@@ -9,13 +9,11 @@ Generate change artifacts. Replaces /opsx:propose + /opsx:explore + /opsx:contin
 4. After each artifact, ask if they want to continue to the next
 
 ### /spec <name>: Direct generation
-1. Create `changes/<name>/` directory
+1. Create `docs/alloy/specs/YYYY-MM-DD-<name>/` directory (if needed)
 2. Generate all artifacts in dependency order:
-   - `proposal.md` — Why and what changes
-   - `specs/<feature>/spec.md` — Delta specs (ADDED/MODIFIED/REMOVED)
-   - `design.md` — Engineering decisions, goals/non-goals, risks
-   - `tasks.md` — Ordered task checklist with checkbox format
-3. Create `.change.yaml` with metadata
+   - `docs/alloy/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements
+   - `docs/alloy/plans/YYYY-MM-DD-<name>.md` — Implementation plan (decision layer)
+   - `docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md` — Ordered task checklist (execution layer)
 
 ### /spec --step: Step-by-step
 Generate one artifact at a time, stopping after each for review.
@@ -43,12 +41,10 @@ Do not generate `tasks.md` until both `specs/` and `design.md` exist.
 
 After generation, report:
 ```
-Created change: <name>
-Artifacts:
-  ✓ proposal.md
-  ✓ specs/<feature>/spec.md
-  ✓ design.md
-  ✓ tasks.md (N tasks, M phases)
+Created artifacts:
+  ✓ docs/alloy/specs/YYYY-MM-DD-<name>-design.md
+  ✓ docs/alloy/plans/YYYY-MM-DD-<name>.md
+  ✓ docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md (N tasks, M phases)
 
-Next step: /plan to refine tasks, or /build to start implementing
+Next step: /build to start implementing, or /plan to refine tasks
 ```

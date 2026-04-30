@@ -58,12 +58,12 @@ digraph process {
         "Mark task complete in tasks.md and TodoWrite" [shape=box];
     }
 
-    "Read plan.md for architecture context + tasks.md for task list, create TodoWrite" [shape=box];
+    "Read docs/alloy/plans/<name>.md for architecture + docs/alloy/tasks/<name>-tasks.md for task list, create TodoWrite" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
     "Use Alloy:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read plan.md for architecture context + tasks.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read docs/alloy/plans/<name>.md for architecture + docs/alloy/tasks/<name>-tasks.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -128,8 +128,8 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 ```
 You: I'm using Subagent-Driven Development to execute this plan.
 
-[Read plan.md for architecture context]
-[Read tasks.md for task list with full text and context]
+[Read docs/alloy/plans/YYYY-MM-DD-<name>.md for architecture context]
+[Read docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md for task list]
 [Create TodoWrite with all tasks]
 
 Task 1: Hook installation script

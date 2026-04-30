@@ -14,10 +14,11 @@ Write-Host ""
 
 # 1. Create artifact directories
 Write-Host "[1/10] Creating artifact directories..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\specs" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\changes" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\archive" -Force | Out-Null
-Write-Host "  OK specs/, changes/, archive/"
+New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\specs" -Force | Out-Null
+New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\plans" -Force | Out-Null
+New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\tasks" -Force | Out-Null
+New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\archive" -Force | Out-Null
+Write-Host "  OK docs/alloy/specs/, docs/alloy/plans/, docs/alloy/tasks/, docs/alloy/archive/"
 
 # 2. Copy commands
 Write-Host "[2/10] Installing commands..." -ForegroundColor Yellow
@@ -211,9 +212,10 @@ This project uses Alloy for structured AI-assisted development.
 - ``/resume`` - Resume from breakpoint
 
 ### Artifact Directories
-- ``specs/`` - Published specs (long-lived)
-- ``changes/`` - Active changes (short-lived)
-- ``archive/`` - Archived changes
+- ``docs/alloy/specs/`` - Design specs (long-lived)
+- ``docs/alloy/plans/`` - Implementation plans (decision layer)
+- ``docs/alloy/tasks/`` - Task checklists (execution layer)
+- ``docs/alloy/archive/`` - Archived artifacts
 "@
 
 if (Test-Path $ClaudeMd) {

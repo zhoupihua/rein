@@ -11,10 +11,10 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 **Announce at start:** "I'm using the planning-and-task-breakdown skill to create the implementation plan."
 
-**Save output to:** `changes/<name>/plan.md` + `changes/<name>/tasks.md`
-- `plan.md` — Architecture decisions, dependency graph, slicing strategy, risks (decision layer)
-- `tasks.md` — Ordered task checklist with acceptance criteria (execution layer, overwrites /spec's coarse tasks)
-- If no `changes/<name>/` directory exists, create it first
+**Save output to:** `docs/alloy/plans/YYYY-MM-DD-<feature-name>.md` + `docs/alloy/tasks/YYYY-MM-DD-<feature-name>-tasks.md`
+- `plans/` — Architecture decisions, dependency graph, slicing strategy, risks (decision layer)
+- `tasks/` — Ordered task checklist with acceptance criteria (execution layer, overwrites /spec's coarse tasks)
+- If no `docs/alloy/plans/` or `docs/alloy/tasks/` directory exists, create it
 
 ## Scope Check
 
@@ -244,7 +244,7 @@ Fix any issues inline. If you find a spec requirement with no task, add the task
 
 After saving both files, offer execution choice:
 
-**"Plan complete and saved to `changes/<name>/plan.md` and `changes/<name>/tasks.md`. Two execution options:**
+**"Plan complete and saved to `docs/alloy/plans/YYYY-MM-DD-<feature-name>.md` and `docs/alloy/tasks/YYYY-MM-DD-<feature-name>-tasks.md`. Two execution options:**
 
 **1. Subagent-Driven (recommended)** — Fresh subagent per task, review between tasks, fast iteration
 

@@ -15,10 +15,11 @@ echo ""
 
 # 1. Create artifact directories
 echo "[1/10] Creating artifact directories..."
-mkdir -p "$PROJECT_DIR/specs"
-mkdir -p "$PROJECT_DIR/changes"
-mkdir -p "$PROJECT_DIR/archive"
-echo "  ✓ specs/, changes/, archive/"
+mkdir -p "$PROJECT_DIR/docs/alloy/specs"
+mkdir -p "$PROJECT_DIR/docs/alloy/plans"
+mkdir -p "$PROJECT_DIR/docs/alloy/tasks"
+mkdir -p "$PROJECT_DIR/docs/alloy/archive"
+echo "  ✓ docs/alloy/specs/, docs/alloy/plans/, docs/alloy/tasks/, docs/alloy/archive/"
 
 # 2. Copy commands
 echo "[2/10] Installing commands..."
@@ -197,9 +198,10 @@ This project uses Alloy for structured AI-assisted development.
 - `/resume` — Resume from breakpoint
 
 ### Artifact Directories
-- `specs/` — Published specs (long-lived)
-- `changes/` — Active changes (short-lived)
-- `archive/` — Archived changes
+- `docs/alloy/specs/` — Design specs (long-lived)
+- `docs/alloy/plans/` — Implementation plans (decision layer)
+- `docs/alloy/tasks/` — Task checklists (execution layer)
+- `docs/alloy/archive/` — Archived artifacts
 BLOCK
 )
 
