@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/rein-protect.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard.sh\""
           }
         ]
       },
@@ -26,11 +26,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/rein-protect-bash.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-bash.sh\""
           },
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/test-gateway.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/gate.sh\""
           }
         ]
       }
@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/secret-scan.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/leak-guard.sh\""
           }
         ]
       }
@@ -61,7 +61,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/context-inject.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/inject.sh\""
           }
         ]
       }

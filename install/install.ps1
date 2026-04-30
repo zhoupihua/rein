@@ -48,16 +48,16 @@ Copy-Item "$WorkflowDir\hooks\session-start.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\session-start.ps1" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\format.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\format.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\test-gateway.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\test-gateway.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\secret-scan.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\secret-scan.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\context-inject.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\context-inject.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\rein-protect.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\rein-protect.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\rein-protect-bash.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\rein-protect-bash.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\gate.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\gate.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\leak-guard.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\leak-guard.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\inject.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\inject.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\guard.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\guard.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\guard-bash.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\guard-bash.ps1" "$ProjectDir\.claude\hooks\"
 Write-Host "  OK All hooks installed"
 
 # 6. Copy checklists
@@ -75,7 +75,7 @@ Write-Host "[7/10] Generating protection manifest..." -ForegroundColor Yellow
 $ManifestFile = "$ProjectDir\.claude\.rein-manifest"
 $ManifestLines = @(
     "# rein Managed Files - DO NOT EDIT",
-    "# These files are protected from modification by the rein-protect hook.",
+    "# These files are protected from modification by the guard hook.",
     "# To allow edits to a specific file, remove its line from this manifest.",
     ""
 )
@@ -133,7 +133,7 @@ if (Test-Path $SettingsFile) {
                     hooks = @(
                         @{
                             type = "command"
-                            command = "$HookBase\rein-protect.ps1""
+                            command = "$HookBase\guard.ps1""
                         }
                     )
                 }
@@ -142,11 +142,11 @@ if (Test-Path $SettingsFile) {
                     hooks = @(
                         @{
                             type = "command"
-                            command = "$HookBase\rein-protect-bash.ps1""
+                            command = "$HookBase\guard-bash.ps1""
                         }
                         @{
                             type = "command"
-                            command = "$HookBase\test-gateway.ps1""
+                            command = "$HookBase\gate.ps1""
                         }
                     )
                 }
@@ -166,7 +166,7 @@ if (Test-Path $SettingsFile) {
                     hooks = @(
                         @{
                             type = "command"
-                            command = "$HookBase\secret-scan.ps1""
+                            command = "$HookBase\leak-guard.ps1""
                         }
                     )
                 }
@@ -177,7 +177,7 @@ if (Test-Path $SettingsFile) {
                     hooks = @(
                         @{
                             type = "command"
-                            command = "$HookBase\context-inject.ps1""
+                            command = "$HookBase\inject.ps1""
                         }
                     )
                 }
@@ -204,12 +204,12 @@ This project uses rein for structured AI-assisted development.
 - ``/feature`` - L3: Full 8-step workflow
 - ``/spec`` - Generate change artifacts
 - ``/plan`` - Task breakdown
-- ``/build`` - Execute tasks from tasks.md
+- ``/do`` - Execute tasks from tasks.md
 - ``/test`` - TDD workflow
 - ``/review`` - Five-axis code review
 - ``/ship`` - Fan-out review + GO/NO-GO
 - ``/simplify`` - Code simplification
-- ``/resume`` - Resume from breakpoint
+- ``/continue`` - Resume from breakpoint
 
 ### Artifact Directories
 - ``docs/rein/specs/`` - Design specs (long-lived)
@@ -244,7 +244,7 @@ Write-Host ""
 Write-Host "=== Installation Complete ===" -ForegroundColor Green
 Write-Host ""
 Write-Host "Installed hooks:" -ForegroundColor Cyan
-Write-Host "  1. SessionStart    - Inject using-workflow skill"
+Write-Host "  1. SessionStart    - Inject using-rein skill"
 Write-Host "  2. rein Protect   - Block edits to rein-managed files (PreToolUse: Edit|Write|MultiEdit)"
 Write-Host "  3. Bash Protect    - Block destructive cmds on rein files (PreToolUse: Bash)"
 Write-Host "  4. Test Gateway    - Run tests before deploy (PreToolUse: Bash)"
@@ -259,6 +259,6 @@ Write-Host "  To allow edits, remove the file's entry from the manifest"
 Write-Host ""
 Write-Host "Verification steps:"
 Write-Host "1. Start a new Claude Code session"
-Write-Host "2. The using-workflow skill should be auto-injected"
+Write-Host "2. The using-rein skill should be auto-injected"
 Write-Host "3. Try /triage to test the workflow"
 Write-Host "4. Try /review to test checklist injection"

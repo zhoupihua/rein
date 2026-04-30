@@ -40,7 +40,7 @@ Collect findings from all three agents. Categorize by severity:
 **If NO-GO:** Present findings and rollback plan. Ask user whether to fix issues or rollback.
 
 **If GO:**
-1. Invoke `git-workflow-and-versioning` to complete the branch
-2. Invoke `shipping-and-launch` for release checks (if applicable)
+1. Invoke `git-workflow` to complete the branch
+2. Invoke `shipping` for release checks (if applicable)
 3. Archive `changes/<name>/` to `archive/YYYY-MM-DD-<name>/`
 4. Report completion

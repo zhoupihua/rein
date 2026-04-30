@@ -45,7 +45,7 @@ echo "  ✓ $AGENT_COUNT agents installed"
 # 5. Copy hooks
 echo "[5/10] Installing hooks..."
 mkdir -p "$PROJECT_DIR/.claude/hooks"
-for hook in session-start format test-gateway secret-scan context-inject rein-protect rein-protect-bash; do
+for hook in session-start format gate leak-guard inject guard guard-bash; do
   cp "$WORKFLOW_DIR/hooks/${hook}.sh" "$PROJECT_DIR/.claude/hooks/"
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
     cp "$WORKFLOW_DIR/hooks/${hook}.ps1" "$PROJECT_DIR/.claude/hooks/"
@@ -69,7 +69,7 @@ echo "[7/10] Generating protection manifest..."
 MANIFEST_FILE="$PROJECT_DIR/.claude/.rein-manifest"
 {
   echo "# rein Managed Files - DO NOT EDIT"
-  echo "# These files are protected from modification by the rein-protect hook."
+  echo "# These files are protected from modification by the guard hook."
   echo "# To allow edits to a specific file, remove its line from this manifest."
   echo ""
   # List individual files in flat directories
@@ -119,7 +119,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "$HOOK_BASE/rein-protect.sh\""
+            "command": "$HOOK_BASE/guard.sh\""
           }
         ]
       },
@@ -128,11 +128,11 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "$HOOK_BASE/rein-protect-bash.sh\""
+            "command": "$HOOK_BASE/guard-bash.sh\""
           },
           {
             "type": "command",
-            "command": "$HOOK_BASE/test-gateway.sh\""
+            "command": "$HOOK_BASE/gate.sh\""
           }
         ]
       }
@@ -152,7 +152,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "$HOOK_BASE/secret-scan.sh\""
+            "command": "$HOOK_BASE/leak-guard.sh\""
           }
         ]
       }
@@ -163,7 +163,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "$HOOK_BASE/context-inject.sh\""
+            "command": "$HOOK_BASE/inject.sh\""
           }
         ]
       }
@@ -190,12 +190,12 @@ This project uses rein for structured AI-assisted development.
 - `/feature` — L3: Full 8-step workflow
 - `/spec` — Generate change artifacts
 - `/plan` — Task breakdown
-- `/build` — Execute tasks from tasks.md
+- `/do` — Execute tasks from tasks.md
 - `/test` — TDD workflow
 - `/review` — Five-axis code review
 - `/ship` — Fan-out review + GO/NO-GO
 - `/simplify` — Code simplification
-- `/resume` — Resume from breakpoint
+- `/continue` — Resume from breakpoint
 
 ### Artifact Directories
 - `docs/rein/specs/` — Design specs (long-lived)
@@ -232,7 +232,7 @@ echo ""
 echo "=== Installation Complete ==="
 echo ""
 echo "Installed hooks:"
-echo "  1. SessionStart    — Inject using-workflow skill"
+echo "  1. SessionStart    — Inject using-rein skill"
 echo "  2. rein Protect   — Block edits to rein-managed files (PreToolUse: Edit|Write|MultiEdit)"
 echo "  3. Bash Protect    — Block destructive cmds on rein files (PreToolUse: Bash)"
 echo "  4. Test Gateway    — Run tests before deploy (PreToolUse: Bash)"
@@ -247,6 +247,6 @@ echo "  To allow edits, remove the file's entry from the manifest"
 echo ""
 echo "Verification steps:"
 echo "1. Start a new Claude Code session"
-echo "2. The using-workflow skill should be auto-injected"
+echo "2. The using-rein skill should be auto-injected"
 echo "3. Try /triage to test the workflow"
 echo "4. Try /review to test checklist injection"

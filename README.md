@@ -97,9 +97,9 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 │  Step 1        Step 2        Step 3        Step 4                    │
 │ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐                │
 │ │  DEFINE  │ │  DEFINE  │ │  DEFINE  │ │  ISOLATE │                │
-│ │ idea-    │ │ spec-    │ │  /spec   │ │ git-     │                │
-│ │ refine   │ │ driven-  │ │ 生成工件  │ │ worktree │                │
-│ │          │ │ develop  │ │          │ │          │                │
+│ │  refine  │ │spec-     │ │  /spec   │ │  git-    │                │
+│ │          │ │driven    │ │ 生成工件  │ │worktrees │                │
+│ │          │ │          │ │          │ │          │                │
 │ └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘                │
 │      │            │            │            │                        │
 │      ▼            ▼            ▼            ▼                        │
@@ -113,10 +113,9 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 │  Step 5        Step 6  │                                             │
 │ ┌──────────┐ ┌────────┴─┐                                           │
 │ │   PLAN   │ │   BUILD  │                                           │
-│ │ planning │ │ incremen-│                                           │
-│ │ -and-    │ │ tal +    │                                           │
-│ │ task-    │ │ TDD      │                                           │
-│ │ breakdown│ │          │                                           │
+│ │ planning │ │incremen- │                                           │
+│ │          │ │tal + tdd │                                           │
+│ │          │ │          │                                           │
 │ └────┬─────┘ └────┬─────┘                                           │
 │      │            │                                                  │
 │      ▼            ▼                                                  │
@@ -131,9 +130,9 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 │  Step 7        Step 8  │                                             │
 │ ┌──────────┐ ┌────────┴─┐                                           │
 │ │  REVIEW  │ │   SHIP   │                                           │
-│ │ code-    │ │ verify + │                                           │
-│ │ review-  │ │ git-     │                                           │
-│ │ quality  │ │ workflow │                                           │
+│ │code-     │ │ verify + │                                           │
+│ │review    │ │git-      │                                           │
+│ │          │ │workflow  │                                           │
 │ └────┬─────┘ └────┬─────┘                                           │
 │      │            │                                                  │
 │      ▼            ▼                                                  │
@@ -152,21 +151,21 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 | 质量门 | 位置 | 检查项 | 不通过则 |
 |--------|------|--------|----------|
-| **DEFINE** | Step 1-3 后 | 需求明确、假设列出、MVP界定、人工审阅 | 回到 idea-refine 重新定义 |
+| **DEFINE** | Step 1-3 后 | 需求明确、假设列出、MVP界定、人工审阅 | 回到 refine 重新定义 |
 | **PLAN + BUILD** | Step 5-6 后 | 任务有验收标准、TDD循环完成、每增量可编译、测试全绿 | 回到对应任务重做 |
 | **REVIEW + SHIP** | Step 7-8 后 | 五轴审查通过、安全无漏洞、性能无退化、用新证据验证 | 修复问题后重新审查 |
 
 ### 恢复断点
 
-任何步骤中断后，使用 `/resume` 自动识别当前阶段并继续：
+任何步骤中断后，使用 `/continue` 自动识别当前阶段并继续：
 
 | 检测条件 | 阶段 | 调用技能 |
 |----------|------|----------|
-| `docs/rein/specs/` 无文件 | DEFINE | idea-refine |
-| `docs/rein/plans/` 无文件 | PLAN | planning-and-task-breakdown |
-| `docs/rein/tasks/` 有未勾选项 | BUILD | incremental-implementation + TDD |
-| 任务全勾选，无审查 | REVIEW | code-review-and-quality |
-| 审查完成，未提交 | SHIP | git-workflow-and-versioning |
+| `docs/rein/specs/` 无文件 | DEFINE | refine |
+| `docs/rein/plans/` 无文件 | PLAN | planning |
+| `docs/rein/tasks/` 有未勾选项 | BUILD | incremental + TDD |
+| 任务全勾选，无审查 | REVIEW | code-review |
+| 审查完成，未提交 | SHIP | git-workflow |
 
 ## Commands
 
@@ -185,12 +184,12 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 |---------|---------|--------|
 | `/spec` | Generate change artifacts | `docs/rein/specs/` + `docs/rein/plans/` + `docs/rein/tasks/` |
 | `/plan` | Task breakdown with dependency graph | `docs/rein/plans/` + `docs/rein/tasks/` |
-| `/build` | Execute tasks from tasks file | Code + commits |
+| `/do` | Execute tasks from tasks file | Code + commits |
 | `/test` | TDD workflow | Tests passing |
 | `/review` | 5-axis code review + security + performance | Review report |
 | `/ship` | Parallel expert fan-out → GO/NO-GO | Merge / PR |
 | `/simplify` | Code simplification | Simpler code |
-| `/resume` | Resume from breakpoint | Continue workflow |
+| `/continue` | Resume from breakpoint | Continue workflow |
 
 ## Hooks
 
@@ -198,7 +197,7 @@ rein 安装后自动配置 7 个钩子，无需手动干预：
 
 | Hook | Event | Matcher | 作用 |
 |------|-------|---------|------|
-| Session Start | SessionStart | * | 注入 using-workflow 技能 |
+| Session Start | SessionStart | * | 注入 using-rein 技能 |
 | rein Protect | PreToolUse | Edit\|Write\|MultiEdit | 阻止修改 rein 管理的文件 |
 | Bash Protect | PreToolUse | Bash | 阻止破坏性命令操作 rein 文件 |
 | Test Gateway | PreToolUse | Bash | deploy/push/publish 前自动跑测试 |
@@ -209,43 +208,43 @@ rein 安装后自动配置 7 个钩子，无需手动干预：
 ## Skills by Phase
 
 ### Meta
-- **using-workflow** — Discovery and operating behaviors for all skills
+- **using-rein** — Discovery and operating behaviors for all skills
 
 ### DEFINE
-- **idea-refine** — Structured divergent/convergent thinking
-- **spec-driven-development** — Write PRD before code
+- **refine** — Structured divergent/convergent thinking
+- **spec-driven** — Write PRD before code
 
 ### PLAN
-- **planning-and-task-breakdown** — Decompose specs into verifiable tasks
-- **using-git-worktrees** — Isolated workspace on new branch
+- **planning** — Decompose specs into verifiable tasks
+- **git-worktrees** — Isolated workspace on new branch
 
 ### BUILD
-- **incremental-implementation** — Thin vertical slices, scope discipline
-- **test-driven-development** — RED-GREEN-REFACTOR iron law
-- **subagent-driven-development** — Dispatch parallel implementer agents
-- **dispatching-parallel-agents** — Independent task parallelization
+- **incremental** — Thin vertical slices, scope discipline
+- **tdd** — RED-GREEN-REFACTOR iron law
+- **subagent** — Dispatch parallel implementer agents
+- **parallel-dispatch** — Independent task parallelization
 - **context-engineering** — Right info at the right time
-- **source-driven-development** — Ground decisions in official docs
-- **frontend-ui-engineering** — Production UI with accessibility
-- **api-and-interface-design** — Stable, hard-to-misuse interfaces
+- **source-driven** — Ground decisions in official docs
+- **frontend** — Production UI with accessibility
+- **api-design** — Stable, hard-to-misuse interfaces
 
 ### VERIFY
-- **debugging-and-error-recovery** — Systematic triage, no fix without root cause
-- **browser-testing-with-devtools** — Live browser data via DevTools MCP
-- **verification-before-completion** — No claims without fresh evidence
+- **debugging** — Systematic triage, no fix without root cause
+- **browser-testing** — Live browser data via DevTools MCP
+- **verify** — No claims without fresh evidence
 
 ### REVIEW
-- **code-review-and-quality** — 5-axis review, change size control
-- **code-simplification** — Reduce complexity preserving behavior
-- **security-and-hardening** — OWASP Top 10 prevention
-- **performance-optimization** — Measure-first optimization
+- **code-review** — 5-axis review, change size control
+- **simplify** — Reduce complexity preserving behavior
+- **security** — OWASP Top 10 prevention
+- **performance** — Measure-first optimization
 
 ### SHIP
-- **git-workflow-and-versioning** — Trunk-based, atomic commits
-- **shipping-and-launch** — Pre-launch checklist, staged rollout
-- **ci-cd-and-automation** — Quality gate pipeline
-- **deprecation-and-migration** — Strangler pattern, zombie code removal
-- **documentation-and-adrs** — Document decisions, not code
+- **git-workflow** — Trunk-based, atomic commits
+- **shipping** — Pre-launch checklist, staged rollout
+- **cicd** — Quality gate pipeline
+- **migration** — Strangler pattern, zombie code removal
+- **docs-and-adrs** — Document decisions, not code
 
 ## Expert Agents
 
@@ -275,7 +274,7 @@ rein 安装后自动配置 7 个钩子，无需手动干预：
 
 ## File Protection
 
-rein 安装的文件受 `rein-protect` 钩子保护，AI 无法修改或删除：
+rein 安装的文件受 `guard` 钩子保护，AI 无法修改或删除：
 
 - 保护清单：`.claude/.rein-manifest`（安装时自动生成）
 - 保护范围：hooks、commands、skills、agents、checklists

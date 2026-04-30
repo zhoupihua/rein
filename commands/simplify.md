@@ -2,7 +2,7 @@ Simplify code while preserving behavior.
 
 ## Instructions
 
-1. Invoke `code-simplification` skill
+1. Invoke `simplify` skill
 2. Read project conventions and understand the code
 3. Scan for simplification opportunities:
    - Structural complexity (nested conditionals, excessive abstraction)

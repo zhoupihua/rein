@@ -1,13 +1,13 @@
 #!/bin/bash
 # Session start hook for rein
-# Injects the using-workflow meta-skill into every new Claude Code session
+# Injects the using-rein meta-skill into every new Claude Code session
 
-SKILL_FILE="$(dirname "$0")/../skills/using-workflow/SKILL.md"
+SKILL_FILE="$(dirname "$0")/../skills/using-rein/SKILL.md"
 
 if [ ! -f "$SKILL_FILE" ]; then
   # Try relative to the script's resolved location
   SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-  SKILL_FILE="$SCRIPT_DIR/../skills/using-workflow/SKILL.md"
+  SKILL_FILE="$SCRIPT_DIR/../skills/using-rein/SKILL.md"
 fi
 
 if [ -f "$SKILL_FILE" ]; then
@@ -26,5 +26,5 @@ EOF
 EOF
   fi
 else
-  echo '{"hookSpecificOutput": {"additionalContext": "Warning: rein using-workflow skill not found. Run install script to set up."}}' >&2
+  echo '{"hookSpecificOutput": {"additionalContext": "Warning: rein using-rein skill not found. Run install script to set up."}}' >&2
 fi

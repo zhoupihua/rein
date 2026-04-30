@@ -15,67 +15,67 @@ rein/
 ├── skills/                          # 22 个统一技能
 │   │
 │   │── # ===== 元技能 =====
-│   ├── using-workflow/              # 合并 using-superpowers + using-agent-skills
+│   ├── using-rein/              # 合并 using-superpowers + using-agent-skills
 │   │   └── SKILL.md
 │   │
 │   │── # ===== DEFINE 阶段 =====
-│   ├── idea-refine/                 # 合并 SP:brainstorming + AS:idea-refine
+│   ├── refine/                 # 合并 SP:brainstorming + AS:refine
 │   │   └── SKILL.md
-│   ├── spec-driven-development/     # AS 独有
+│   ├── spec-driven/     # AS 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== PLAN 阶段 =====
-│   ├── planning-and-task-breakdown/ # 合并 SP:writing-plans + AS:planning-and-task-breakdown
+│   ├── planning/ # 合并 SP:writing-plans + AS:planning
 │   │   └── SKILL.md
-│   ├── using-git-worktrees/         # SP 独有
+│   ├── git-worktrees/         # SP 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== BUILD 阶段 =====
-│   ├── incremental-implementation/  # 合并 SP:executing-plans + AS:incremental-implementation
+│   ├── incremental/  # 合并 SP:executing-plans + AS:incremental
 │   │   └── SKILL.md
-│   ├── test-driven-development/     # 合并 SP:TDD + AS:TDD
+│   ├── tdd/     # 合并 SP:TDD + AS:TDD
 │   │   └── SKILL.md
-│   ├── subagent-driven-development/ # SP 独有
+│   ├── subagent/ # SP 独有
 │   │   └── SKILL.md
-│   ├── dispatching-parallel-agents/ # SP 独有
+│   ├── parallel-dispatch/ # SP 独有
 │   │   └── SKILL.md
 │   ├── context-engineering/         # AS 独有
 │   │   └── SKILL.md
-│   ├── source-driven-development/   # AS 独有
+│   ├── source-driven/   # AS 独有
 │   │   └── SKILL.md
-│   ├── frontend-ui-engineering/     # AS 独有
+│   ├── frontend/     # AS 独有
 │   │   └── SKILL.md
-│   ├── api-and-interface-design/    # AS 独有
+│   ├── api-design/    # AS 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== VERIFY 阶段 =====
-│   ├── debugging-and-error-recovery/ # 合并 SP:systematic-debugging + AS:debugging-and-error-recovery
+│   ├── debugging/ # 合并 SP:systematic-debugging + AS:debugging
 │   │   └── SKILL.md
-│   ├── browser-testing-with-devtools/ # AS 独有
+│   ├── browser-testing/ # AS 独有
 │   │   └── SKILL.md
-│   ├── verification-before-completion/ # SP 独有
+│   ├── verify/ # SP 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== REVIEW 阶段 =====
-│   ├── code-review-and-quality/     # 合并 SP:requesting+receiving-code-review + AS:code-review-and-quality
+│   ├── code-review/     # 合并 SP:requesting+receiving-code-review + AS:code-review
 │   │   └── SKILL.md
-│   ├── code-simplification/         # AS 独有
+│   ├── simplify/         # AS 独有
 │   │   └── SKILL.md
-│   ├── security-and-hardening/      # AS 独有
+│   ├── security/      # AS 独有
 │   │   └── SKILL.md
-│   ├── performance-optimization/    # AS 独有
+│   ├── performance/    # AS 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== SHIP 阶段 =====
-│   ├── git-workflow-and-versioning/ # AS 独有（融入 SP:finishing-a-development-branch）
+│   ├── git-workflow/ # AS 独有（融入 SP:finishing-a-development-branch）
 │   │   └── SKILL.md
-│   ├── shipping-and-launch/         # AS 独有
+│   ├── shipping/         # AS 独有
 │   │   └── SKILL.md
-│   ├── ci-cd-and-automation/        # AS 独有
+│   ├── cicd/        # AS 独有
 │   │   └── SKILL.md
-│   ├── deprecation-and-migration/   # AS 独有
+│   ├── migration/   # AS 独有
 │   │   └── SKILL.md
-│   └── documentation-and-adrs/      # AS 独有
+│   └── docs-and-adrs/      # AS 独有
 │       └── SKILL.md
 │
 ├── agents/                          # 3 个专家代理
@@ -98,7 +98,7 @@ rein/
 │   └── simplify.md                  # 代码简化
 │
 ├── hooks/                           # 会话钩子
-│   ├── session-start.sh             # 注入 using-workflow 元技能
+│   ├── session-start.sh             # 注入 using-rein 元技能
 │   └── session-start.ps1            # Windows 版
 │
 ├── references/                      # 参考清单（来自 AS）
@@ -170,7 +170,7 @@ OpenSpec CLI 的每个功能都有替代实现：
 
 ## 技能合并策略（6 对合并）
 
-### 1. idea-refine ← SP:brainstorming + AS:idea-refine
+### 1. refine ← SP:brainstorming + AS:refine
 
 **骨架**：SP brainstorming（更强的流程关卡、自审循环、到 planning 的显式交接）
 **注入 AS 元素**：
@@ -180,7 +180,7 @@ OpenSpec CLI 的每个功能都有替代实现：
 - "不做清单"作为必填输出
 - 收敛时的三维度压力测试（用户价值/可行性/差异化）
 
-### 2. planning-and-task-breakdown ← SP:writing-plans + AS:planning-and-task-breakdown
+### 2. planning ← SP:writing-plans + AS:planning
 
 **骨架**：SP writing-plans（执行就绪的计划格式、无占位符规则、自审、显式交接）
 **注入 AS 元素**：
@@ -191,15 +191,15 @@ OpenSpec CLI 的每个功能都有替代实现：
 - 并行化分类（safe/sequential/needs-coordination）
 - 反合理化表
 
-### 3. incremental-implementation ← SP:executing-plans + AS:incremental-implementation
+### 3. incremental ← SP:executing-plans + AS:incremental
 
-**骨架**：AS incremental-implementation（实现规则、范围纪律、feature flags、rollback-friendly）
+**骨架**：AS incremental（实现规则、范围纪律、feature flags、rollback-friendly）
 **注入 SP 元素**：
 - 执行前审阅计划步骤
 - 遇阻时的 stop-and-ask 协议
-- 到 git-workflow-and-versioning 的显式交接
+- 到 git-workflow 的显式交接
 
-### 4. test-driven-development ← SP:TDD + AS:TDD
+### 4. tdd ← SP:TDD + AS:TDD
 
 **骨架**：SP TDD（铁律、删除先写代码的规则、12 条反合理化）
 **注入 AS 元素**：
@@ -210,18 +210,18 @@ OpenSpec CLI 的每个功能都有替代实现：
 - Prove-It 模式（bug 修复专用）
 - 浏览器测试集成（DevTools MCP）
 
-### 5. debugging-and-error-recovery ← SP:systematic-debugging + AS:debugging-and-error-recovery
+### 5. debugging ← SP:systematic-debugging + AS:debugging
 
-**骨架**：AS debugging-and-error-recovery（6 步分诊、错误分类决策树、不可重现 bug 处理、安全回退）
+**骨架**：AS debugging（6 步分诊、错误分类决策树、不可重现 bug 处理、安全回退）
 **注入 SP 元素**：
 - 铁律（无根因分析不修复）
 - 3 次修复失败 → 质疑架构
 - 反合理化表（8 条）
 - 多组件诊断仪器
 
-### 6. code-review-and-quality ← SP:requesting+receiving-code-review + AS:code-review-and-quality
+### 6. code-review ← SP:requesting+receiving-code-review + AS:code-review
 
-**骨架**：AS code-review-and-quality（5 轴审查、变更大小控制、严重性分类、多模型审查模式）
+**骨架**：AS code-review（5 轴审查、变更大小控制、严重性分类、多模型审查模式）
 **注入 SP receiving-code-review 元素**：
 - 禁止回复清单（不得说"好观点！"、"你说得对！"）
 - YAGNI 检查（审查建议的"专业"特性）
@@ -242,36 +242,36 @@ OpenSpec CLI 的每个功能都有替代实现：
 
 **`/fix`** — L2 标准变更（单文件/2-3 文件，需求明确）
 ```
-Bug: debugging-and-error-recovery → test-driven-development → verification-before-completion → 提交
-功能: test-driven-development → verification-before-completion → 提交
-前端 Bug: + browser-testing-with-devtools
+Bug: debugging → tdd → verify → 提交
+功能: tdd → verify → 提交
+前端 Bug: + browser-testing
 ```
 
 **`/feature`** — L3 完整变更（8 步铁三角流程）
 ```
-1. idea-refine → 发散/收敛，输出 one-pager
-2. spec-driven-development → 生成 PRD
+1. refine → 发散/收敛，输出 one-pager
+2. spec-driven → 生成 PRD
 3. spec → 生成 changes/<name>/ 全套制品（proposal/specs/design/tasks）
-4. using-git-worktrees → 分支隔离 + baseline
-5. planning-and-task-breakdown → 细化任务
-6. incremental-implementation + test-driven-development → 实现
-   - 前端 → frontend-ui-engineering
-   - API → api-and-interface-design
-   - 并行 → subagent-driven-development
-   - 遇 bug → debugging-and-error-recovery
-7. code-review-and-quality → 5 轴审查
-   - 安全 → security-and-hardening
-   - 性能 → performance-optimization
-8. verification-before-completion → 验证
-   → git-workflow-and-versioning → 提交
-   → shipping-and-launch → 发布检查
-   → documentation-and-adrs → 文档
+4. git-worktrees → 分支隔离 + baseline
+5. planning → 细化任务
+6. incremental + tdd → 实现
+   - 前端 → frontend
+   - API → api-design
+   - 并行 → subagent
+   - 遇 bug → debugging
+7. code-review → 5 轴审查
+   - 安全 → security
+   - 性能 → performance
+8. verify → 验证
+   → git-workflow → 提交
+   → shipping → 发布检查
+   → docs-and-adrs → 文档
    → 归档 changes/ 到 archive/
 ```
 
 **`/triage`** — 自动分级判定
 
-**`/resume`** — 断点恢复（读取 tasks.md checkbox 状态）
+**`/continue`** — 断点恢复（读取 tasks.md checkbox 状态）
 
 ### 工作流命令（替代 OpenSpec 的 /opsx:*）
 
@@ -281,18 +281,18 @@ Bug: debugging-and-error-recovery → test-driven-development → verification-b
 - `/spec --step`：逐个生成制品（替代 /opsx:continue）
 - `/spec --validate`：验证当前变更的制品完整性（替代 `openspec validate`）
 
-**`/build`** — 替代 `/opsx:apply`
+**`/do`** — 替代 `/opsx:apply`
 - 读取 tasks.md，逐项执行，勾选 checkbox
 
-**`/plan`** — 独立调用 planning-and-task-breakdown
+**`/plan`** — 独立调用 planning
 
-**`/test`** — 独立调用 test-driven-development + browser-testing-with-devtools
+**`/test`** — 独立调用 tdd + browser-testing
 
-**`/review`** — 独立调用 code-review-and-quality + security-and-hardening + performance-optimization
+**`/review`** — 独立调用 code-review + security + performance
 
 **`/ship`** — 并行 fan-out（3 专家代理）→ GO/NO-GO → 归档
 
-**`/simplify`** — 独立调用 code-simplification
+**`/simplify`** — 独立调用 simplify
 
 ---
 
@@ -339,10 +339,10 @@ install 脚本检测平台，如果是 Codex CLI：
 ## 验证方式
 
 1. 运行 install 脚本，确认目录和文件全部创建
-2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-workflow 元技能
+2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-rein 元技能
 3. 测试 `/triage`：输入一个变更描述，确认正确分级
 4. 测试 `/spec test-feature`：确认生成 `changes/test-feature/` 全套制品
-5. 测试 `/build`：确认读取 tasks.md 并执行
+5. 测试 `/do`：确认读取 tasks.md 并执行
 6. 测试 `/ship`：确认 fan-out 3 专家代理
-7. 测试 `/resume`：中断后确认能恢复
+7. 测试 `/continue`：中断后确认能恢复
 8. 测试 hooks：编辑 sqlmigration 文件，确认被阻断

@@ -2,12 +2,12 @@ Run TDD workflow with browser testing support.
 
 ## Instructions
 
-1. Invoke `test-driven-development` skill
+1. Invoke `tdd` skill
 2. For new features: Write failing tests first (RED)
 3. For bug fixes: Use the Prove-It pattern — write a test reproducing the bug
 4. Implement minimal code to pass (GREEN)
 5. Refactor while keeping tests green (REFACTOR)
-6. For browser-based changes: Also invoke `browser-testing-with-devtools` for runtime verification
+6. For browser-based changes: Also invoke `browser-testing` for runtime verification
 
 ## Test Pyramid Guidance
 

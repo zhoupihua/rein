@@ -4,7 +4,7 @@ Generate change artifacts. Replaces /opsx:propose + /opsx:explore + /opsx:contin
 
 ### No arguments: Interactive mode
 1. Ask what the user wants to build
-2. Explore the codebase for context (invoke `idea-refine` for divergent thinking)
+2. Explore the codebase for context (invoke `refine` for divergent thinking)
 3. Propose a change name and generate artifacts step by step
 4. After each artifact, ask if they want to continue to the next
 
@@ -46,5 +46,5 @@ Created artifacts:
   ✓ docs/rein/plans/YYYY-MM-DD-<name>.md
   ✓ docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md (N tasks, M phases)
 
-Next step: /build to start implementing, or /plan to refine tasks
+Next step: /do to start implementing, or /plan to refine tasks
 ```

@@ -2,7 +2,7 @@ Break down work into ordered tasks with dependency graphs.
 
 ## Instructions
 
-1. Invoke `planning-and-task-breakdown` skill
+1. Invoke `planning` skill
 2. Read the spec or requirements document (from `docs/rein/specs/` or user-provided)
 3. Operate in read-only mode — no code writing during planning
 4. Output two files:
@@ -30,5 +30,5 @@ After generation, report:
 Created plan: docs/rein/plans/YYYY-MM-DD-<feature-name>.md
 Created tasks: docs/rein/tasks/YYYY-MM-DD-<feature-name>-tasks.md (N tasks, M phases)
 
-Next step: /build to start implementing, or /resume to continue later
+Next step: /do to start implementing, or /continue to continue later
 ```
