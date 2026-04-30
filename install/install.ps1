@@ -58,8 +58,13 @@ if (Test-Path $SettingsFile) {
         hooks = @{
             SessionStart = @(
                 @{
-                    type = "command"
-                    command = 'powershell -ExecutionPolicy Bypass -File "${CLAUDE_PROJECT_DIR}\.claude\hooks\session-start.ps1"'
+                    matcher = ""
+                    hooks = @(
+                        @{
+                            type = "command"
+                            command = 'powershell -ExecutionPolicy Bypass -File "${CLAUDE_PROJECT_DIR}\.claude\hooks\session-start.ps1"'
+                        }
+                    )
                 }
             )
         }

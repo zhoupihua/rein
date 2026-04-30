@@ -57,7 +57,7 @@ SETTINGS_FILE="$PROJECT_DIR/.claude/settings.json"
 if [ -f "$SETTINGS_FILE" ]; then
   echo "  ℹ settings.json exists — merge hooks manually if needed"
   echo "  Add this to your hooks config:"
-  echo '  {"hooks": {"SessionStart": [{"type": "command", "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\""}]}}'
+  echo '  {"hooks": {"SessionStart": [{"matcher": "", "hooks": [{"type": "command", "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\""}]}]}}'
 else
   mkdir -p "$PROJECT_DIR/.claude"
   cat > "$SETTINGS_FILE" <<'SETTINGS'
@@ -65,8 +65,13 @@ else
   "hooks": {
     "SessionStart": [
       {
-        "type": "command",
-        "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\""
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\""
+          }
+        ]
       }
     ]
   }
