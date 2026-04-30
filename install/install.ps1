@@ -108,82 +108,83 @@ Write-Host "  OK $ManifestCount entries in .rein-manifest"
 # 8. Configure settings.json
 Write-Host "[8/10] Configuring hooks in settings.json..." -ForegroundColor Yellow
 $SettingsFile = "$ProjectDir\.claude\settings.json"
-$HookBase = 'powershell -ExecutionPolicy Bypass -File "${CLAUDE_PROJECT_DIR}\.claude\hooks'
 if (Test-Path $SettingsFile) {
     Write-Host "  INFO settings.json exists - merge hooks manually if needed"
     Write-Host "  See hooks/hooks.json for the full configuration template"
 } else {
     New-Item -ItemType Directory -Path "$ProjectDir\.claude" -Force | Out-Null
-    $Settings = @{
-        hooks = @{
-            SessionStart = @(
-                @{
-                    matcher = ""
-                    hooks = @(
-                        @{
-                            type = "command"
-                            command = "$HookBase\session-start.ps1""
-                        }
-                    )
-                }
-            )
-            PreToolUse = @(
-                @{
-                    matcher = "Edit|Write|MultiEdit"
-                    hooks = @(
-                        @{
-                            type = "command"
-                            command = "$HookBase\guard.ps1""
-                        }
-                    )
-                }
-                @{
-                    matcher = "Bash"
-                    hooks = @(
-                        @{
-                            type = "command"
-                            command = "$HookBase\guard-bash.ps1""
-                        }
-                        @{
-                            type = "command"
-                            command = "$HookBase\gate.ps1""
-                        }
-                    )
-                }
-            )
-            PostToolUse = @(
-                @{
-                    matcher = "Write|Edit|MultiEdit"
-                    hooks = @(
-                        @{
-                            type = "command"
-                            command = "$HookBase\format.ps1""
-                        }
-                    )
-                }
-                @{
-                    matcher = "Read|Bash"
-                    hooks = @(
-                        @{
-                            type = "command"
-                            command = "$HookBase\leak-guard.ps1""
-                        }
-                    )
-                }
-            )
-            UserPromptExpansion = @(
-                @{
-                    matcher = "code-review"
-                    hooks = @(
-                        @{
-                            type = "command"
-                            command = "$HookBase\inject.ps1""
-                        }
-                    )
-                }
-            )
-        }
-    } | ConvertTo-Json -Depth 10
+    $Settings = @'
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\session-start.ps1\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\guard.ps1\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\guard-bash.ps1\""
+          },
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\gate.ps1\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\format.ps1\""
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\leak-guard.ps1\""
+          }
+        ]
+      }
+    ],
+    "UserPromptExpansion": [
+      {
+        "matcher": "code-review",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\inject.ps1\""
+          }
+        ]
+      }
+    ]
+  }
+}
+'@
     Set-Content -Path $SettingsFile -Value $Settings
     Write-Host "  OK settings.json created with all hooks"
 }
