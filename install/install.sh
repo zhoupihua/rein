@@ -14,55 +14,47 @@ echo "Target project:  $PROJECT_DIR"
 echo ""
 
 # 1. Create artifact directories
-echo "[1/9] Creating artifact directories..."
+echo "[1/10] Creating artifact directories..."
 mkdir -p "$PROJECT_DIR/specs"
 mkdir -p "$PROJECT_DIR/changes"
 mkdir -p "$PROJECT_DIR/archive"
 echo "  ✓ specs/, changes/, archive/"
 
 # 2. Copy commands
-echo "[2/9] Installing commands..."
+echo "[2/10] Installing commands..."
 mkdir -p "$PROJECT_DIR/.claude/commands"
 cp "$WORKFLOW_DIR/commands/"*.md "$PROJECT_DIR/.claude/commands/"
 CMD_COUNT=$(ls "$PROJECT_DIR/.claude/commands/"*.md | wc -l)
 echo "  ✓ $CMD_COUNT commands installed"
 
 # 3. Copy skills
-echo "[3/9] Installing skills..."
+echo "[3/10] Installing skills..."
 mkdir -p "$PROJECT_DIR/.claude/skills"
 cp -r "$WORKFLOW_DIR/skills/"* "$PROJECT_DIR/.claude/skills/"
 SKILL_COUNT=$(ls -d "$PROJECT_DIR/.claude/skills/"*/ | wc -l)
 echo "  ✓ $SKILL_COUNT skills installed"
 
 # 4. Copy agents
-echo "[4/9] Installing agents..."
+echo "[4/10] Installing agents..."
 mkdir -p "$PROJECT_DIR/.claude/agents"
 cp "$WORKFLOW_DIR/agents/"*.md "$PROJECT_DIR/.claude/agents/"
 AGENT_COUNT=$(ls "$PROJECT_DIR/.claude/agents/"*.md | wc -l)
 echo "  ✓ $AGENT_COUNT agents installed"
 
 # 5. Copy hooks
-echo "[5/9] Installing hooks..."
+echo "[5/10] Installing hooks..."
 mkdir -p "$PROJECT_DIR/.claude/hooks"
-cp "$WORKFLOW_DIR/hooks/session-start.sh" "$PROJECT_DIR/.claude/hooks/"
-cp "$WORKFLOW_DIR/hooks/format.sh" "$PROJECT_DIR/.claude/hooks/"
-cp "$WORKFLOW_DIR/hooks/test-gateway.sh" "$PROJECT_DIR/.claude/hooks/"
-cp "$WORKFLOW_DIR/hooks/secret-scan.sh" "$PROJECT_DIR/.claude/hooks/"
-cp "$WORKFLOW_DIR/hooks/context-inject.sh" "$PROJECT_DIR/.claude/hooks/"
-cp "$WORKFLOW_DIR/hooks/claude-protect.sh" "$PROJECT_DIR/.claude/hooks/"
-if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-  cp "$WORKFLOW_DIR/hooks/session-start.ps1" "$PROJECT_DIR/.claude/hooks/"
-  cp "$WORKFLOW_DIR/hooks/format.ps1" "$PROJECT_DIR/.claude/hooks/"
-  cp "$WORKFLOW_DIR/hooks/test-gateway.ps1" "$PROJECT_DIR/.claude/hooks/"
-  cp "$WORKFLOW_DIR/hooks/secret-scan.ps1" "$PROJECT_DIR/.claude/hooks/"
-  cp "$WORKFLOW_DIR/hooks/context-inject.ps1" "$PROJECT_DIR/.claude/hooks/"
-  cp "$WORKFLOW_DIR/hooks/claude-protect.ps1" "$PROJECT_DIR/.claude/hooks/"
-fi
+for hook in session-start format test-gateway secret-scan context-inject alloy-protect alloy-protect-bash; do
+  cp "$WORKFLOW_DIR/hooks/${hook}.sh" "$PROJECT_DIR/.claude/hooks/"
+  if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+    cp "$WORKFLOW_DIR/hooks/${hook}.ps1" "$PROJECT_DIR/.claude/hooks/"
+  fi
+done
 chmod +x "$PROJECT_DIR/.claude/hooks/"*.sh
-echo "  ✓ All hooks installed (session-start, format, test-gateway, secret-scan, context-inject, claude-protect)"
+echo "  ✓ All hooks installed"
 
 # 6. Copy checklists
-echo "[6/9] Installing checklists..."
+echo "[6/10] Installing checklists..."
 mkdir -p "$PROJECT_DIR/.claude/checklists"
 if [ -f "$WORKFLOW_DIR/templates/checklists/review.md" ]; then
   cp "$WORKFLOW_DIR/templates/checklists/review.md" "$PROJECT_DIR/.claude/checklists/"
@@ -71,8 +63,34 @@ else
   echo "  ⚠ No review checklist template found"
 fi
 
-# 7. Configure settings.json
-echo "[7/9] Configuring hooks in settings.json..."
+# 7. Generate manifest
+echo "[7/10] Generating protection manifest..."
+MANIFEST_FILE="$PROJECT_DIR/.claude/.alloy-manifest"
+{
+  echo "# Alloy Managed Files - DO NOT EDIT"
+  echo "# These files are protected from modification by the alloy-protect hook."
+  echo "# To allow edits to a specific file, remove its line from this manifest."
+  echo ""
+  # List individual files in flat directories
+  for dir in hooks commands agents checklists; do
+    if [ -d "$PROJECT_DIR/.claude/$dir" ]; then
+      find "$PROJECT_DIR/.claude/$dir" -maxdepth 1 -type f | while read -r f; do
+        echo "${f#$PROJECT_DIR/}"
+      done
+    fi
+  done
+  # Skills are directories - list each skill dir as a prefix
+  if [ -d "$PROJECT_DIR/.claude/skills" ]; then
+    find "$PROJECT_DIR/.claude/skills" -mindepth 1 -maxdepth 1 -type d | while read -r d; do
+      echo "${d#$PROJECT_DIR/}/"
+    done
+  fi
+} > "$MANIFEST_FILE"
+MANIFEST_COUNT=$(grep -cvE '^\s*#|^\s*$' "$MANIFEST_FILE")
+echo "  ✓ $MANIFEST_COUNT entries in .alloy-manifest"
+
+# 8. Configure settings.json
+echo "[8/10] Configuring hooks in settings.json..."
 SETTINGS_FILE="$PROJECT_DIR/.claude/settings.json"
 HOOK_BASE='bash "${CLAUDE_PROJECT_DIR}/.claude/hooks'
 if [ -f "$SETTINGS_FILE" ]; then
@@ -90,6 +108,30 @@ else
           {
             "type": "command",
             "command": "$HOOK_BASE/session-start.sh\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOOK_BASE/alloy-protect.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOOK_BASE/alloy-protect-bash.sh\""
+          },
+          {
+            "type": "command",
+            "command": "$HOOK_BASE/test-gateway.sh\""
           }
         ]
       }
@@ -114,26 +156,6 @@ else
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOOK_BASE/claude-protect.sh\""
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOOK_BASE/test-gateway.sh\""
-          }
-        ]
-      }
-    ],
     "UserPromptExpansion": [
       {
         "matcher": "review",
@@ -151,8 +173,8 @@ SETTINGS
   echo "  ✓ settings.json created with all hooks"
 fi
 
-# 8. Append workflow instructions to CLAUDE.md
-echo "[8/9] Updating CLAUDE.md..."
+# 9. Append workflow instructions to CLAUDE.md
+echo "[9/10] Updating CLAUDE.md..."
 CLAUDE_MD="$PROJECT_DIR/CLAUDE.md"
 WORKFLOW_BLOCK=$(cat <<'BLOCK'
 
@@ -194,8 +216,8 @@ else
   echo "  ✓ CLAUDE.md created with workflow instructions"
 fi
 
-# 9. Handle AGENTS.md (Codex CLI compatibility)
-echo "[9/9] Checking for Codex CLI..."
+# 10. Handle AGENTS.md (Codex CLI compatibility)
+echo "[10/10] Checking for Codex CLI..."
 AGENTS_MD="$PROJECT_DIR/AGENTS.md"
 if [ -f "$AGENTS_MD" ]; then
   echo "  ℹ AGENTS.md found — Codex CLI detected"
@@ -208,12 +230,18 @@ echo ""
 echo "=== Installation Complete ==="
 echo ""
 echo "Installed hooks:"
-echo "  1. SessionStart   — Inject using-workflow skill"
-echo "  2. Format         — Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
-echo "  3. Test Gateway   — Run tests before deploy (PreToolUse: Bash)"
-echo "  4. Secret Scan    — Block secrets in output (PostToolUse: Read|Bash)"
-echo "  5. Context Inject — Inject review checklist (UserPromptExpansion: /review)"
-echo "  6. Claude Protect  — Block manual edits to .claude/ (PreToolUse: Write|Edit|MultiEdit)"
+echo "  1. SessionStart    — Inject using-workflow skill"
+echo "  2. Alloy Protect   — Block edits to Alloy-managed files (PreToolUse: Edit|Write|MultiEdit)"
+echo "  3. Bash Protect    — Block destructive cmds on Alloy files (PreToolUse: Bash)"
+echo "  4. Test Gateway    — Run tests before deploy (PreToolUse: Bash)"
+echo "  5. Format          — Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
+echo "  6. Secret Scan     — Block secrets in output (PostToolUse: Read|Bash)"
+echo "  7. Context Inject  — Inject review checklist (UserPromptExpansion: /review)"
+echo ""
+echo "Protection:"
+echo "  Alloy-managed files are listed in .claude/.alloy-manifest"
+echo "  Edit/Write on these files will be blocked automatically"
+echo "  To allow edits, remove the file's entry from the manifest"
 echo ""
 echo "Verification steps:"
 echo "1. Start a new Claude Code session"
