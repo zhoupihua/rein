@@ -5,7 +5,8 @@ Resume work from a breakpoint.
 1. Scan `docs/rein/tasks/` for task files with unchecked items
 2. For each task file, read checkbox status
 3. Find the first unchecked task
-4. Determine which phase the work is in:
+4. Verify tasks.md and plan.md are in sync (all `[x]` items match completed work)
+5. Determine which phase the work is in:
 
 | Condition | Phase | Skill to invoke |
 |-----------|-------|----------------|
@@ -17,7 +18,8 @@ Resume work from a breakpoint.
 | Review done, not committed | SHIP | git-workflow |
 
 5. Invoke the appropriate skill and continue from that point
-6. If no active changes found, suggest starting with `/triage`
+6. During BUILD phase: after each completed task, MUST update tasks.md checkbox (IRON RULE)
+7. If no active changes found, suggest starting with `/triage`
 
 ## Output
 

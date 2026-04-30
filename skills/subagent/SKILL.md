@@ -117,20 +117,29 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
 
-## Task Status Tracking
+## Task Status Tracking (MANDATORY)
+
+**IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated.** Moving to the next task without updating tasks.md is a process violation.
 
 During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
 
 - **plan.md** → HOW: Include full task details (acceptance criteria, verification, files, notes) when dispatching implementer subagents
-- **tasks.md** → STATUS: After each task passes both reviews, update the checkbox
+- **tasks.md** → STATUS: After each task is verified complete, you MUST update the checkbox
 
-After each task passes both reviews (spec compliance + code quality):
+**After each task is verified complete** (whether through full review or justified skip):
 
-1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
-2. Change the task's checkbox from `- [ ]` to `- [x]`
-3. Continue to the next task
+1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` using the Edit tool
+2. Change the completed task's checkbox from `- [ ]` to `- [x]`
+3. Verify the edit was applied correctly
+4. ONLY THEN proceed to the next task
 
-This is mandatory. The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
+**This applies even when:**
+- Skipping reviews for XS tasks (still must update tasks.md)
+- The task was trivial (still must update tasks.md)
+- You plan to batch multiple tasks (update each one as it completes, not after the batch)
+- A subagent reports completion (the controller updates tasks.md, not the subagent)
+
+The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
 
 ## Prompt Templates
 
@@ -169,7 +178,7 @@ Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 [Get git SHAs, dispatch code quality reviewer]
 Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
-[Mark Task 1 complete]
+[Edit docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md: change "- [ ] 1.1 ..." to "- [x] 1.1 ..."]
 
 Task 2: Recovery modes
 
@@ -203,7 +212,7 @@ Implementer: Extracted PROGRESS_INTERVAL constant
 [Code reviewer reviews again]
 Code reviewer: ✅ Approved
 
-[Mark Task 2 complete]
+[Edit docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md: change "- [ ] 2.1 ..." to "- [x] 2.1 ..."]
 
 ...
 
@@ -250,6 +259,7 @@ Done!
 
 **Never:**
 - Start implementation on main/master branch without explicit user consent
+- **Move to the next task without updating tasks.md checkbox** (IRON RULE)
 - Skip reviews (spec compliance OR code quality)
 - Proceed with unfixed issues
 - Dispatch multiple implementation subagents in parallel (conflicts)

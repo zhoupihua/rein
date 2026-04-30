@@ -151,20 +151,28 @@ Each increment should be independently revertable:
 
 **Ask for clarification rather than guessing.**
 
-## Task Status Tracking
+## Task Status Tracking (MANDATORY)
+
+**IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated.** Moving to the next task without updating tasks.md is a process violation.
 
 During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
 
 - **plan.md** → HOW: Read task details (acceptance criteria, verification, files, notes) before implementing each task
-- **tasks.md** → STATUS: After completing each task, update the checkbox from `- [ ]` to `- [x]`
+- **tasks.md** → STATUS: After completing each task, you MUST update the checkbox
 
 After completing each task increment:
 
-1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
+1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` using the Edit tool
 2. Change the completed task's checkbox from `- [ ]` to `- [x]`
-3. Continue to the next task
+3. Verify the edit was applied correctly
+4. ONLY THEN proceed to the next task
 
-This is mandatory — not optional. Other commands (`/continue`, `/do`) rely on checkbox state to determine progress and resume points.
+**This applies even when:**
+- The task was trivial or XS-sized
+- You plan to batch multiple tasks (update each one as it completes)
+- You are executing quickly and want to skip the step
+
+The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
 
 ## After All Tasks Complete
 
@@ -184,6 +192,7 @@ After all tasks are complete and verified:
 
 ## Red Flags
 
+- Moving to the next task without updating tasks.md checkbox (IRON RULE violation)
 - More than 100 lines of code written without running tests
 - Multiple unrelated changes in a single increment
 - "Let me just quickly add this too" scope expansion

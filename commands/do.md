@@ -7,21 +7,27 @@ Execute tasks from tasks.md incrementally. Replaces /opsx:apply.
 3. Find the first unchecked task
 4. For each task:
    a. Look up task details in plan.md
-   b. Mark as in-progress
-   c. Invoke `incremental` + `tdd`
-   d. Build in thin vertical slices: implement → test → verify → commit
-   e. Mark the task checkbox in tasks.md as complete (`- [x]`)
-   f. Commit with descriptive message
-4. If a task is blocked:
+   b. Implement the task
+   c. Verify tests pass
+   d. Commit with descriptive message
+   e. **Edit tasks.md: change `- [ ]` to `- [x]` for this task** (MANDATORY — do not skip)
+5. If a task is blocked:
    - Stop and report the blocker
    - Suggest using `debugging` if it's a bug
    - Ask the user for direction
-5. After all tasks complete, suggest `/code-review` or `/ship`
+6. After all tasks complete, suggest `/code-review` or `/ship`
+
+## IRON RULE
+
+**A task is NOT complete until its checkbox in tasks.md is updated.**
+You MUST Edit tasks.md after each completed task, BEFORE starting the next one.
+This is not optional — not for trivial tasks, not for small tasks, not ever.
 
 ## Task Execution Rules
 
 - One task at a time
 - Verify tests pass after each task
 - Commit after each verified increment
+- Update tasks.md checkbox after each commit (mandatory)
 - Don't skip tasks or mark them complete without verification
 - If scope expands, stop and update the plan
