@@ -13,7 +13,7 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 **Save output to:** `docs/rein/plans/YYYY-MM-DD-<feature-name>.md` + `docs/rein/tasks/YYYY-MM-DD-<feature-name>-tasks.md`
 - `plans/` — Architecture decisions, dependency graph, slicing strategy, risks (decision layer)
-- `tasks/` — Ordered task checklist with acceptance criteria (execution layer, the SINGLE source of truth for task tracking)
+- `tasks/` — Ordered task checklist with acceptance criteria (execution layer, the SINGLE source of truth for task tracking — MUST be generated, do not skip)
 - If no `docs/rein/plans/` or `docs/rein/tasks/` directory exists, create it
 
 ## Scope Check

@@ -14,7 +14,7 @@ echo "Target project:  $PROJECT_DIR"
 echo ""
 
 # 1. Create artifact directories
-echo "[1/10] Creating artifact directories..."
+echo "[1/9] Creating artifact directories..."
 mkdir -p "$PROJECT_DIR/docs/rein/specs"
 mkdir -p "$PROJECT_DIR/docs/rein/plans"
 mkdir -p "$PROJECT_DIR/docs/rein/tasks"
@@ -22,28 +22,28 @@ mkdir -p "$PROJECT_DIR/docs/rein/archive"
 echo "  ✓ docs/rein/specs/, docs/rein/plans/, docs/rein/tasks/, docs/rein/archive/"
 
 # 2. Copy commands
-echo "[2/10] Installing commands..."
+echo "[2/9] Installing commands..."
 mkdir -p "$PROJECT_DIR/.claude/commands"
 cp "$WORKFLOW_DIR/commands/"*.md "$PROJECT_DIR/.claude/commands/"
 CMD_COUNT=$(ls "$PROJECT_DIR/.claude/commands/"*.md | wc -l)
 echo "  ✓ $CMD_COUNT commands installed"
 
 # 3. Copy skills
-echo "[3/10] Installing skills..."
+echo "[3/9] Installing skills..."
 mkdir -p "$PROJECT_DIR/.claude/skills"
 cp -r "$WORKFLOW_DIR/skills/"* "$PROJECT_DIR/.claude/skills/"
 SKILL_COUNT=$(ls -d "$PROJECT_DIR/.claude/skills/"*/ | wc -l)
 echo "  ✓ $SKILL_COUNT skills installed"
 
 # 4. Copy agents
-echo "[4/10] Installing agents..."
+echo "[4/9] Installing agents..."
 mkdir -p "$PROJECT_DIR/.claude/agents"
 cp "$WORKFLOW_DIR/agents/"*.md "$PROJECT_DIR/.claude/agents/"
 AGENT_COUNT=$(ls "$PROJECT_DIR/.claude/agents/"*.md | wc -l)
 echo "  ✓ $AGENT_COUNT agents installed"
 
 # 5. Copy hooks
-echo "[5/10] Installing hooks..."
+echo "[5/9] Installing hooks..."
 mkdir -p "$PROJECT_DIR/.claude/hooks"
 for hook in session-start format gate leak-guard inject guard guard-bash; do
   cp "$WORKFLOW_DIR/hooks/${hook}.sh" "$PROJECT_DIR/.claude/hooks/"
@@ -55,7 +55,7 @@ chmod +x "$PROJECT_DIR/.claude/hooks/"*.sh
 echo "  ✓ All hooks installed"
 
 # 6. Copy checklists
-echo "[6/10] Installing checklists..."
+echo "[6/9] Installing checklists..."
 mkdir -p "$PROJECT_DIR/.claude/checklists"
 if [ -f "$WORKFLOW_DIR/templates/checklists/review.md" ]; then
   cp "$WORKFLOW_DIR/templates/checklists/review.md" "$PROJECT_DIR/.claude/checklists/"
@@ -65,7 +65,7 @@ else
 fi
 
 # 7. Generate manifest
-echo "[7/10] Generating protection manifest..."
+echo "[7/9] Generating protection manifest..."
 MANIFEST_FILE="$PROJECT_DIR/.claude/.rein-manifest"
 {
   echo "# rein Managed Files - DO NOT EDIT"
@@ -91,7 +91,7 @@ MANIFEST_COUNT=$(grep -cvE '^\s*#|^\s*$' "$MANIFEST_FILE")
 echo "  ✓ $MANIFEST_COUNT entries in .rein-manifest"
 
 # 8. Configure settings.json
-echo "[8/10] Configuring hooks in settings.json..."
+echo "[8/9] Configuring hooks in settings.json..."
 SETTINGS_FILE="$PROJECT_DIR/.claude/settings.json"
 HOOK_BASE='bash "${CLAUDE_PROJECT_DIR}/.claude/hooks'
 if [ -f "$SETTINGS_FILE" ]; then
@@ -174,52 +174,8 @@ SETTINGS
   echo "  ✓ settings.json created with all hooks"
 fi
 
-# 9. Append workflow instructions to CLAUDE.md
-echo "[9/10] Updating CLAUDE.md..."
-CLAUDE_MD="$PROJECT_DIR/CLAUDE.md"
-WORKFLOW_BLOCK=$(cat <<'BLOCK'
-
-## rein
-
-This project uses rein for structured AI-assisted development.
-
-### Commands
-- `/triage` — Classify a change as L1/L2/L3
-- `/quick` — L1: ≤5 lines, no logic impact
-- `/fix` — L2: 1-3 files, clear requirements
-- `/feature` — L3: Full 8-step workflow
-- `/spec` — Generate design spec
-- `/plan` — Task breakdown
-- `/do` — Execute tasks from tasks.md
-- `/test` — TDD workflow
-- `/code-review` — Five-axis code review
-- `/ship` — Fan-out review + GO/NO-GO
-- `/simplify` — Code simplification
-- `/continue` — Resume from breakpoint
-
-### Artifact Directories
-- `docs/rein/specs/` — Design specs only (no tasks)
-- `docs/rein/plans/` — Implementation plans (decision layer)
-- `docs/rein/tasks/` — Task checklists (execution layer)
-- `docs/rein/archive/` — Archived artifacts
-BLOCK
-)
-
-if [ -f "$CLAUDE_MD" ]; then
-  if ! grep -q "rein" "$CLAUDE_MD"; then
-    echo "$WORKFLOW_BLOCK" >> "$CLAUDE_MD"
-    echo "  ✓ Workflow instructions appended to CLAUDE.md"
-  else
-    echo "  ℹ CLAUDE.md already contains rein section"
-  fi
-else
-  echo "# CLAUDE.md" > "$CLAUDE_MD"
-  echo "$WORKFLOW_BLOCK" >> "$CLAUDE_MD"
-  echo "  ✓ CLAUDE.md created with workflow instructions"
-fi
-
-# 10. Handle AGENTS.md (Codex CLI compatibility)
-echo "[10/10] Checking for Codex CLI..."
+# 9. Handle AGENTS.md (Codex CLI compatibility)
+echo "[9/9] Checking for Codex CLI..."
 AGENTS_MD="$PROJECT_DIR/AGENTS.md"
 if [ -f "$AGENTS_MD" ]; then
   echo "  ℹ AGENTS.md found — Codex CLI detected"

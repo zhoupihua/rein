@@ -321,7 +321,7 @@ powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 4. 创建 `.claude/agents/` 目录，将 `agents/*.md` 复制进去
 5. 创建 `.claude/hooks/` 目录，将 `hooks/` 复制进去
 6. 配置 `.claude/settings.json` 中的 hooks（session-start + 自定义守卫）
-7. 在 `CLAUDE.md` 末尾追加工作流说明
+7. 生成 `.claude/.rein-manifest` 保护清单
 8. 如有 `AGENTS.md`（Codex CLI），追加命令定义
 
 > 不需要 `npm install -g`，不需要 `/plugin install`，不需要任何外部依赖。
