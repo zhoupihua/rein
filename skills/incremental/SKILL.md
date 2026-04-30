@@ -24,22 +24,31 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 ```
 ┌──────────────────────────────────────┐
 │                                      │
-│   Implement ──→ Test ──→ Verify ──┐  │
-│       ▲                           │  │
-│       └───── Commit ◄─────────────┘  │
-│              │                       │
-│              ▼                       │
-│          Next slice                  │
+│  Read task.md ──→ Find first [ ]     │
+│       │                              │
+│       ▼                              │
+│  Implement ──→ Test ──→ Verify       │
+│       │                              │
+│       ▼                              │
+│  Commit ──→ Update checkbox ──┐      │
+│              │                 │      │
+│              ▼                 │      │
+│       Re-read task.md ◄───────┘      │
+│       (loop back to top)             │
 │                                      │
 └──────────────────────────────────────┘
 ```
 
 For each slice:
 
-1. **Implement** the smallest complete piece of functionality
-2. **Test** — run the test suite (or write a test if none exists)
-3. **Verify** — confirm the slice works as expected (tests pass, build succeeds, manual check)
-4. **Commit** — save your progress with a descriptive message
+1. **Read task.md** — find the first `- [ ]` line (the current task)
+2. **Read plan.md** — look up task details for the current task number
+3. **Implement** the smallest complete piece of functionality
+4. **Test** — run the test suite (or write a test if none exists)
+5. **Verify** — confirm the slice works as expected (tests pass, build succeeds, manual check)
+6. **Commit** — save your progress with a descriptive message
+7. **Update task status** — mark the completed task in task.md: change `- [ ]` to `- [x]`
+8. **Loop back** — re-read task.md to find the next `- [ ]` (not from memory)
 5. **Update task status** — mark the completed task in tasks.md: change `- [ ]` to `- [x]`
 6. **Move to the next slice** — carry forward, don't restart
 

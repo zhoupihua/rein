@@ -45,7 +45,7 @@ echo "  ✓ $AGENT_COUNT agents installed"
 # 5. Copy hooks
 echo "[5/9] Installing hooks..."
 mkdir -p "$PROJECT_DIR/.claude/hooks"
-for hook in session-start format gate leak-guard inject guard guard-bash; do
+for hook in session-start format gate leak-guard inject guard guard-bash checkbox-guard; do
   cp "$WORKFLOW_DIR/hooks/${hook}.sh" "$PROJECT_DIR/.claude/hooks/"
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
     cp "$WORKFLOW_DIR/hooks/${hook}.ps1" "$PROJECT_DIR/.claude/hooks/"
@@ -144,6 +144,10 @@ else
           {
             "type": "command",
             "command": "$HOOK_BASE/format.sh\""
+          },
+          {
+            "type": "command",
+            "command": "$HOOK_BASE/checkbox-guard.sh\""
           }
         ]
       },
@@ -193,8 +197,9 @@ echo "  2. guard           — Block edits to rein-managed files (PreToolUse: Ed
 echo "  3. guard-bash      — Block destructive cmds on rein files (PreToolUse: Bash)"
 echo "  4. gate            — Run tests before deploy (PreToolUse: Bash)"
 echo "  5. format          — Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
-echo "  6. leak-guard      — Block secrets in output (PostToolUse: Read|Bash)"
-echo "  7. inject          — Inject review checklist (UserPromptExpansion: /code-review)"
+echo "  6. checkbox-guard  — Warn when task checkbox not updated (PostToolUse: Write|Edit|MultiEdit)"
+echo "  7. leak-guard      — Block secrets in output (PostToolUse: Read|Bash)"
+echo "  8. inject          — Inject review checklist (UserPromptExpansion: /code-review)"
 echo ""
 echo "Protection:"
 echo "  rein-managed files are listed in .claude/.rein-manifest"
