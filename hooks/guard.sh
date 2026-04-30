@@ -5,12 +5,19 @@
 MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
 [ -f "$MANIFEST" ] || exit 0
 
+# Read tool input from env or file
+TOOL_INPUT="$CLAUDE_TOOL_INPUT"
+if [ -z "$TOOL_INPUT" ] && [ -n "$CLAUDE_TOOL_INPUT_FILE_PATH" ] && [ -f "$CLAUDE_TOOL_INPUT_FILE_PATH" ]; then
+    TOOL_INPUT=$(cat "$CLAUDE_TOOL_INPUT_FILE_PATH")
+fi
+[ -n "$TOOL_INPUT" ] || exit 0
+
 # Extract file_path from tool input JSON
-TARGET=$(echo "$CLAUDE_TOOL_INPUT" | sed -n 's/.*"file_path"\s*:\s*"\([^"]*\)".*/\1/p')
+TARGET=$(echo "$TOOL_INPUT" | sed -n 's/.*"file_path"\s*:\s*"\([^"]*\)".*/\1/p')
 [ -n "$TARGET" ] || exit 0
 
-# Normalize to forward slashes for cross-platform matching
-TARGET=$(echo "$TARGET" | tr '\\' '/')
+# Unescape JSON \\ to \, then normalize to forward slashes
+TARGET=$(echo "$TARGET" | sed 's/\\\\/\\/g' | tr '\\' '/')
 
 while IFS= read -r entry; do
     [[ "$entry" =~ ^[[:space:]]*# ]] && continue

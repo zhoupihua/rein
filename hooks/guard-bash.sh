@@ -5,7 +5,12 @@
 MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
 [ -f "$MANIFEST" ] || exit 0
 
+# Read tool input from env or file
 INPUT="$CLAUDE_TOOL_INPUT"
+if [ -z "$INPUT" ] && [ -n "$CLAUDE_TOOL_INPUT_FILE_PATH" ] && [ -f "$CLAUDE_TOOL_INPUT_FILE_PATH" ]; then
+    INPUT=$(cat "$CLAUDE_TOOL_INPUT_FILE_PATH")
+fi
+[ -n "$INPUT" ] || exit 0
 
 # Only check destructive commands
 if ! echo "$INPUT" | grep -qE '(rm |rmdir |del |mv |sed -i |truncate|>\s*/|Remove-Item|Move-Item)'; then

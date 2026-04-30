@@ -4,7 +4,12 @@
 $ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.rein-manifest"
 if (-not (Test-Path $ManifestPath)) { exit 0 }
 
+# Read tool input from env or file
 $ToolInput = $env:CLAUDE_TOOL_INPUT
+if (-not $ToolInput -and $env:CLAUDE_TOOL_INPUT_FILE_PATH -and (Test-Path $env:CLAUDE_TOOL_INPUT_FILE_PATH)) {
+    $ToolInput = Get-Content $env:CLAUDE_TOOL_INPUT_FILE_PATH -Raw
+}
+if (-not $ToolInput) { exit 0 }
 
 # Only check destructive commands
 if ($ToolInput -notmatch '(rm |rmdir |del |mv |sed -i|Remove-Item|Move-Item|Set-Content|Out-File)') {
