@@ -2,7 +2,7 @@
 
 ## Context
 
-当前 AI 编程工作流需要配置 3 个独立项目（OpenSpec + Superpowers + Agent Skills），安装流程复杂（npm 包 + 插件市场 + 手动配置），且技能大量重叠。目标：将三者精华合并为 **一个零外部依赖的独立项目**，拉代码改一改，一条脚本完成安装。
+当前 AI 编程工作流需要配置 3 个独立项目（OpenSpec + Superpowers + Agent Skills），安装流程复杂（npm 包 + 插件市场 + 手动配置），且技能大量重叠。目标：参考三者设计，独立实现 **一个零外部依赖的项目**，拉代码改一改，一条脚本完成安装。
 
 ---
 
@@ -15,25 +15,25 @@ rein/
 ├── skills/                          # 22 个统一技能
 │   │
 │   │── # ===== 元技能 =====
-│   ├── using-rein/              # 合并 using-superpowers + using-agent-skills
+│   ├── using-rein/              # 参考 SP:using-superpowers + AS:using-agent-skills
 │   │   └── SKILL.md
 │   │
 │   │── # ===== DEFINE 阶段 =====
-│   ├── refine/                 # 合并 SP:brainstorming + AS:refine
+│   ├── refine/                 # 参考 SP:brainstorming + AS:refine
 │   │   └── SKILL.md
 │   ├── spec-driven/     # AS 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== PLAN 阶段 =====
-│   ├── planning/ # 合并 SP:writing-plans + AS:planning
+│   ├── planning/ # 参考 SP:writing-plans + AS:planning
 │   │   └── SKILL.md
 │   ├── git-worktrees/         # SP 独有
 │   │   └── SKILL.md
 │   │
 │   │── # ===== BUILD 阶段 =====
-│   ├── incremental/  # 合并 SP:executing-plans + AS:incremental
+│   ├── incremental/  # 参考 SP:executing-plans + AS:incremental
 │   │   └── SKILL.md
-│   ├── tdd/     # 合并 SP:TDD + AS:TDD
+│   ├── tdd/     # 参考 SP:TDD + AS:TDD
 │   │   └── SKILL.md
 │   ├── subagent/ # SP 独有
 │   │   └── SKILL.md
@@ -49,7 +49,7 @@ rein/
 │   │   └── SKILL.md
 │   │
 │   │── # ===== VERIFY 阶段 =====
-│   ├── debugging/ # 合并 SP:systematic-debugging + AS:debugging
+│   ├── debugging/ # 参考 SP:systematic-debugging + AS:debugging
 │   │   └── SKILL.md
 │   ├── browser-testing/ # AS 独有
 │   │   └── SKILL.md
@@ -57,7 +57,7 @@ rein/
 │   │   └── SKILL.md
 │   │
 │   │── # ===== REVIEW 阶段 =====
-│   ├── code-review/     # 合并 SP:requesting+receiving-code-review + AS:code-review
+│   ├── code-review/     # 参考 SP:requesting+receiving-code-review + AS:code-review
 │   │   └── SKILL.md
 │   ├── simplify/         # AS 独有
 │   │   └── SKILL.md
@@ -169,7 +169,7 @@ OpenSpec CLI 的每个功能都有替代实现：
 
 ---
 
-## 技能合并策略（6 对合并）
+## 技能设计策略（6 组参考）
 
 ### 1. refine ← SP:brainstorming + AS:refine
 
