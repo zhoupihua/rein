@@ -105,12 +105,13 @@ Arrange tasks so that:
 
 ## Output: Two Files
 
-### plan.md Template (Decision Layer)
+### plan.md Template (Decision + Implementation Layer)
 
 ```markdown
 # [Feature Name] Plan
 
-> **For agentic workers:** Read this file for architecture context, then read tasks.md for execution.
+> **For agentic workers:** This is your primary reference during implementation.
+> Read tasks.md only for status tracking (which tasks are done).
 
 **Goal:** [One sentence describing what this builds]
 
@@ -138,6 +139,24 @@ Arrange tasks so that:
 |------|---------|-------------|
 | `src/path/to/file.ts` | [Purpose] | New/Modified |
 
+## Task Details
+
+### 1.1 [Short descriptive title]
+- **Acceptance:** [Specific, testable condition]
+- **Verification:** `npm test -- --grep "feature-name"`
+- **Dependencies:** None
+- **Files:** `src/path/to/file.ts`
+- **Scope:** S
+- **Notes:** [Implementation approach, key code snippets, edge cases]
+
+### 1.2 [Short descriptive title]
+- **Acceptance:** [Specific, testable condition]
+- **Verification:** `npm run build`
+- **Dependencies:** 1.1
+- **Files:** `src/path/to/file.ts`, `tests/path/to/test.ts`
+- **Scope:** M
+- **Notes:** [Implementation approach, key code snippets, edge cases]
+
 ## Parallelization
 
 | Category | Tasks | Strategy |
@@ -155,52 +174,38 @@ Arrange tasks so that:
 - [Question needing human input]
 ```
 
-### tasks.md Template (Execution Layer)
+### tasks.md Template (Execution Layer — Status Tracking Only)
+
+tasks.md is a **lightweight checkbox list** for tracking progress. Implementation details live in plan.md. During execution, agents read plan.md for HOW, update tasks.md for STATUS.
 
 ```markdown
+# Tasks: [Feature Name]
+
 ## 1. Foundation
+- [ ] 1.1 Create database migration for X
+- [ ] 1.2 Implement repository layer for X
 
-- [ ] 1.1 [Short descriptive title]
-  - Acceptance: [Specific, testable condition]
-  - Verification: `npm test -- --grep "feature-name"`
-  - Dependencies: None
-  - Files: `src/path/to/file.ts`
-  - Scope: [XS | S | M | L]
-
-- [ ] 1.2 [Short descriptive title]
-  - Acceptance: [Specific, testable condition]
-  - Verification: `npm run build`
-  - Dependencies: 1.1
-  - Files: `src/path/to/file.ts`, `tests/path/to/test.ts`
-  - Scope: S
-
-### Checkpoint: Foundation
-- [ ] Tests pass, builds clean
-
-## 2. Core Features
-
-- [ ] 2.1 [Short descriptive title]
-  - Acceptance: [Specific, testable condition]
-  - Verification: `npm test`
-  - Dependencies: 1.2
-  - Files: `src/path/to/file.ts`
-  - Scope: M
-
-### Checkpoint: Core Features
-- [ ] End-to-end flow works
+## 2. Core Feature
+- [ ] 2.1 Add API endpoint for X
+- [ ] 2.2 Build UI for X
 
 ## 3. Polish
-
-- [ ] 3.1 [Short descriptive title]
-  - Acceptance: [Specific, testable condition]
-  - Verification: `npm test && npm run build`
-  - Dependencies: 2.1
-  - Files: `src/path/to/file.ts`
-  - Scope: XS
-
-### Checkpoint: Complete
-- [ ] All acceptance criteria met
+- [ ] 3.1 Add error handling
+- [ ] 3.2 Update documentation
 ```
+
+**Rules:**
+- One line per task, no nested metadata (Acceptance/Verification/Dependencies/Files/Scope go in plan.md)
+- Group by phase with `##` headings
+- Number tasks for easy reference (1.1, 1.2, 2.1, ...)
+- Task titles should be specific enough to identify the work, but details go in plan.md
+- Sub-tasks use indented checkboxes:
+  ```
+  - [ ] 2.1 Add API endpoint for X
+    - [ ] Define route and handler
+    - [ ] Add input validation
+    - [ ] Write tests
+  ```
 
 ## Task Sizing Guidelines
 
@@ -233,10 +238,10 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 After writing both documents:
 
-1. **Spec coverage:** Can you point to a task that implements each spec requirement? List any gaps.
+1. **Spec coverage:** Can you point to a task in plan.md's Task Details that implements each spec requirement? List any gaps.
 2. **Placeholder scan:** Search for red flags from the "No Placeholders" section. Fix them.
-3. **Type consistency:** Do types, method signatures, and property names match across tasks?
-4. **Alignment check:** Does every task in tasks.md reference files listed in plan.md's file map? Does every parallelization note in plan.md match the dependency declarations in tasks.md?
+3. **Type consistency:** Do types, method signatures, and property names match across tasks in plan.md?
+4. **Alignment check:** Does every task in tasks.md have a corresponding Task Details section in plan.md? Does every parallelization note in plan.md match the dependency declarations?
 
 Fix any issues inline. If you find a spec requirement with no task, add the task.
 
@@ -264,24 +269,22 @@ After saving both files, offer execution choice:
 ## Red Flags
 
 - Starting implementation without a written task list
-- Tasks that say "implement the feature" without acceptance criteria
-- No verification steps in the plan
+- plan.md Task Details say "implement the feature" without acceptance criteria
+- No verification steps in plan.md Task Details
 - All tasks are XL-sized
-- No checkpoints between tasks
 - Dependency order isn't considered
-- Placeholders or vague steps in the plan
-- plan.md contains task lists (should be in tasks.md)
+- Placeholders or vague steps in plan.md
+- tasks.md contains implementation details (should be simple checkboxes only)
 - tasks.md contains architecture decisions (should be in plan.md)
+- plan.md and tasks.md task numbers don't match
 
 ## Verification
 
 Before starting implementation, confirm:
 
-- [ ] plan.md contains only decision-layer content (architecture, dependencies, risks)
-- [ ] tasks.md contains only execution-layer content (ordered tasks with checkboxes)
-- [ ] Every task has acceptance criteria
-- [ ] Every task has a verification step
-- [ ] Task dependencies are identified and ordered correctly
+- [ ] plan.md contains architecture decisions AND task details (acceptance, verification, files, dependencies)
+- [ ] tasks.md is a simple checkbox list with no nested metadata
+- [ ] Every task in tasks.md has a corresponding Task Details section in plan.md
+- [ ] Task numbers match between plan.md and tasks.md
 - [ ] No task touches more than ~5 files
-- [ ] Checkpoints exist between major phases
 - [ ] The human has reviewed and approved both documents

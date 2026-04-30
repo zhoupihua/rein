@@ -153,11 +153,16 @@ Each increment should be independently revertable:
 
 ## Task Status Tracking
 
-The tasks.md file is the **single source of truth** for progress. After completing each task increment:
+During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
+
+- **plan.md** → HOW: Read task details (acceptance criteria, verification, files, notes) before implementing each task
+- **tasks.md** → STATUS: After completing each task, update the checkbox from `- [ ]` to `- [x]`
+
+After completing each task increment:
 
 1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
-2. Change the task's checkbox from `- [ ]` to `- [x]`
-3. Also mark any checkpoint items that are satisfied
+2. Change the completed task's checkbox from `- [ ]` to `- [x]`
+3. Continue to the next task
 
 This is mandatory — not optional. Other commands (`/continue`, `/do`) rely on checkbox state to determine progress and resume points.
 

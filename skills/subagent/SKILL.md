@@ -119,13 +119,18 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 ## Task Status Tracking
 
+During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
+
+- **plan.md** → HOW: Include full task details (acceptance criteria, verification, files, notes) when dispatching implementer subagents
+- **tasks.md** → STATUS: After each task passes both reviews, update the checkbox
+
 After each task passes both reviews (spec compliance + code quality):
 
 1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
 2. Change the task's checkbox from `- [ ]` to `- [x]`
-3. Mark any checkpoint items that are now satisfied
+3. Continue to the next task
 
-This is mandatory. The tasks.md checkbox state is the **single source of truth** — `/continue` relies on it to determine resume points and current phase.
+This is mandatory. The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
 
 ## Prompt Templates
 

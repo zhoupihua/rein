@@ -3,13 +3,15 @@ Execute tasks from tasks.md incrementally. Replaces /opsx:apply.
 ## Instructions
 
 1. Read `docs/rein/tasks/` for the current task file (latest or user-specified)
-2. Find the first unchecked task
-3. For each task:
-   a. Mark as in-progress
-   b. Invoke `incremental` + `tdd`
-   c. Build in thin vertical slices: implement → test → verify → commit
-   d. Mark the task checkbox as complete (`- [x]`)
-   e. Commit with descriptive message
+2. Read the corresponding `docs/rein/plans/` file for task details (acceptance criteria, verification, files)
+3. Find the first unchecked task
+4. For each task:
+   a. Look up task details in plan.md
+   b. Mark as in-progress
+   c. Invoke `incremental` + `tdd`
+   d. Build in thin vertical slices: implement → test → verify → commit
+   e. Mark the task checkbox in tasks.md as complete (`- [x]`)
+   f. Commit with descriptive message
 4. If a task is blocked:
    - Stop and report the blocker
    - Suggest using `debugging` if it's a bug
