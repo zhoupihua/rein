@@ -63,5 +63,5 @@ if ($MatchedTask) {
 
     $Msg = "Auto-checked task $MatchedTask (file match: $EditedFile)"
     $MsgEscaped = $Msg -replace '\\', '\\' -replace '"', '\"'
-    Write-Output "{`"hookSpecificOutput`": {`"additionalContext`": `"$MsgEscaped`"}}"
+    Write-Output "{`"hookSpecificOutput`": {`"hookEventName`": `"PostToolUse`", `"additionalContext`": `"$MsgEscaped`"}}"
 }

@@ -31,4 +31,4 @@ if ($ToolResult -and $ToolResult -match '\[x\]') { exit 0 }
 # Task.md was edited but no checkbox was toggled - inject warning
 $Msg = "WARNING: You edited a task file but did not toggle any checkbox from [ ] to [x]. If you completed a task, you MUST update its checkbox NOW. The /do loop will re-find the same task until its checkbox is updated."
 $MsgEscaped = $Msg -replace '\\', '\\' -replace '"', '\"'
-Write-Output "{`"hookSpecificOutput`": {`"additionalContext`": `"$MsgEscaped`"}}"
+Write-Output "{`"hookSpecificOutput`": {`"hookEventName`": `"PostToolUse`", `"additionalContext`": `"$MsgEscaped`"}}"

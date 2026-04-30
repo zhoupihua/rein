@@ -35,4 +35,4 @@ fi
 MSG="WARNING: You edited a task file but did not toggle any checkbox from [ ] to [x]. If you completed a task, you MUST update its checkbox NOW. The /do loop will re-find the same task until its checkbox is updated."
 # Escape for JSON
 MSG_ESCAPED=$(echo "$MSG" | sed 's/\\/\\\\/g; s/"/\\"/g')
-echo "{\"hookSpecificOutput\": {\"additionalContext\": \"$MSG_ESCAPED\"}}"
+echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUse\", \"additionalContext\": \"$MSG_ESCAPED\"}}"

@@ -61,5 +61,5 @@ if [ -n "$MATCHED_TASK" ]; then
     # Inject confirmation
     MSG="Auto-checked task ${MATCHED_TASK} (file match: ${EDITED_FILE})"
     MSG_ESCAPED=$(echo "$MSG" | sed 's/\\/\\\\/g; s/"/\\"/g')
-    echo "{\"hookSpecificOutput\": {\"additionalContext\": \"$MSG_ESCAPED\"}}"
+    echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUse\", \"additionalContext\": \"$MSG_ESCAPED\"}}"
 fi

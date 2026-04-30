@@ -38,9 +38,9 @@ EOF
   else
     # Claude Code format (default)
     cat <<EOF
-{"hookSpecificOutput": {"additionalContext": "$CONTENT"}}
+{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "$CONTENT"}}
 EOF
   fi
 else
-  echo '{"hookSpecificOutput": {"additionalContext": "Warning: rein using-rein skill not found. Run install script to set up."}}' >&2
+  echo '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "Warning: rein using-rein skill not found. Run install script to set up."}}' >&2
 fi

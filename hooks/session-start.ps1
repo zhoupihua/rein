@@ -24,9 +24,9 @@ if (Test-Path $SkillFile) {
     }
 
     # Claude Code format (default)
-    $Output = '{"hookSpecificOutput": {"additionalContext": "' + $Content + '"}}'
+    $Output = '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "' + $Content + '"}}'
     Write-Output $Output
 } else {
-    $Warning = '{"hookSpecificOutput": {"additionalContext": "Warning: rein using-rein skill not found. Run install script to set up."}}'
+    $Warning = '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": "Warning: rein using-rein skill not found. Run install script to set up."}}'
     Write-Error $Warning
 }
