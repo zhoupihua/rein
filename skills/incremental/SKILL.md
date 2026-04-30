@@ -153,24 +153,25 @@ Each increment should be independently revertable:
 
 ## Task Status Tracking (MANDATORY)
 
-**IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated.** Moving to the next task without updating tasks.md is a process violation.
+**IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated AND verified.** Moving to the next task without updating tasks.md is a process violation.
 
 During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
 
 - **plan.md** → HOW: Read task details (acceptance criteria, verification, files, notes) before implementing each task
 - **tasks.md** → STATUS: After completing each task, you MUST update the checkbox
 
-After completing each task increment:
+After completing each task increment, execute this two-step sequence — **both steps are required**:
 
-1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` using the Edit tool
-2. Change the completed task's checkbox from `- [ ]` to `- [x]`
-3. Verify the edit was applied correctly
-4. ONLY THEN proceed to the next task
+1. **Edit** `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` — change the task's `- [ ]` to `- [x]`
+2. **Read** the same file back — confirm the checkbox now shows `- [x]`. If not, fix it immediately.
+
+Only after both steps are done may you proceed to the next task.
 
 **This applies even when:**
 - The task was trivial or XS-sized
 - You plan to batch multiple tasks (update each one as it completes)
 - You are executing quickly and want to skip the step
+- You skipped reviews for a small task (still must update tasks.md)
 
 The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
 

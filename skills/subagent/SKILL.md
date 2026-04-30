@@ -119,19 +119,19 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 ## Task Status Tracking (MANDATORY)
 
-**IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated.** Moving to the next task without updating tasks.md is a process violation.
+**IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated AND verified.** Moving to the next task without updating tasks.md is a process violation.
 
 During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
 
 - **plan.md** → HOW: Include full task details (acceptance criteria, verification, files, notes) when dispatching implementer subagents
-- **tasks.md** → STATUS: After each task is verified complete, you MUST update the checkbox
+- **tasks.md** → STATUS: After each task is verified complete, the controller MUST update the checkbox
 
-**After each task is verified complete** (whether through full review or justified skip):
+**After each task is verified complete** (whether through full review or justified skip), the controller executes this two-step sequence — **both steps are required**:
 
-1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` using the Edit tool
-2. Change the completed task's checkbox from `- [ ]` to `- [x]`
-3. Verify the edit was applied correctly
-4. ONLY THEN proceed to the next task
+1. **Edit** `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` — change the task's `- [ ]` to `- [x]`
+2. **Read** the same file back — confirm the checkbox now shows `- [x]`. If not, fix it immediately.
+
+Only after both steps are done may you proceed to the next task.
 
 **This applies even when:**
 - Skipping reviews for XS tasks (still must update tasks.md)
@@ -179,6 +179,7 @@ Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
 [Edit docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md: change "- [ ] 1.1 ..." to "- [x] 1.1 ..."]
+[Read docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md — confirm 1.1 shows "- [x]"]
 
 Task 2: Recovery modes
 
@@ -213,6 +214,7 @@ Implementer: Extracted PROGRESS_INTERVAL constant
 Code reviewer: ✅ Approved
 
 [Edit docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md: change "- [ ] 2.1 ..." to "- [x] 2.1 ..."]
+[Read docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md — confirm 2.1 shows "- [x]"]
 
 ...
 
