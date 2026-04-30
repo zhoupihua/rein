@@ -45,7 +45,7 @@ echo "  ✓ $AGENT_COUNT agents installed"
 # 5. Copy hooks
 echo "[5/9] Installing hooks..."
 mkdir -p "$PROJECT_DIR/.claude/hooks"
-for hook in session-start format gate leak-guard inject guard guard-bash checkbox-guard; do
+for hook in session-start format gate leak-guard inject guard guard-bash checkbox-guard task-progress; do
   cp "$WORKFLOW_DIR/hooks/${hook}.sh" "$PROJECT_DIR/.claude/hooks/"
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
     cp "$WORKFLOW_DIR/hooks/${hook}.ps1" "$PROJECT_DIR/.claude/hooks/"
@@ -148,6 +148,10 @@ else
           {
             "type": "command",
             "command": "$HOOK_BASE/checkbox-guard.sh\""
+          },
+          {
+            "type": "command",
+            "command": "$HOOK_BASE/task-progress.sh\""
           }
         ]
       },
@@ -200,6 +204,7 @@ echo "  5. format          — Auto-format with Prettier (PostToolUse: Write|Edi
 echo "  6. checkbox-guard  — Warn when task checkbox not updated (PostToolUse: Write|Edit|MultiEdit)"
 echo "  7. leak-guard      — Block secrets in output (PostToolUse: Read|Bash)"
 echo "  8. inject          — Inject review checklist (UserPromptExpansion: /code-review)"
+echo "  9. task-progress   — Inject task progress after code edits (PostToolUse: Write|Edit|MultiEdit)"
 echo ""
 echo "Protection:"
 echo "  rein-managed files are listed in .claude/.rein-manifest"

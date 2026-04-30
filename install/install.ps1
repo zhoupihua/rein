@@ -60,6 +60,8 @@ Copy-Item "$WorkflowDir\hooks\guard-bash.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\guard-bash.ps1" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\checkbox-guard.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\checkbox-guard.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\task-progress.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\task-progress.ps1" "$ProjectDir\.claude\hooks\"
 Write-Host "  OK All hooks installed"
 
 # 6. Copy checklists
@@ -164,6 +166,10 @@ if (Test-Path $SettingsFile) {
           {
             "type": "command",
             "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\checkbox-guard.ps1\""
+          },
+          {
+            "type": "command",
+            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\task-progress.ps1\""
           }
         ]
       },
@@ -216,6 +222,7 @@ Write-Host "  5. format          - Auto-format with Prettier (PostToolUse: Write
 Write-Host "  6. checkbox-guard  - Warn when task checkbox not updated (PostToolUse: Write|Edit|MultiEdit)"
 Write-Host "  7. leak-guard      - Block secrets in output (PostToolUse: Read|Bash)"
 Write-Host "  8. inject          - Inject review checklist (UserPromptExpansion: /code-review)"
+Write-Host "  9. task-progress   - Inject task progress after code edits (PostToolUse: Write|Edit|MultiEdit)"
 Write-Host ""
 Write-Host "Protection:" -ForegroundColor Cyan
 Write-Host "  rein-managed files are listed in .claude/.rein-manifest"
