@@ -289,7 +289,7 @@ Bug: debugging → tdd → verify → 提交
 
 **`/test`** — 独立调用 tdd + browser-testing
 
-**`/review`** — 独立调用 code-review + security + performance
+**`/code-review`** — 独立调用 code-review + security + performance
 
 **`/ship`** — 并行 fan-out（3 专家代理）→ GO/NO-GO → 归档
 

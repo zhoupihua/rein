@@ -173,7 +173,7 @@ if (Test-Path $SettingsFile) {
             )
             UserPromptExpansion = @(
                 @{
-                    matcher = "review"
+                    matcher = "code-review"
                     hooks = @(
                         @{
                             type = "command"
@@ -206,7 +206,7 @@ This project uses rein for structured AI-assisted development.
 - ``/plan`` - Task breakdown
 - ``/do`` - Execute tasks from tasks.md
 - ``/test`` - TDD workflow
-- ``/review`` - Five-axis code review
+- ``/code-review`` - Five-axis code review
 - ``/ship`` - Fan-out review + GO/NO-GO
 - ``/simplify`` - Code simplification
 - ``/continue`` - Resume from breakpoint
@@ -250,7 +250,7 @@ Write-Host "  3. guard-bash      - Block destructive cmds on rein files (PreTool
 Write-Host "  4. gate            - Run tests before deploy (PreToolUse: Bash)"
 Write-Host "  5. format          - Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
 Write-Host "  6. leak-guard      - Block secrets in output (PostToolUse: Read|Bash)"
-Write-Host "  7. inject          - Inject review checklist (UserPromptExpansion: /review)"
+Write-Host "  7. inject          - Inject review checklist (UserPromptExpansion: /code-review)"
 Write-Host ""
 Write-Host "Protection:" -ForegroundColor Cyan
 Write-Host "  rein-managed files are listed in .claude/.rein-manifest"
@@ -261,4 +261,4 @@ Write-Host "Verification steps:"
 Write-Host "1. Start a new Claude Code session"
 Write-Host "2. The using-rein skill should be auto-injected"
 Write-Host "3. Try /triage to test the workflow"
-Write-Host "4. Try /review to test checklist injection"
+Write-Host "4. Try /code-review to test checklist injection"

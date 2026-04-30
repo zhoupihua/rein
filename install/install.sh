@@ -159,7 +159,7 @@ else
     ],
     "UserPromptExpansion": [
       {
-        "matcher": "review",
+        "matcher": "code-review",
         "hooks": [
           {
             "type": "command",
@@ -192,7 +192,7 @@ This project uses rein for structured AI-assisted development.
 - `/plan` — Task breakdown
 - `/do` — Execute tasks from tasks.md
 - `/test` — TDD workflow
-- `/review` — Five-axis code review
+- `/code-review` — Five-axis code review
 - `/ship` — Fan-out review + GO/NO-GO
 - `/simplify` — Code simplification
 - `/continue` — Resume from breakpoint
@@ -238,7 +238,7 @@ echo "  3. guard-bash      — Block destructive cmds on rein files (PreToolUse:
 echo "  4. gate            — Run tests before deploy (PreToolUse: Bash)"
 echo "  5. format          — Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
 echo "  6. leak-guard      — Block secrets in output (PostToolUse: Read|Bash)"
-echo "  7. inject          — Inject review checklist (UserPromptExpansion: /review)"
+echo "  7. inject          — Inject review checklist (UserPromptExpansion: /code-review)"
 echo ""
 echo "Protection:"
 echo "  rein-managed files are listed in .claude/.rein-manifest"
@@ -249,4 +249,4 @@ echo "Verification steps:"
 echo "1. Start a new Claude Code session"
 echo "2. The using-rein skill should be auto-injected"
 echo "3. Try /triage to test the workflow"
-echo "4. Try /review to test checklist injection"
+echo "4. Try /code-review to test checklist injection"

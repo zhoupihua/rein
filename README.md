@@ -186,7 +186,7 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 | `/plan` | Task breakdown with dependency graph | `docs/rein/plans/` + `docs/rein/tasks/` |
 | `/do` | Execute tasks from tasks file | Code + commits |
 | `/test` | TDD workflow | Tests passing |
-| `/review` | 5-axis code review + security + performance | Review report |
+| `/code-review` | 5-axis code review + security + performance | Review report |
 | `/ship` | Parallel expert fan-out → GO/NO-GO | Merge / PR |
 | `/simplify` | Code simplification | Simpler code |
 | `/continue` | Resume from breakpoint | Continue workflow |
@@ -203,7 +203,7 @@ rein 安装后自动配置 7 个钩子，无需手动干预：
 | gate | PreToolUse | Bash | deploy/push/publish 前自动跑测试 |
 | format | PostToolUse | Write\|Edit\|MultiEdit | 自动 Prettier 格式化 |
 | leak-guard | PostToolUse | Read\|Bash | 拦截密钥泄露 (AKIA/sk-/ghp_) |
-| inject | UserPromptExpansion | /review | 注入审查清单 |
+| inject | UserPromptExpansion | /code-review | 注入审查清单 |
 
 ## Skills by Phase
 
