@@ -2,7 +2,7 @@ Execute tasks from tasks.md incrementally. Replaces /opsx:apply.
 
 ## Instructions
 
-1. Read `docs/alloy/tasks/` for the current task file (latest or user-specified)
+1. Read `docs/rein/tasks/` for the current task file (latest or user-specified)
 2. Find the first unchecked task
 3. For each task:
    a. Mark as in-progress

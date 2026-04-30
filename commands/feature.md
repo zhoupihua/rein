@@ -3,22 +3,22 @@ L3 full change — the 8-step iron triangle workflow.
 ## The Full Workflow
 
 ### Step 1: Idea Refine
-Invoke `idea-refine` skill. Diverge and converge on the idea. Output a markdown one-pager with Problem Statement, Recommended Direction, Key Assumptions, MVP Scope, and Not Doing list. Save to `docs/alloy/specs/YYYY-MM-DD-<topic>-design.md` and commit.
+Invoke `idea-refine` skill. Diverge and converge on the idea. Output a markdown one-pager with Problem Statement, Recommended Direction, Key Assumptions, MVP Scope, and Not Doing list. Save to `docs/rein/specs/YYYY-MM-DD-<topic>-design.md` and commit.
 
 ### Step 2: Spec-Driven Development
-Invoke `spec-driven-development` skill. Write a PRD covering Objective, Commands, Project Structure, Code Style, Testing Strategy, and Boundaries. Save to `docs/alloy/specs/YYYY-MM-DD-<topic>-design.md` and commit.
+Invoke `spec-driven-development` skill. Write a PRD covering Objective, Commands, Project Structure, Code Style, Testing Strategy, and Boundaries. Save to `docs/rein/specs/YYYY-MM-DD-<topic>-design.md` and commit.
 
 ### Step 3: Generate Artifacts
 Use `/spec <name>` to generate the full artifact set:
-- `docs/alloy/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements
-- `docs/alloy/plans/YYYY-MM-DD-<name>.md` — Implementation plan (decision layer)
-- `docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md` — Task checklist (execution layer)
+- `docs/rein/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements
+- `docs/rein/plans/YYYY-MM-DD-<name>.md` — Implementation plan (decision layer)
+- `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` — Task checklist (execution layer)
 
 ### Step 4: Branch Isolation
 Invoke `using-git-worktrees` skill. Create an isolated worktree with a new branch. Verify clean test baseline.
 
 ### Step 5: Plan Tasks
-Invoke `planning-and-task-breakdown` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/alloy/plans/` and tasks to `docs/alloy/tasks/`, then commit.
+Invoke `planning-and-task-breakdown` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/rein/plans/` and tasks to `docs/rein/tasks/`, then commit.
 
 ### Step 6: Implement
 Invoke `incremental-implementation` + `test-driven-development` skills:
@@ -50,7 +50,7 @@ Then invoke `git-workflow-and-versioning` skill to:
 Post-merge:
 - Invoke `shipping-and-launch` for release checks (if applicable)
 - Invoke `documentation-and-adrs` for decision documentation
-- Archive completed `docs/alloy/` artifacts to `docs/alloy/archive/YYYY-MM-DD-<name>/`
+- Archive completed `docs/rein/` artifacts to `docs/rein/archive/YYYY-MM-DD-<name>/`
 
 ## Resuming
 

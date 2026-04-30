@@ -25,7 +25,7 @@ You MUST create a task for each of these items and complete them in order:
 4. **Generate idea variations** — 5-8 variations using divergent thinking lenses
 5. **Propose 2-3 approaches** — with trade-offs and your recommendation
 6. **Present design** — in sections scaled to complexity, get user approval after each section
-7. **Write design doc** — save to `docs/alloy/specs/YYYY-MM-DD-<topic>-design.md` and commit
+7. **Write design doc** — save to `docs/rein/specs/YYYY-MM-DD-<topic>-design.md` and commit
 8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope
 9. **User reviews written spec** — ask user to review the spec file before proceeding
 10. **Transition to implementation** — invoke planning-and-task-breakdown skill
@@ -154,7 +154,7 @@ Produce a concrete artifact — a markdown one-pager that moves work forward:
 ## After the Design
 
 **Documentation:**
-- Write the validated design (spec) to `docs/alloy/specs/YYYY-MM-DD-<topic>-design.md`
+- Write the validated design (spec) to `docs/rein/specs/YYYY-MM-DD-<topic>-design.md`
 - Commit the design document to git
 
 **Spec Self-Review:**

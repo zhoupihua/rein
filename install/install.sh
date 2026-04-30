@@ -1,6 +1,6 @@
 #!/bin/bash
-# Alloy install script (Linux/Mac)
-# Run from your project root: bash /path/to/Alloy/install/install.sh
+# rein install script (Linux/Mac)
+# Run from your project root: bash /path/to/rein/install/install.sh
 
 set -e
 
@@ -8,18 +8,18 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 WORKFLOW_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECT_DIR="$(pwd)"
 
-echo "=== Alloy Installer ==="
+echo "=== rein Installer ==="
 echo "Workflow source: $WORKFLOW_DIR"
 echo "Target project:  $PROJECT_DIR"
 echo ""
 
 # 1. Create artifact directories
 echo "[1/10] Creating artifact directories..."
-mkdir -p "$PROJECT_DIR/docs/alloy/specs"
-mkdir -p "$PROJECT_DIR/docs/alloy/plans"
-mkdir -p "$PROJECT_DIR/docs/alloy/tasks"
-mkdir -p "$PROJECT_DIR/docs/alloy/archive"
-echo "  ✓ docs/alloy/specs/, docs/alloy/plans/, docs/alloy/tasks/, docs/alloy/archive/"
+mkdir -p "$PROJECT_DIR/docs/rein/specs"
+mkdir -p "$PROJECT_DIR/docs/rein/plans"
+mkdir -p "$PROJECT_DIR/docs/rein/tasks"
+mkdir -p "$PROJECT_DIR/docs/rein/archive"
+echo "  ✓ docs/rein/specs/, docs/rein/plans/, docs/rein/tasks/, docs/rein/archive/"
 
 # 2. Copy commands
 echo "[2/10] Installing commands..."
@@ -45,7 +45,7 @@ echo "  ✓ $AGENT_COUNT agents installed"
 # 5. Copy hooks
 echo "[5/10] Installing hooks..."
 mkdir -p "$PROJECT_DIR/.claude/hooks"
-for hook in session-start format test-gateway secret-scan context-inject alloy-protect alloy-protect-bash; do
+for hook in session-start format test-gateway secret-scan context-inject rein-protect rein-protect-bash; do
   cp "$WORKFLOW_DIR/hooks/${hook}.sh" "$PROJECT_DIR/.claude/hooks/"
   if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
     cp "$WORKFLOW_DIR/hooks/${hook}.ps1" "$PROJECT_DIR/.claude/hooks/"
@@ -66,10 +66,10 @@ fi
 
 # 7. Generate manifest
 echo "[7/10] Generating protection manifest..."
-MANIFEST_FILE="$PROJECT_DIR/.claude/.alloy-manifest"
+MANIFEST_FILE="$PROJECT_DIR/.claude/.rein-manifest"
 {
-  echo "# Alloy Managed Files - DO NOT EDIT"
-  echo "# These files are protected from modification by the alloy-protect hook."
+  echo "# rein Managed Files - DO NOT EDIT"
+  echo "# These files are protected from modification by the rein-protect hook."
   echo "# To allow edits to a specific file, remove its line from this manifest."
   echo ""
   # List individual files in flat directories
@@ -88,7 +88,7 @@ MANIFEST_FILE="$PROJECT_DIR/.claude/.alloy-manifest"
   fi
 } > "$MANIFEST_FILE"
 MANIFEST_COUNT=$(grep -cvE '^\s*#|^\s*$' "$MANIFEST_FILE")
-echo "  ✓ $MANIFEST_COUNT entries in .alloy-manifest"
+echo "  ✓ $MANIFEST_COUNT entries in .rein-manifest"
 
 # 8. Configure settings.json
 echo "[8/10] Configuring hooks in settings.json..."
@@ -119,7 +119,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "$HOOK_BASE/alloy-protect.sh\""
+            "command": "$HOOK_BASE/rein-protect.sh\""
           }
         ]
       },
@@ -128,7 +128,7 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "$HOOK_BASE/alloy-protect-bash.sh\""
+            "command": "$HOOK_BASE/rein-protect-bash.sh\""
           },
           {
             "type": "command",
@@ -179,9 +179,9 @@ echo "[9/10] Updating CLAUDE.md..."
 CLAUDE_MD="$PROJECT_DIR/CLAUDE.md"
 WORKFLOW_BLOCK=$(cat <<'BLOCK'
 
-## Alloy
+## rein
 
-This project uses Alloy for structured AI-assisted development.
+This project uses rein for structured AI-assisted development.
 
 ### Commands
 - `/triage` — Classify a change as L1/L2/L3
@@ -198,19 +198,19 @@ This project uses Alloy for structured AI-assisted development.
 - `/resume` — Resume from breakpoint
 
 ### Artifact Directories
-- `docs/alloy/specs/` — Design specs (long-lived)
-- `docs/alloy/plans/` — Implementation plans (decision layer)
-- `docs/alloy/tasks/` — Task checklists (execution layer)
-- `docs/alloy/archive/` — Archived artifacts
+- `docs/rein/specs/` — Design specs (long-lived)
+- `docs/rein/plans/` — Implementation plans (decision layer)
+- `docs/rein/tasks/` — Task checklists (execution layer)
+- `docs/rein/archive/` — Archived artifacts
 BLOCK
 )
 
 if [ -f "$CLAUDE_MD" ]; then
-  if ! grep -q "Alloy" "$CLAUDE_MD"; then
+  if ! grep -q "rein" "$CLAUDE_MD"; then
     echo "$WORKFLOW_BLOCK" >> "$CLAUDE_MD"
     echo "  ✓ Workflow instructions appended to CLAUDE.md"
   else
-    echo "  ℹ CLAUDE.md already contains Alloy section"
+    echo "  ℹ CLAUDE.md already contains rein section"
   fi
 else
   echo "# CLAUDE.md" > "$CLAUDE_MD"
@@ -233,15 +233,15 @@ echo "=== Installation Complete ==="
 echo ""
 echo "Installed hooks:"
 echo "  1. SessionStart    — Inject using-workflow skill"
-echo "  2. Alloy Protect   — Block edits to Alloy-managed files (PreToolUse: Edit|Write|MultiEdit)"
-echo "  3. Bash Protect    — Block destructive cmds on Alloy files (PreToolUse: Bash)"
+echo "  2. rein Protect   — Block edits to rein-managed files (PreToolUse: Edit|Write|MultiEdit)"
+echo "  3. Bash Protect    — Block destructive cmds on rein files (PreToolUse: Bash)"
 echo "  4. Test Gateway    — Run tests before deploy (PreToolUse: Bash)"
 echo "  5. Format          — Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
 echo "  6. Secret Scan     — Block secrets in output (PostToolUse: Read|Bash)"
 echo "  7. Context Inject  — Inject review checklist (UserPromptExpansion: /review)"
 echo ""
 echo "Protection:"
-echo "  Alloy-managed files are listed in .claude/.alloy-manifest"
+echo "  rein-managed files are listed in .claude/.rein-manifest"
 echo "  Edit/Write on these files will be blocked automatically"
 echo "  To allow edits, remove the file's entry from the manifest"
 echo ""

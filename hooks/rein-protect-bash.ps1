@@ -1,7 +1,7 @@
-# Alloy Bash Protection Hook (PreToolUse → Bash)
-# Prevents destructive commands targeting Alloy-managed files
+# rein Bash Protection Hook (PreToolUse → Bash)
+# Prevents destructive commands targeting rein-managed files
 
-$ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.alloy-manifest"
+$ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.rein-manifest"
 if (-not (Test-Path $ManifestPath)) { exit 0 }
 
 $ToolInput = $env:CLAUDE_TOOL_INPUT
@@ -16,7 +16,7 @@ foreach ($entry in $entries) {
     if ($entry -match '^\s*#' -or $entry -match '^\s*$') { continue }
     $normalizedEntry = $entry -replace '\\', '/'
     if ($ToolInput -like "*$normalizedEntry*") {
-        Write-Output "{`"decision`":`"block`",`"reason`":`"Command targets Alloy-managed file: $normalizedEntry. Use Alloy commands to update.`"}"
+        Write-Output "{`"decision`":`"block`",`"reason`":`"Command targets rein-managed file: $normalizedEntry. Use rein commands to update.`"}"
         exit 2
     }
 }

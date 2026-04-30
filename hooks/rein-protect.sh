@@ -1,8 +1,8 @@
 #!/bin/bash
-# Alloy Protection Hook (PreToolUse → Edit|Write|MultiEdit)
-# Prevents modification of Alloy-managed files
+# rein Protection Hook (PreToolUse → Edit|Write|MultiEdit)
+# Prevents modification of rein-managed files
 
-MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.alloy-manifest"
+MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
 [ -f "$MANIFEST" ] || exit 0
 
 # Extract file_path from tool input JSON
@@ -17,7 +17,7 @@ while IFS= read -r entry; do
     [[ -z "${entry// /}" ]] && continue
     entry=$(echo "$entry" | tr '\\' '/')
     if [[ "$TARGET" == *"$entry"* ]]; then
-        echo '{"decision":"block","reason":"This file is managed by Alloy and cannot be modified. Use Alloy commands to update, or remove its path from .claude/.alloy-manifest to allow edits."}'
+        echo '{"decision":"block","reason":"This file is managed by rein and cannot be modified. Use rein commands to update, or remove its path from .claude/.rein-manifest to allow edits."}'
         exit 2
     fi
 done < "$MANIFEST"

@@ -1,7 +1,7 @@
-# Alloy Protection Hook (PreToolUse → Edit|Write|MultiEdit)
-# Prevents modification of Alloy-managed files
+# rein Protection Hook (PreToolUse → Edit|Write|MultiEdit)
+# Prevents modification of rein-managed files
 
-$ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.alloy-manifest"
+$ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.rein-manifest"
 if (-not (Test-Path $ManifestPath)) { exit 0 }
 
 $ToolInput = $env:CLAUDE_TOOL_INPUT
@@ -19,7 +19,7 @@ foreach ($entry in $entries) {
     if ($entry -match '^\s*#' -or $entry -match '^\s*$') { continue }
     $normalizedEntry = $entry -replace '\\', '/'
     if ($Target -like "*$normalizedEntry*") {
-        Write-Output '{"decision":"block","reason":"This file is managed by Alloy and cannot be modified. Use Alloy commands to update, or remove its path from .claude/.alloy-manifest to allow edits."}'
+        Write-Output '{"decision":"block","reason":"This file is managed by rein and cannot be modified. Use rein commands to update, or remove its path from .claude/.rein-manifest to allow edits."}'
         exit 2
     }
 }

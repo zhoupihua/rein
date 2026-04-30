@@ -1,4 +1,4 @@
-# Alloy
+# rein
 
 A unified, zero-dependency AI coding workflow that consolidates the best of [Superpowers](https://github.com/obra/superpowers), [Agent Skills](https://github.com/addyosmani/agent-skills), and [OpenSpec](https://github.com/Fission-AI/OpenSpec) into one project.
 
@@ -9,7 +9,7 @@ Setting up the "Iron Triangle" (OpenSpec + Superpowers + Agent Skills) requires:
 - npm package (OpenSpec CLI) + plugin marketplace (Superpowers) + manual setup (Agent Skills)
 - Overlapping skills with different names and slight variations
 
-**Alloy** merges them into a single project with zero external dependencies. Clone, run install script, done.
+**rein** merges them into a single project with zero external dependencies. Clone, run install script, done.
 
 ## What's Inside
 
@@ -26,15 +26,15 @@ Setting up the "Iron Triangle" (OpenSpec + Superpowers + Agent Skills) requires:
 
 ```bash
 # Clone this repo
-git clone https://github.com/<org>/Alloy.git
+git clone https://github.com/<org>/rein.git
 
 # Install into your project (Linux/Mac)
 cd your-project
-bash /path/to/Alloy/install/install.sh
+bash /path/to/rein/install/install.sh
 
 # Install into your project (Windows)
 cd your-project
-powershell -ExecutionPolicy Bypass -File \path\to\Alloy\install\install.ps1
+powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 ```
 
 No `npm install -g`, no plugin marketplace, no manual configuration.
@@ -159,7 +159,7 @@ Frontend: + browser testing
 
 ## What's Different from the Source Projects
 
-| Aspect | Source Projects | Alloy |
+| Aspect | Source Projects | rein |
 |--------|----------------|-----------------|
 | Install | 3 projects, npm + plugin + manual | 1 script, zero dependencies |
 | Skills | 14 + 20 with overlaps | 25 merged, no duplicates |

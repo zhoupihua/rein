@@ -1,5 +1,5 @@
 #!/bin/bash
-# Session start hook for Alloy
+# Session start hook for rein
 # Injects the using-workflow meta-skill into every new Claude Code session
 
 SKILL_FILE="$(dirname "$0")/../skills/using-workflow/SKILL.md"
@@ -26,5 +26,5 @@ EOF
 EOF
   fi
 else
-  echo '{"hookSpecificOutput": {"additionalContext": "Warning: Alloy using-workflow skill not found. Run install script to set up."}}' >&2
+  echo '{"hookSpecificOutput": {"additionalContext": "Warning: rein using-workflow skill not found. Run install script to set up."}}' >&2
 fi

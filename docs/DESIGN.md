@@ -1,4 +1,4 @@
-# 统一项目方案：Alloy
+# 统一项目方案：rein
 
 ## Context
 
@@ -9,7 +9,7 @@
 ## 项目结构
 
 ```
-Alloy/
+rein/
 ├── README.md
 │
 ├── skills/                          # 22 个统一技能
@@ -302,14 +302,14 @@ Bug: debugging-and-error-recovery → test-driven-development → verification-b
 
 ```bash
 # Linux/Mac
-git clone https://github.com/<org>/Alloy.git
+git clone https://github.com/<org>/rein.git
 cd your-project
-bash /path/to/Alloy/install/install.sh
+bash /path/to/rein/install/install.sh
 
 # Windows
-git clone https://github.com/<org>/Alloy.git
+git clone https://github.com/<org>/rein.git
 cd your-project
-powershell -ExecutionPolicy Bypass -File \path\to\Alloy\install\install.ps1
+powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 ```
 
 ### install 脚本做的事

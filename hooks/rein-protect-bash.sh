@@ -1,8 +1,8 @@
 #!/bin/bash
-# Alloy Bash Protection Hook (PreToolUse → Bash)
-# Prevents destructive commands targeting Alloy-managed files
+# rein Bash Protection Hook (PreToolUse → Bash)
+# Prevents destructive commands targeting rein-managed files
 
-MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.alloy-manifest"
+MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
 [ -f "$MANIFEST" ] || exit 0
 
 INPUT="$CLAUDE_TOOL_INPUT"
@@ -17,7 +17,7 @@ while IFS= read -r entry; do
     [[ -z "${entry// /}" ]] && continue
     entry=$(echo "$entry" | tr '\\' '/')
     if echo "$INPUT" | grep -qF "$entry"; then
-        echo "{\"decision\":\"block\",\"reason\":\"Command targets Alloy-managed file: $entry. Use Alloy commands to update.\"}"
+        echo "{\"decision\":\"block\",\"reason\":\"Command targets rein-managed file: $entry. Use rein commands to update.\"}"
         exit 2
     fi
 done < "$MANIFEST"

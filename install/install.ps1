@@ -1,5 +1,5 @@
-# Alloy install script (Windows)
-# Run from your project root: powershell -ExecutionPolicy Bypass -File \path\to\Alloy\install\install.ps1
+# rein install script (Windows)
+# Run from your project root: powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 
 $ErrorActionPreference = "Stop"
 
@@ -7,18 +7,18 @@ $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $WorkflowDir = Split-Path -Parent $ScriptDir
 $ProjectDir = Get-Location
 
-Write-Host "=== Alloy Installer ===" -ForegroundColor Cyan
+Write-Host "=== rein Installer ===" -ForegroundColor Cyan
 Write-Host "Workflow source: $WorkflowDir"
 Write-Host "Target project:  $ProjectDir"
 Write-Host ""
 
 # 1. Create artifact directories
 Write-Host "[1/10] Creating artifact directories..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\specs" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\plans" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\tasks" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\docs\alloy\archive" -Force | Out-Null
-Write-Host "  OK docs/alloy/specs/, docs/alloy/plans/, docs/alloy/tasks/, docs/alloy/archive/"
+New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\specs" -Force | Out-Null
+New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\plans" -Force | Out-Null
+New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\tasks" -Force | Out-Null
+New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
+Write-Host "  OK docs/rein/specs/, docs/rein/plans/, docs/rein/tasks/, docs/rein/archive/"
 
 # 2. Copy commands
 Write-Host "[2/10] Installing commands..." -ForegroundColor Yellow
@@ -54,10 +54,10 @@ Copy-Item "$WorkflowDir\hooks\secret-scan.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\secret-scan.ps1" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\context-inject.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\context-inject.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\alloy-protect.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\alloy-protect.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\alloy-protect-bash.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\alloy-protect-bash.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\rein-protect.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\rein-protect.ps1" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\rein-protect-bash.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\rein-protect-bash.ps1" "$ProjectDir\.claude\hooks\"
 Write-Host "  OK All hooks installed"
 
 # 6. Copy checklists
@@ -72,10 +72,10 @@ if (Test-Path "$WorkflowDir\templates\checklists\review.md") {
 
 # 7. Generate manifest
 Write-Host "[7/10] Generating protection manifest..." -ForegroundColor Yellow
-$ManifestFile = "$ProjectDir\.claude\.alloy-manifest"
+$ManifestFile = "$ProjectDir\.claude\.rein-manifest"
 $ManifestLines = @(
-    "# Alloy Managed Files - DO NOT EDIT",
-    "# These files are protected from modification by the alloy-protect hook.",
+    "# rein Managed Files - DO NOT EDIT",
+    "# These files are protected from modification by the rein-protect hook.",
     "# To allow edits to a specific file, remove its line from this manifest.",
     ""
 )
@@ -103,7 +103,7 @@ if (Test-Path "$ProjectDir\.claude\skills") {
 }
 Set-Content -Path $ManifestFile -Value $ManifestLines
 $ManifestCount = ($ManifestLines | Where-Object { $_ -notmatch '^\s*#' -and $_ -ne '' }).Count
-Write-Host "  OK $ManifestCount entries in .alloy-manifest"
+Write-Host "  OK $ManifestCount entries in .rein-manifest"
 
 # 8. Configure settings.json
 Write-Host "[8/10] Configuring hooks in settings.json..." -ForegroundColor Yellow
@@ -133,7 +133,7 @@ if (Test-Path $SettingsFile) {
                     hooks = @(
                         @{
                             type = "command"
-                            command = "$HookBase\alloy-protect.ps1""
+                            command = "$HookBase\rein-protect.ps1""
                         }
                     )
                 }
@@ -142,7 +142,7 @@ if (Test-Path $SettingsFile) {
                     hooks = @(
                         @{
                             type = "command"
-                            command = "$HookBase\alloy-protect-bash.ps1""
+                            command = "$HookBase\rein-protect-bash.ps1""
                         }
                         @{
                             type = "command"
@@ -193,9 +193,9 @@ Write-Host "[9/10] Updating CLAUDE.md..." -ForegroundColor Yellow
 $ClaudeMd = "$ProjectDir\CLAUDE.md"
 $WorkflowBlock = @"
 
-## Alloy
+## rein
 
-This project uses Alloy for structured AI-assisted development.
+This project uses rein for structured AI-assisted development.
 
 ### Commands
 - ``/triage`` - Classify a change as L1/L2/L3
@@ -212,19 +212,19 @@ This project uses Alloy for structured AI-assisted development.
 - ``/resume`` - Resume from breakpoint
 
 ### Artifact Directories
-- ``docs/alloy/specs/`` - Design specs (long-lived)
-- ``docs/alloy/plans/`` - Implementation plans (decision layer)
-- ``docs/alloy/tasks/`` - Task checklists (execution layer)
-- ``docs/alloy/archive/`` - Archived artifacts
+- ``docs/rein/specs/`` - Design specs (long-lived)
+- ``docs/rein/plans/`` - Implementation plans (decision layer)
+- ``docs/rein/tasks/`` - Task checklists (execution layer)
+- ``docs/rein/archive/`` - Archived artifacts
 "@
 
 if (Test-Path $ClaudeMd) {
     $Content = Get-Content $ClaudeMd -Raw
-    if ($Content -notmatch "Alloy") {
+    if ($Content -notmatch "rein") {
         Add-Content -Path $ClaudeMd -Value $WorkflowBlock
         Write-Host "  OK Workflow instructions appended to CLAUDE.md"
     } else {
-        Write-Host "  INFO CLAUDE.md already contains Alloy section"
+        Write-Host "  INFO CLAUDE.md already contains rein section"
     }
 } else {
     Set-Content -Path $ClaudeMd -Value "# CLAUDE.md$WorkflowBlock"
@@ -245,15 +245,15 @@ Write-Host "=== Installation Complete ===" -ForegroundColor Green
 Write-Host ""
 Write-Host "Installed hooks:" -ForegroundColor Cyan
 Write-Host "  1. SessionStart    - Inject using-workflow skill"
-Write-Host "  2. Alloy Protect   - Block edits to Alloy-managed files (PreToolUse: Edit|Write|MultiEdit)"
-Write-Host "  3. Bash Protect    - Block destructive cmds on Alloy files (PreToolUse: Bash)"
+Write-Host "  2. rein Protect   - Block edits to rein-managed files (PreToolUse: Edit|Write|MultiEdit)"
+Write-Host "  3. Bash Protect    - Block destructive cmds on rein files (PreToolUse: Bash)"
 Write-Host "  4. Test Gateway    - Run tests before deploy (PreToolUse: Bash)"
 Write-Host "  5. Format          - Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
 Write-Host "  6. Secret Scan     - Block secrets in output (PostToolUse: Read|Bash)"
 Write-Host "  7. Context Inject  - Inject review checklist (UserPromptExpansion: /review)"
 Write-Host ""
 Write-Host "Protection:" -ForegroundColor Cyan
-Write-Host "  Alloy-managed files are listed in .claude/.alloy-manifest"
+Write-Host "  rein-managed files are listed in .claude/.rein-manifest"
 Write-Host "  Edit/Write on these files will be blocked automatically"
 Write-Host "  To allow edits, remove the file's entry from the manifest"
 Write-Host ""

@@ -58,12 +58,12 @@ digraph process {
         "Mark task complete in tasks.md and TodoWrite" [shape=box];
     }
 
-    "Read docs/alloy/plans/<name>.md for architecture + docs/alloy/tasks/<name>-tasks.md for task list, create TodoWrite" [shape=box];
+    "Read docs/rein/plans/<name>.md for architecture + docs/rein/tasks/<name>-tasks.md for task list, create TodoWrite" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
-    "Use Alloy:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
+    "Use rein:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read docs/alloy/plans/<name>.md for architecture + docs/alloy/tasks/<name>-tasks.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read docs/rein/plans/<name>.md for architecture + docs/rein/tasks/<name>-tasks.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -80,7 +80,7 @@ digraph process {
     "Mark task complete in tasks.md and TodoWrite" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use Alloy:finishing-a-development-branch";
+    "Dispatch final code reviewer subagent for entire implementation" -> "Use rein:finishing-a-development-branch";
 }
 ```
 
@@ -128,8 +128,8 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 ```
 You: I'm using Subagent-Driven Development to execute this plan.
 
-[Read docs/alloy/plans/YYYY-MM-DD-<name>.md for architecture context]
-[Read docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md for task list]
+[Read docs/rein/plans/YYYY-MM-DD-<name>.md for architecture context]
+[Read docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md for task list]
 [Create TodoWrite with all tasks]
 
 Task 1: Hook installation script
@@ -139,7 +139,7 @@ Task 1: Hook installation script
 
 Implementer: "Before I begin - should the hook be installed at user or system level?"
 
-You: "User level (~/.config/Alloy/hooks/)"
+You: "User level (~/.config/rein/hooks/)"
 
 Implementer: "Got it. Implementing now..."
 [Later] Implementer:
@@ -265,13 +265,13 @@ Done!
 ## Integration
 
 **Required workflow skills:**
-- **Alloy:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
-- **Alloy:writing-plans** - Creates the plan this skill executes
-- **Alloy:requesting-code-review** - Code review template for reviewer subagents
-- **Alloy:finishing-a-development-branch** - Complete development after all tasks
+- **rein:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
+- **rein:writing-plans** - Creates the plan this skill executes
+- **rein:requesting-code-review** - Code review template for reviewer subagents
+- **rein:finishing-a-development-branch** - Complete development after all tasks
 
 **Subagents should use:**
-- **Alloy:test-driven-development** - Subagents follow TDD for each task
+- **rein:test-driven-development** - Subagents follow TDD for each task
 
 **Alternative workflow:**
-- **Alloy:executing-plans** - Use for parallel session instead of same-session execution
+- **rein:executing-plans** - Use for parallel session instead of same-session execution

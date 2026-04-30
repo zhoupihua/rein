@@ -9,11 +9,11 @@ Generate change artifacts. Replaces /opsx:propose + /opsx:explore + /opsx:contin
 4. After each artifact, ask if they want to continue to the next
 
 ### /spec <name>: Direct generation
-1. Create `docs/alloy/specs/YYYY-MM-DD-<name>/` directory (if needed)
+1. Create `docs/rein/specs/YYYY-MM-DD-<name>/` directory (if needed)
 2. Generate all artifacts in dependency order:
-   - `docs/alloy/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements
-   - `docs/alloy/plans/YYYY-MM-DD-<name>.md` — Implementation plan (decision layer)
-   - `docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md` — Ordered task checklist (execution layer)
+   - `docs/rein/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements
+   - `docs/rein/plans/YYYY-MM-DD-<name>.md` — Implementation plan (decision layer)
+   - `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` — Ordered task checklist (execution layer)
 
 ### /spec --step: Step-by-step
 Generate one artifact at a time, stopping after each for review.
@@ -42,9 +42,9 @@ Do not generate `tasks.md` until both `specs/` and `design.md` exist.
 After generation, report:
 ```
 Created artifacts:
-  ✓ docs/alloy/specs/YYYY-MM-DD-<name>-design.md
-  ✓ docs/alloy/plans/YYYY-MM-DD-<name>.md
-  ✓ docs/alloy/tasks/YYYY-MM-DD-<name>-tasks.md (N tasks, M phases)
+  ✓ docs/rein/specs/YYYY-MM-DD-<name>-design.md
+  ✓ docs/rein/plans/YYYY-MM-DD-<name>.md
+  ✓ docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md (N tasks, M phases)
 
 Next step: /build to start implementing, or /plan to refine tasks
 ```

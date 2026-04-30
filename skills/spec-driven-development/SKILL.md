@@ -197,4 +197,4 @@ Before proceeding to implementation, confirm:
 - [ ] The human has reviewed and approved the spec
 - [ ] Success criteria are specific and testable
 - [ ] Boundaries (Always/Ask First/Never) are defined
-- [ ] The spec is saved to `docs/alloy/specs/`
+- [ ] The spec is saved to `docs/rein/specs/`
