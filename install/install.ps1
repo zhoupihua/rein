@@ -53,7 +53,9 @@ Copy-Item "$WorkflowDir\hooks\secret-scan.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\secret-scan.ps1" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\context-inject.sh" "$ProjectDir\.claude\hooks\"
 Copy-Item "$WorkflowDir\hooks\context-inject.ps1" "$ProjectDir\.claude\hooks\"
-Write-Host "  OK All hooks installed (session-start, format, test-gateway, secret-scan, context-inject)"
+Copy-Item "$WorkflowDir\hooks\claude-protect.sh" "$ProjectDir\.claude\hooks\"
+Copy-Item "$WorkflowDir\hooks\claude-protect.ps1" "$ProjectDir\.claude\hooks\"
+Write-Host "  OK All hooks installed (session-start, format, test-gateway, secret-scan, context-inject, claude-protect)"
 
 # 6. Copy checklists
 Write-Host "[6/9] Installing checklists..." -ForegroundColor Yellow
@@ -108,6 +110,15 @@ if (Test-Path $SettingsFile) {
                 }
             )
             PreToolUse = @(
+                @{
+                    matcher = "Write|Edit|MultiEdit"
+                    hooks = @(
+                        @{
+                            type = "command"
+                            command = "$HookBase\claude-protect.ps1""
+                        }
+                    )
+                }
                 @{
                     matcher = "Bash"
                     hooks = @(
@@ -195,6 +206,7 @@ Write-Host "  2. Format        - Auto-format with Prettier (PostToolUse: Write|E
 Write-Host "  3. Test Gateway  - Run tests before deploy (PreToolUse: Bash)"
 Write-Host "  4. Secret Scan   - Block secrets in output (PostToolUse: Read|Bash)"
 Write-Host "  5. Context Inject- Inject review checklist (UserPromptExpansion: /review)"
+Write-Host "  6. Claude Protect- Block manual edits to .claude/ (PreToolUse: Write|Edit|MultiEdit)"
 Write-Host ""
 Write-Host "Verification steps:"
 Write-Host "1. Start a new Claude Code session"

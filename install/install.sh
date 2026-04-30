@@ -49,15 +49,17 @@ cp "$WORKFLOW_DIR/hooks/format.sh" "$PROJECT_DIR/.claude/hooks/"
 cp "$WORKFLOW_DIR/hooks/test-gateway.sh" "$PROJECT_DIR/.claude/hooks/"
 cp "$WORKFLOW_DIR/hooks/secret-scan.sh" "$PROJECT_DIR/.claude/hooks/"
 cp "$WORKFLOW_DIR/hooks/context-inject.sh" "$PROJECT_DIR/.claude/hooks/"
+cp "$WORKFLOW_DIR/hooks/claude-protect.sh" "$PROJECT_DIR/.claude/hooks/"
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
   cp "$WORKFLOW_DIR/hooks/session-start.ps1" "$PROJECT_DIR/.claude/hooks/"
   cp "$WORKFLOW_DIR/hooks/format.ps1" "$PROJECT_DIR/.claude/hooks/"
   cp "$WORKFLOW_DIR/hooks/test-gateway.ps1" "$PROJECT_DIR/.claude/hooks/"
   cp "$WORKFLOW_DIR/hooks/secret-scan.ps1" "$PROJECT_DIR/.claude/hooks/"
   cp "$WORKFLOW_DIR/hooks/context-inject.ps1" "$PROJECT_DIR/.claude/hooks/"
+  cp "$WORKFLOW_DIR/hooks/claude-protect.ps1" "$PROJECT_DIR/.claude/hooks/"
 fi
 chmod +x "$PROJECT_DIR/.claude/hooks/"*.sh
-echo "  ✓ All hooks installed (session-start, format, test-gateway, secret-scan, context-inject)"
+echo "  ✓ All hooks installed (session-start, format, test-gateway, secret-scan, context-inject, claude-protect)"
 
 # 6. Copy checklists
 echo "[6/9] Installing checklists..."
@@ -113,6 +115,15 @@ else
       }
     ],
     "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOOK_BASE/claude-protect.sh\""
+          }
+        ]
+      },
       {
         "matcher": "Bash",
         "hooks": [
@@ -202,6 +213,7 @@ echo "  2. Format         — Auto-format with Prettier (PostToolUse: Write|Edit
 echo "  3. Test Gateway   — Run tests before deploy (PreToolUse: Bash)"
 echo "  4. Secret Scan    — Block secrets in output (PostToolUse: Read|Bash)"
 echo "  5. Context Inject — Inject review checklist (UserPromptExpansion: /review)"
+echo "  6. Claude Protect  — Block manual edits to .claude/ (PreToolUse: Write|Edit|MultiEdit)"
 echo ""
 echo "Verification steps:"
 echo "1. Start a new Claude Code session"
