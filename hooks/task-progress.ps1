@@ -1,6 +1,6 @@
 # task-progress: PostToolUse hook on Edit|Write|MultiEdit
-# Injects task progress after code edits, making checkbox state visible to AI
-# Inspired by OpenSpec's CLI feedback loop — AI sees progress and naturally corrects
+# Auto-checks task checkboxes when edited files match task descriptions
+# No AI cooperation needed — directly modifies task.md
 
 $ToolInput = $env:CLAUDE_TOOL_INPUT
 if (-not $ToolInput -and $env:CLAUDE_TOOL_INPUT_FILE_PATH -and (Test-Path $env:CLAUDE_TOOL_INPUT_FILE_PATH)) {
@@ -13,33 +13,55 @@ if ($ToolInput -match '"file_path"\s*:\s*"([^"]+)"') {
     $Target = ($Matches[1] -replace '\\\\', '\') -replace '\\', '/'
 } else { exit 0 }
 
-# Skip when editing task.md (avoid recursive noise)
+# Skip task.md edits (avoid recursive triggers)
 if ($Target -match 'docs/rein/tasks/.*task\.md$') { exit 0 }
 
-# Parse task.md progress
+# Extract short filename for matching
+$EditedFile = [System.IO.Path]::GetFileName($Target)
+
 $TasksDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\tasks"
 if (-not (Test-Path $TasksDir)) { exit 0 }
 
-$Total = 0; $Complete = 0; $UncheckedList = @()
+$MatchedTask = ""
+$MatchedTaskfile = $null
+
 foreach ($taskfile in Get-ChildItem "$TasksDir\*task.md" -File) {
-    foreach ($line in Get-Content $taskfile) {
-        if ($line -match '^\s*- \[[xX]\]') {
-            $Total++; $Complete++
-        } elseif ($line -match '^\s*- \[ \]') {
-            $Total++
-            $desc = ($line -replace '^\s*- \[ \] ', '')
-            if ($desc.Length -gt 60) { $desc = $desc.Substring(0, 60) }
-            $UncheckedList += $desc
+    $content = Get-Content $taskfile
+
+    foreach ($line in $content) {
+        if ($line -notmatch '^\s*- \[ \]') { continue }
+
+        if ($line -match '^\s*- \[ \] (\d+\.\d+)') {
+            $taskNum = $Matches[1]
+        } else { continue }
+
+        # Extract backtick file references
+        $refs = [regex]::Matches($line, '`([^`]+)`') | ForEach-Object { $_.Groups[1].Value }
+
+        foreach ($ref in $refs) {
+            $refBase = [System.IO.Path]::GetFileName($ref)
+            if ($refBase -eq $EditedFile) {
+                $MatchedTask = $taskNum
+                $MatchedTaskfile = $taskfile
+                break
+            }
         }
+
+        if ($MatchedTask) { break }
     }
+
+    if ($MatchedTask) { break }
 }
 
-# No tasks or all complete → silent
-if ($Total -eq 0 -or ($Total - $Complete) -eq 0) { exit 0 }
+if ($MatchedTask) {
+    # Auto-check
+    $pattern = "- [ ] $MatchedTask"
+    $replacement = "- [x] $MatchedTask"
+    $content = Get-Content $MatchedTaskfile
+    $newContent = $content -replace [regex]::Escape($pattern), $replacement
+    Set-Content $MatchedTaskfile $newContent
 
-$UncheckedStr = $UncheckedList -join ', '
-
-# Inject progress
-$Msg = "Task Progress: ${Complete}/${Total}. Unchecked: ${UncheckedStr}. If you completed a task, update its checkbox in task.md: ``- [ ]`` → ``- [x]``"
-$MsgEscaped = $Msg -replace '\\', '\\' -replace '"', '\"'
-Write-Output "{`"hookSpecificOutput`": {`"additionalContext`": `"$MsgEscaped`"}}"
+    $Msg = "Auto-checked task $MatchedTask (file match: $EditedFile)"
+    $MsgEscaped = $Msg -replace '\\', '\\' -replace '"', '\"'
+    Write-Output "{`"hookSpecificOutput`": {`"additionalContext`": `"$MsgEscaped`"}}"
+}
