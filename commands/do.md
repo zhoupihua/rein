@@ -14,7 +14,7 @@ Execute tasks from tasks.md incrementally. Replaces /opsx:apply.
    - Stop and report the blocker
    - Suggest using `debugging` if it's a bug
    - Ask the user for direction
-5. After all tasks complete, suggest `/review` or `/ship`
+5. After all tasks complete, suggest `/code-review` or `/ship`
 
 ## Task Execution Rules
 

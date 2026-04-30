@@ -40,7 +40,8 @@ For each slice:
 2. **Test** — run the test suite (or write a test if none exists)
 3. **Verify** — confirm the slice works as expected (tests pass, build succeeds, manual check)
 4. **Commit** — save your progress with a descriptive message
-5. **Move to the next slice** — carry forward, don't restart
+5. **Update task status** — mark the completed task in tasks.md: change `- [ ]` to `- [x]`
+6. **Move to the next slice** — carry forward, don't restart
 
 ## Slicing Strategies
 
@@ -149,6 +150,16 @@ Each increment should be independently revertable:
 - Verification fails repeatedly
 
 **Ask for clarification rather than guessing.**
+
+## Task Status Tracking
+
+The tasks.md file is the **single source of truth** for progress. After completing each task increment:
+
+1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
+2. Change the task's checkbox from `- [ ]` to `- [x]`
+3. Also mark any checkpoint items that are satisfied
+
+This is mandatory — not optional. Other commands (`/continue`, `/do`) rely on checkbox state to determine progress and resume points.
 
 ## After All Tasks Complete
 

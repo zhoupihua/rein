@@ -117,6 +117,16 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
 
+## Task Status Tracking
+
+After each task passes both reviews (spec compliance + code quality):
+
+1. Edit `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
+2. Change the task's checkbox from `- [ ]` to `- [x]`
+3. Mark any checkpoint items that are now satisfied
+
+This is mandatory. The tasks.md checkbox state is the **single source of truth** — `/continue` relies on it to determine resume points and current phase.
+
 ## Prompt Templates
 
 - `./implementer-prompt.md` - Dispatch implementer subagent
