@@ -13,7 +13,7 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 
 ## Pre-Execution: Load and Review Plan
 
-1. Read `docs/rein/plans/YYYY-MM-DD-<name>.md` for architecture context and decisions
+1. Read `docs/rein/plans/YYYY-MM-DD-<name>-plan.md` for architecture context and decisions
 2. Read `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` for the ordered task list
 3. Review critically — identify any questions or concerns about the plan
 4. If concerns: Raise them with your human partner before starting

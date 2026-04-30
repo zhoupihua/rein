@@ -152,11 +152,11 @@ OpenSpec CLI 的每个功能都有替代实现：
 └── docs/
     └── rein/
         ├── specs/                 # 设计规格（长期存在）
-        │   └── YYYY-MM-DD-<topic>-design.md
+        │   └── YYYY-MM-DD-<name>-spec.md
         ├── plans/                 # 实现计划（决策层）
-        │   └── YYYY-MM-DD-<feature-name>.md
+        │   └── YYYY-MM-DD-<name>-plan.md
         ├── tasks/                 # 任务清单（执行层，checkbox 格式）
-        │   └── YYYY-MM-DD-<feature-name>-tasks.md
+        │   └── YYYY-MM-DD-<name>-tasks.md
         └── archive/               # 已归档变更
             └── YYYY-MM-DD-<name>/
 ```

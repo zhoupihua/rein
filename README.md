@@ -261,11 +261,11 @@ rein 安装后自动配置 7 个钩子，无需手动干预：
 └── docs/
     └── rein/
         ├── specs/                 # Design specs only (no tasks)
-        │   └── YYYY-MM-DD-<topic>-design.md
+        │   └── YYYY-MM-DD-<name>-spec.md
         ├── plans/                 # Implementation plans (decision layer)
-        │   └── YYYY-MM-DD-<feature-name>.md
+        │   └── YYYY-MM-DD-<name>-plan.md
         ├── tasks/                 # Task checklists (single source of truth)
-        │   └── YYYY-MM-DD-<feature-name>-tasks.md
+        │   └── YYYY-MM-DD-<name>-tasks.md
         └── archive/               # Archived artifacts
             └── YYYY-MM-DD-<name>/
 ```

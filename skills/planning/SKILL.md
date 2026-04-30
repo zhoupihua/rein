@@ -11,7 +11,7 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 **Announce at start:** "I'm using the planning skill to create the implementation plan."
 
-**Save output to:** `docs/rein/plans/YYYY-MM-DD-<feature-name>.md` + `docs/rein/tasks/YYYY-MM-DD-<feature-name>-tasks.md`
+**Save output to:** `docs/rein/plans/YYYY-MM-DD-<name>-plan.md` + `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`
 - `plans/` — Architecture decisions, dependency graph, slicing strategy, risks (decision layer)
 - `tasks/` — Ordered task checklist with acceptance criteria (execution layer, the SINGLE source of truth for task tracking — MUST be generated, do not skip)
 - If no `docs/rein/plans/` or `docs/rein/tasks/` directory exists, create it
@@ -249,7 +249,7 @@ Fix any issues inline. If you find a spec requirement with no task, add the task
 
 After saving both files, offer execution choice:
 
-**"Plan complete and saved to `docs/rein/plans/YYYY-MM-DD-<feature-name>.md` and `docs/rein/tasks/YYYY-MM-DD-<feature-name>-tasks.md`. Two execution options:**
+**"Plan complete and saved to `docs/rein/plans/YYYY-MM-DD-<name>-plan.md` and `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md`. Two execution options:**
 
 **1. Subagent-Driven (recommended)** — Fresh subagent per task, review between tasks, fast iteration
 

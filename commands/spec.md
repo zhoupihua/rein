@@ -12,7 +12,7 @@ Generate design spec artifacts. Replaces /opsx:propose + /opsx:explore.
 
 ### /spec <name>: Direct generation
 1. Generate design spec:
-   - `docs/rein/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements and decisions
+   - `docs/rein/specs/YYYY-MM-DD-<name>-spec.md` — Design spec with requirements and decisions
 
 ### /spec --validate: Validate artifacts
 Check that the current spec is complete (has Context, Goals, Decisions, Risks).
@@ -41,7 +41,7 @@ The spec must NOT contain:
 
 After generation, report:
 ```
-Created spec: docs/rein/specs/YYYY-MM-DD-<name>-design.md
+Created spec: docs/rein/specs/YYYY-MM-DD-<name>-spec.md
 
 Next step: /plan to break this into tasks, then /do to implement
 ```
