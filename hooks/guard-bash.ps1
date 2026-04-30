@@ -1,4 +1,4 @@
-# rein Bash Protection Hook (PreToolUse → Bash)
+# guard-bash Hook (PreToolUse → Bash)
 # Prevents destructive commands targeting rein-managed files
 
 $ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.rein-manifest"

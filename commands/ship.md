@@ -42,5 +42,5 @@ Collect findings from all three agents. Categorize by severity:
 **If GO:**
 1. Invoke `git-workflow` to complete the branch
 2. Invoke `shipping` for release checks (if applicable)
-3. Archive `changes/<name>/` to `archive/YYYY-MM-DD-<name>/`
+3. Archive `docs/rein/` artifacts to `docs/rein/archive/YYYY-MM-DD-<name>/`
 4. Report completion

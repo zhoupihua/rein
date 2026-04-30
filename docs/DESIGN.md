@@ -88,18 +88,23 @@ rein/
 │   ├── fix.md                       # L2 标准变更
 │   ├── feature.md                   # L3 完整变更（8 步铁三角流程）
 │   ├── triage.md                    # 自动分级判定
-│   ├── resume.md                    # 断点恢复
+│   ├── continue.md                  # 断点恢复
 │   ├── spec.md                      # 定义规格（替代 /opsx:propose + /opsx:explore）
 │   ├── plan.md                      # 拆解任务（替代 /opsx:continue + /opsx:ff）
-│   ├── build.md                     # 增量构建
+│   ├── do.md                        # 增量构建
 │   ├── test.md                      # TDD
 │   ├── review.md                    # 5 轴审查
 │   ├── ship.md                      # 并行专家审查 + GO/NO-GO
 │   └── simplify.md                  # 代码简化
 │
 ├── hooks/                           # 会话钩子
-│   ├── session-start.sh             # 注入 using-rein 元技能
-│   └── session-start.ps1            # Windows 版
+│   ├── session-start.sh/ps1         # 注入 using-rein 元技能
+│   ├── guard.sh/ps1                 # 文件保护（阻止修改 rein 管理的文件）
+│   ├── guard-bash.sh/ps1            # Bash 保护（阻止破坏性命令操作 rein 文件）
+│   ├── gate.sh/ps1                  # 测试网关（deploy/push 前自动跑测试）
+│   ├── format.sh/ps1                # 自动 Prettier 格式化
+│   ├── leak-guard.sh/ps1            # 密钥泄露拦截
+│   └── inject.sh/ps1                # 注入审查清单
 │
 ├── references/                      # 参考清单（来自 AS）
 │   ├── testing-patterns.md
@@ -126,41 +131,37 @@ OpenSpec CLI 的每个功能都有替代实现：
 
 | OpenSpec CLI | 原功能 | 替代方案 |
 |-------------|--------|---------|
-| `openspec init` | 创建 `openspec/changes/`、`openspec/specs/` 目录 | install 脚本创建目录 |
+| `openspec init` | 创建制品目录 | install 脚本创建 `docs/rein/` 目录 |
 | `openspec update` | 生成 `.claude/skills/` 等指令文件 | 不需要——我们自己写 skills，不存在自动生成 |
 | `openspec validate` | 验证制品完整性 | `spec` 命令内置验证步骤（AI 检查制品是否齐全）|
-| `openspec list` | 列出变更 | `resume` 命令扫描 `changes/` 目录 |
-| `openspec status` | 查看制品进度 | `resume` 命令读取 `tasks.md` checkbox 状态 |
-| `openspec archive` | 归档到 archive/ | `ship` 命令结尾执行归档（mv 到 archive/） |
+| `openspec list` | 列出变更 | `continue` 命令扫描 `docs/rein/tasks/` 目录 |
+| `openspec status` | 查看制品进度 | `continue` 命令读取 `tasks.md` checkbox 状态 |
+| `openspec archive` | 归档 | `ship` 命令结尾执行归档（mv 到 `docs/rein/archive/`） |
 | `/opsx:propose` | 提出变更 + 生成制品 | `spec` 命令（读取 templates/ 模板生成制品）|
 | `/opsx:explore` | 探索性对话 | `spec` 命令（内置 explore 模式）|
-| `/opsx:apply` | 按 tasks.md 实现 | `build` 命令 |
+| `/opsx:apply` | 按 tasks.md 实现 | `do` 命令 |
 | `/opsx:verify` | 验证实现 | `review` 命令内置验证 |
 | `/opsx:archive` | 归档变更 | `ship` 命令结尾 |
 | `/opsx:continue` | 创建下一个制品 | `spec` 命令（可逐步或一次性生成）|
 | `/opsx:ff` | 快进生成所有制品 | `spec` 命令的 `--full` 模式 |
 
-### 制品目录结构（保留 OpenSpec 的核心设计）
+### 制品目录结构
 
 ```
 <project-root>/
-├── specs/                    # 已发布的规格（长期存在）
-│   └── <feature>/
-│       └── spec.md
-├── changes/                  # 活跃变更（短期存在）
-│   └── <change-name>/
-│       ├── .change.yaml      # 变更元数据
-│       ├── proposal.md       # 为什么做、要改什么
-│       ├── specs/
-│       │   └── <feature>/spec.md  # delta specs（ADDED/MODIFIED/REMOVED）
-│       ├── design.md         # 工程决策 + Open Questions
-│       └── tasks.md          # 任务清单（checkbox 格式）
-└── archive/                  # 已归档变更
-    └── YYYY-MM-DD-<name>/
-        └── (完整制品副本)
+└── docs/
+    └── rein/
+        ├── specs/                 # 设计规格（长期存在）
+        │   └── YYYY-MM-DD-<topic>-design.md
+        ├── plans/                 # 实现计划（决策层）
+        │   └── YYYY-MM-DD-<feature-name>.md
+        ├── tasks/                 # 任务清单（执行层，checkbox 格式）
+        │   └── YYYY-MM-DD-<feature-name>-tasks.md
+        └── archive/               # 已归档变更
+            └── YYYY-MM-DD-<name>/
 ```
 
-> 相比 OpenSpec 的 `openspec/changes/`，简化为 `changes/`（少一层嵌套）。
+> 工件按日期前缀 + 主题命名，同一特性的 spec/plan/tasks 共享相同前缀，便于关联。
 
 ### 制品模板（templates/）
 
@@ -251,7 +252,7 @@ Bug: debugging → tdd → verify → 提交
 ```
 1. refine → 发散/收敛，输出 one-pager
 2. spec-driven → 生成 PRD
-3. spec → 生成 changes/<name>/ 全套制品（proposal/specs/design/tasks）
+3. spec → 生成 `docs/rein/specs/` + `docs/rein/plans/` + `docs/rein/tasks/` 全套制品
 4. git-worktrees → 分支隔离 + baseline
 5. planning → 细化任务
 6. incremental + tdd → 实现
@@ -266,7 +267,7 @@ Bug: debugging → tdd → verify → 提交
    → git-workflow → 提交
    → shipping → 发布检查
    → docs-and-adrs → 文档
-   → 归档 changes/ 到 archive/
+   → 归档 `docs/rein/` 制品到 `docs/rein/archive/`
 ```
 
 **`/triage`** — 自动分级判定
@@ -314,7 +315,7 @@ powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 
 ### install 脚本做的事
 
-1. 创建制品目录：`specs/`、`changes/`、`archive/`
+1. 创建制品目录：`docs/rein/specs/`、`docs/rein/plans/`、`docs/rein/tasks/`、`docs/rein/archive/`
 2. 创建 `.claude/commands/` 目录，将 `commands/*.md` 复制进去
 3. 创建 `.claude/skills/` 目录，将 `skills/` 复制进去
 4. 创建 `.claude/agents/` 目录，将 `agents/*.md` 复制进去
@@ -341,7 +342,7 @@ install 脚本检测平台，如果是 Codex CLI：
 1. 运行 install 脚本，确认目录和文件全部创建
 2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-rein 元技能
 3. 测试 `/triage`：输入一个变更描述，确认正确分级
-4. 测试 `/spec test-feature`：确认生成 `changes/test-feature/` 全套制品
+4. 测试 `/spec test-feature`：确认生成 `docs/rein/specs/` + `docs/rein/plans/` + `docs/rein/tasks/` 中的制品
 5. 测试 `/do`：确认读取 tasks.md 并执行
 6. 测试 `/ship`：确认 fan-out 3 专家代理
 7. 测试 `/continue`：中断后确认能恢复

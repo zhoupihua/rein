@@ -1,4 +1,4 @@
-# rein Protection Hook (PreToolUse → Edit|Write|MultiEdit)
+# guard Hook (PreToolUse → Edit|Write|MultiEdit)
 # Prevents modification of rein-managed files
 
 $ManifestPath = Join-Path $env:CLAUDE_PROJECT_DIR ".claude\.rein-manifest"

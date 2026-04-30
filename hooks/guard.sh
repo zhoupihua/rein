@@ -1,5 +1,5 @@
 #!/bin/bash
-# rein Protection Hook (PreToolUse → Edit|Write|MultiEdit)
+# guard Hook (PreToolUse → Edit|Write|MultiEdit)
 # Prevents modification of rein-managed files
 
 MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
