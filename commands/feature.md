@@ -8,11 +8,9 @@ Invoke `refine` skill. Diverge and converge on the idea. Output a markdown one-p
 ### Step 2: Spec-Driven Development
 Invoke `spec-driven` skill. Write a PRD covering Objective, Commands, Project Structure, Code Style, Testing Strategy, and Boundaries. Save to `docs/rein/specs/YYYY-MM-DD-<topic>-design.md` and commit.
 
-### Step 3: Generate Artifacts
-Use `/spec <name>` to generate the full artifact set:
-- `docs/rein/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements
-- `docs/rein/plans/YYYY-MM-DD-<name>.md` — Implementation plan (decision layer)
-- `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` — Task checklist (execution layer)
+### Step 3: Generate Design Spec
+Use `/spec <name>` to generate the design spec:
+- `docs/rein/specs/YYYY-MM-DD-<name>-design.md` — Design spec with requirements and decisions
 
 ### Step 4: Branch Isolation
 Invoke `git-worktrees` skill. Create an isolated worktree with a new branch. Verify clean test baseline.

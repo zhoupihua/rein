@@ -203,7 +203,7 @@ This project uses rein for structured AI-assisted development.
 - ``/quick`` - L1: <=5 lines, no logic impact
 - ``/fix`` - L2: 1-3 files, clear requirements
 - ``/feature`` - L3: Full 8-step workflow
-- ``/spec`` - Generate change artifacts
+- ``/spec`` - Generate design spec
 - ``/plan`` - Task breakdown
 - ``/do`` - Execute tasks from tasks.md
 - ``/test`` - TDD workflow
@@ -213,7 +213,7 @@ This project uses rein for structured AI-assisted development.
 - ``/continue`` - Resume from breakpoint
 
 ### Artifact Directories
-- ``docs/rein/specs/`` - Design specs (long-lived)
+- ``docs/rein/specs/`` - Design specs only (no tasks)
 - ``docs/rein/plans/`` - Implementation plans (decision layer)
 - ``docs/rein/tasks/`` - Task checklists (execution layer)
 - ``docs/rein/archive/`` - Archived artifacts

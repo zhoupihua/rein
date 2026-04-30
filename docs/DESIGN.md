@@ -137,7 +137,7 @@ OpenSpec CLI 的每个功能都有替代实现：
 | `openspec list` | 列出变更 | `continue` 命令扫描 `docs/rein/tasks/` 目录 |
 | `openspec status` | 查看制品进度 | `continue` 命令读取 `tasks.md` checkbox 状态 |
 | `openspec archive` | 归档 | `ship` 命令结尾执行归档（mv 到 `docs/rein/archive/`） |
-| `/opsx:propose` | 提出变更 + 生成制品 | `spec` 命令（读取 templates/ 模板生成制品）|
+| `/opsx:propose` | 提出变更 + 生成制品 | `spec` 命令（生成设计规格，不含任务）|
 | `/opsx:explore` | 探索性对话 | `spec` 命令（内置 explore 模式）|
 | `/opsx:apply` | 按 tasks.md 实现 | `do` 命令 |
 | `/opsx:verify` | 验证实现 | `review` 命令内置验证 |
@@ -252,7 +252,7 @@ Bug: debugging → tdd → verify → 提交
 ```
 1. refine → 发散/收敛，输出 one-pager
 2. spec-driven → 生成 PRD
-3. spec → 生成 `docs/rein/specs/` + `docs/rein/plans/` + `docs/rein/tasks/` 全套制品
+3. spec → 生成 `docs/rein/specs/` 设计文档（不含任务）
 4. git-worktrees → 分支隔离 + baseline
 5. planning → 细化任务
 6. incremental + tdd → 实现
@@ -278,7 +278,7 @@ Bug: debugging → tdd → verify → 提交
 
 **`/spec`** — 替代 `/opsx:propose` + `/opsx:explore` + `/opsx:continue` + `/opsx:ff`
 - 无参数：交互式选择模式（explore → propose → 逐步生成）
-- `/spec <name>`：直接生成全套制品
+- `/spec <name>`：直接生成设计规格
 - `/spec --step`：逐个生成制品（替代 /opsx:continue）
 - `/spec --validate`：验证当前变更的制品完整性（替代 `openspec validate`）
 
@@ -342,7 +342,7 @@ install 脚本检测平台，如果是 Codex CLI：
 1. 运行 install 脚本，确认目录和文件全部创建
 2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-rein 元技能
 3. 测试 `/triage`：输入一个变更描述，确认正确分级
-4. 测试 `/spec test-feature`：确认生成 `docs/rein/specs/` + `docs/rein/plans/` + `docs/rein/tasks/` 中的制品
+4. 测试 `/spec test-feature`：确认生成 `docs/rein/specs/` 设计文档
 5. 测试 `/do`：确认读取 tasks.md 并执行
 6. 测试 `/ship`：确认 fan-out 3 专家代理
 7. 测试 `/continue`：中断后确认能恢复
