@@ -24,7 +24,7 @@ Resume work from a breakpoint.
 ## Output
 
 ```
-Found active work: docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md
+Found active work: docs/rein/tasks/YYYY-MM-DD-<name>-task.md
 Phase: <DEFINE|PLAN|BUILD|REVIEW|SHIP>
 Next step: <description>
 Resuming with <skill-name>...

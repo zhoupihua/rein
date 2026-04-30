@@ -7,7 +7,7 @@ Break down work into ordered tasks with dependency graphs.
 3. Operate in read-only mode — no code writing during planning
 4. **MUST output TWO files** (both are required, do not skip tasks):
    - `docs/rein/plans/YYYY-MM-DD-<name>-plan.md` — Architecture decisions, dependency graph, vertical slicing, **task details** (acceptance criteria, verification, files, dependencies, scope, notes)
-   - `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` — Simple checkbox list for status tracking only (no nested metadata)
+   - `docs/rein/tasks/YYYY-MM-DD-<name>-task.md` — Simple checkbox list for status tracking only (no nested metadata)
 5. Offer execution choice: subagent-driven (recommended) or inline
 
 ## Two-File Responsibility Split
@@ -41,7 +41,7 @@ Break down work into ordered tasks with dependency graphs.
 
 After generation, verify both files exist and are non-empty:
 1. `docs/rein/plans/YYYY-MM-DD-<name>-plan.md` has architecture decisions, dependency graph, AND Task Details sections
-2. `docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md` has simple checkbox tasks (no nested metadata)
+2. `docs/rein/tasks/YYYY-MM-DD-<name>-task.md` has simple checkbox tasks (no nested metadata)
 3. Task numbers match between the two files
 
 If either file is missing, generate it before reporting completion.
@@ -51,7 +51,7 @@ If either file is missing, generate it before reporting completion.
 After generation, report:
 ```
 Created plan: docs/rein/plans/YYYY-MM-DD-<name>-plan.md
-Created tasks: docs/rein/tasks/YYYY-MM-DD-<name>-tasks.md (N tasks, M phases)
+Created tasks: docs/rein/tasks/YYYY-MM-DD-<name>-task.md (N tasks, M phases)
 
 Next step: /do to start implementing, or /continue to continue later
 ```
