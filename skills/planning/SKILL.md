@@ -241,7 +241,7 @@ After writing both documents:
 1. **Spec coverage:** Can you point to a task in plan.md's Task Details that implements each spec requirement? List any gaps.
 2. **Placeholder scan:** Search for red flags from the "No Placeholders" section. Fix them.
 3. **Type consistency:** Do types, method signatures, and property names match across tasks in plan.md?
-4. **Alignment check:** Does every task in tasks.md have a corresponding Task Details section in plan.md? Does every parallelization note in plan.md match the dependency declarations?
+4. **Alignment check:** Extract task numbers from both files. Every checkbox in tasks.md (e.g., `- [ ] 1.1 ...`) must have a matching `### 1.1` section in plan.md, and vice versa. If numbers differ, fix before proceeding.
 
 Fix any issues inline. If you find a spec requirement with no task, add the task.
 
