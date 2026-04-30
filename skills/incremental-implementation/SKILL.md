@@ -13,10 +13,11 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 
 ## Pre-Execution: Load and Review Plan
 
-1. Read plan file
-2. Review critically — identify any questions or concerns about the plan
-3. If concerns: Raise them with your human partner before starting
-4. If no concerns: Create task list and proceed
+1. Read `changes/<name>/plan.md` for architecture context and decisions
+2. Read `changes/<name>/tasks.md` for the ordered task list
+3. Review critically — identify any questions or concerns about the plan
+4. If concerns: Raise them with your human partner before starting
+5. If no concerns: Proceed with the first unchecked task
 
 ## The Increment Cycle
 

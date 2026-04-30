@@ -1,17 +1,34 @@
-Break work into ordered tasks with dependency graphs.
+Break down work into ordered tasks with dependency graphs.
 
 ## Instructions
 
 1. Invoke `planning-and-task-breakdown` skill
-2. Read the spec or requirements document
+2. Read the spec or requirements document from the active change in `changes/<name>/`
 3. Operate in read-only mode — no code writing during planning
-4. Output a plan document with:
-   - Dependency graph (ASCII tree)
-   - Vertical slicing strategy
-   - Task breakdown with acceptance criteria
-   - Task sizing (XS/S/M/L)
-   - Parallelization classification (safe/sequential/needs-coordination)
-   - Checkpoints between phases
-   - Risks and mitigations table
-5. Save plan to `docs/plans/YYYY-MM-DD-<name>.md`
-6. Offer execution choice: subagent-driven (recommended) or inline
+4. Output two files:
+   - `changes/<name>/plan.md` — Architecture decisions, dependency graph, vertical slicing strategy, file map, parallelization, risks (decision layer)
+   - `changes/<name>/tasks.md` — Ordered task checklist with acceptance criteria, verification commands, dependencies, file paths, scope (execution layer, overwrites /spec's coarse tasks)
+5. Offer execution choice: subagent-driven (recommended) or inline
+
+## Task Format in tasks.md
+
+Each task uses checkbox format with inline metadata:
+
+```
+- [ ] 1.1 [Short descriptive title]
+  - Acceptance: [Specific, testable condition]
+  - Verification: [test command]
+  - Dependencies: [Task numbers or "None"]
+  - Files: `path/to/file.ts`
+  - Scope: [XS | S | M | L]
+```
+
+## Output
+
+After generation, report:
+```
+Created plan: changes/<name>/plan.md
+Created tasks: changes/<name>/tasks.md (N tasks, M phases)
+
+Next step: /build to start implementing, or /resume to continue later
+```

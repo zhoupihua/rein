@@ -11,8 +11,10 @@ Write comprehensive implementation plans assuming the engineer has zero context 
 
 **Announce at start:** "I'm using the planning-and-task-breakdown skill to create the implementation plan."
 
-**Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
-- (User preferences for plan location override this default)
+**Save output to:** `changes/<name>/plan.md` + `changes/<name>/tasks.md`
+- `plan.md` — Architecture decisions, dependency graph, slicing strategy, risks (decision layer)
+- `tasks.md` — Ordered task checklist with acceptance criteria (execution layer, overwrites /spec's coarse tasks)
+- If no `changes/<name>/` directory exists, create it first
 
 ## Scope Check
 
@@ -29,7 +31,7 @@ Before writing any code, operate in read-only mode:
 - Map dependencies between components
 - Note risks and unknowns
 
-**Do NOT write code during planning.** The output is a plan document, not implementation.
+**Do NOT write code during planning.** The output is two documents, not implementation.
 
 ### Step 2: Identify the Dependency Graph
 
@@ -93,30 +95,6 @@ Before defining tasks, map out which files will be created or modified and what 
 - "Run the tests and make sure they pass" - step
 - "Commit" - step
 
-Each task follows this structure:
-
-```markdown
-## Task [N]: [Short descriptive title]
-
-**Description:** One paragraph explaining what this task accomplishes.
-
-**Acceptance criteria:**
-- [ ] [Specific, testable condition]
-- [ ] [Specific, testable condition]
-
-**Verification:**
-- [ ] Tests pass: `npm test -- --grep "feature-name"`
-- [ ] Build succeeds: `npm run build`
-
-**Dependencies:** [Task numbers this depends on, or "None"]
-
-**Files likely touched:**
-- `src/path/to/file.ts`
-- `tests/path/to/test.ts`
-
-**Estimated scope:** [XS | S | M | L]
-```
-
 ### Step 6: Order and Checkpoint
 
 Arrange tasks so that:
@@ -125,12 +103,14 @@ Arrange tasks so that:
 3. Verification checkpoints occur after every 2-3 tasks
 4. High-risk tasks are early (fail fast)
 
-## Plan Document Template
+## Output: Two Files
+
+### plan.md Template (Decision Layer)
 
 ```markdown
-# [Feature Name] Implementation Plan
+# [Feature Name] Plan
 
-> **For agentic workers:** Use subagent-driven-development (recommended) or incremental-implementation to execute this plan task-by-task.
+> **For agentic workers:** Read this file for architecture context, then read tasks.md for execution.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -144,27 +124,27 @@ Arrange tasks so that:
 - [Key decision 1 and rationale]
 - [Key decision 2 and rationale]
 
-## Task List
+## Dependency Graph
 
-### Phase 1: Foundation
-- [ ] Task 1: ...
-- [ ] Task 2: ...
+[ASCII tree showing component dependencies]
 
-### Checkpoint: Foundation
-- [ ] Tests pass, builds clean
+## Vertical Slicing Strategy
 
-### Phase 2: Core Features
-- [ ] Task 3: ...
-- [ ] Task 4: ...
+[How work is sliced into independent, testable increments]
 
-### Checkpoint: Core Features
-- [ ] End-to-end flow works
+## File Map
 
-### Phase 3: Polish
-- [ ] Task 5: ...
+| File | Purpose | New/Modified |
+|------|---------|-------------|
+| `src/path/to/file.ts` | [Purpose] | New/Modified |
 
-### Checkpoint: Complete
-- [ ] All acceptance criteria met
+## Parallelization
+
+| Category | Tasks | Strategy |
+|----------|-------|----------|
+| Safe to parallelize | [Task numbers] | Dispatch concurrently |
+| Must be sequential | [Task numbers] | Execute in order |
+| Needs coordination | [Task numbers] | Define contract first |
 
 ## Risks and Mitigations
 | Risk | Impact | Mitigation |
@@ -173,6 +153,53 @@ Arrange tasks so that:
 
 ## Open Questions
 - [Question needing human input]
+```
+
+### tasks.md Template (Execution Layer)
+
+```markdown
+## 1. Foundation
+
+- [ ] 1.1 [Short descriptive title]
+  - Acceptance: [Specific, testable condition]
+  - Verification: `npm test -- --grep "feature-name"`
+  - Dependencies: None
+  - Files: `src/path/to/file.ts`
+  - Scope: [XS | S | M | L]
+
+- [ ] 1.2 [Short descriptive title]
+  - Acceptance: [Specific, testable condition]
+  - Verification: `npm run build`
+  - Dependencies: 1.1
+  - Files: `src/path/to/file.ts`, `tests/path/to/test.ts`
+  - Scope: S
+
+### Checkpoint: Foundation
+- [ ] Tests pass, builds clean
+
+## 2. Core Features
+
+- [ ] 2.1 [Short descriptive title]
+  - Acceptance: [Specific, testable condition]
+  - Verification: `npm test`
+  - Dependencies: 1.2
+  - Files: `src/path/to/file.ts`
+  - Scope: M
+
+### Checkpoint: Core Features
+- [ ] End-to-end flow works
+
+## 3. Polish
+
+- [ ] 3.1 [Short descriptive title]
+  - Acceptance: [Specific, testable condition]
+  - Verification: `npm test && npm run build`
+  - Dependencies: 2.1
+  - Files: `src/path/to/file.ts`
+  - Scope: XS
+
+### Checkpoint: Complete
+- [ ] All acceptance criteria met
 ```
 
 ## Task Sizing Guidelines
@@ -193,14 +220,6 @@ If a task is L or larger, it should be broken into smaller tasks. An agent perfo
 - It touches two or more independent subsystems
 - You find yourself writing "and" in the task title
 
-## Parallelization Opportunities
-
-| Category | Examples | Strategy |
-|----------|----------|----------|
-| **Safe to parallelize** | Independent feature slices, tests for implemented features, docs | Dispatch concurrently |
-| **Must be sequential** | Database migrations, shared state changes, dependency chains | Execute in order |
-| **Needs coordination** | Features sharing an API contract | Define contract first, then parallelize |
-
 ## No Placeholders
 
 Every step must contain the actual content an engineer needs. These are **plan failures**:
@@ -212,19 +231,20 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 ## Self-Review
 
-After writing the complete plan:
+After writing both documents:
 
 1. **Spec coverage:** Can you point to a task that implements each spec requirement? List any gaps.
 2. **Placeholder scan:** Search for red flags from the "No Placeholders" section. Fix them.
 3. **Type consistency:** Do types, method signatures, and property names match across tasks?
+4. **Alignment check:** Does every task in tasks.md reference files listed in plan.md's file map? Does every parallelization note in plan.md match the dependency declarations in tasks.md?
 
 Fix any issues inline. If you find a spec requirement with no task, add the task.
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving both files, offer execution choice:
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+**"Plan complete and saved to `changes/<name>/plan.md` and `changes/<name>/tasks.md`. Two execution options:**
 
 **1. Subagent-Driven (recommended)** — Fresh subagent per task, review between tasks, fast iteration
 
@@ -250,14 +270,18 @@ After saving the plan, offer execution choice:
 - No checkpoints between tasks
 - Dependency order isn't considered
 - Placeholders or vague steps in the plan
+- plan.md contains task lists (should be in tasks.md)
+- tasks.md contains architecture decisions (should be in plan.md)
 
 ## Verification
 
 Before starting implementation, confirm:
 
+- [ ] plan.md contains only decision-layer content (architecture, dependencies, risks)
+- [ ] tasks.md contains only execution-layer content (ordered tasks with checkboxes)
 - [ ] Every task has acceptance criteria
 - [ ] Every task has a verification step
 - [ ] Task dependencies are identified and ordered correctly
 - [ ] No task touches more than ~5 files
 - [ ] Checkpoints exist between major phases
-- [ ] The human has reviewed and approved the plan
+- [ ] The human has reviewed and approved both documents
