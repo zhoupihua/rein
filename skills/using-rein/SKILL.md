@@ -7,6 +7,10 @@ description: Use when starting any conversation - discovers and invokes skills, 
 If you were dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
+<LANGUAGE>
+始终使用中文与用户沟通。所有面向用户的文字输出（解释、建议、状态更新、提问）必须使用中文，不要中英文混用。代码、注释、commit message、技术术语除外。
+</LANGUAGE>
+
 <EXTREMELY-IMPORTANT>
 If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
 
