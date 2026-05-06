@@ -213,18 +213,28 @@ Before adding any dependency:
 
 ### Architecture
 - [ ] Follows existing patterns
-- [ ] No unnecessary coupling
+- [ ] No unnecessary coupling or dependencies
 - [ ] Appropriate abstraction level
+- [ ] No circular dependencies
 
 ### Security
 - [ ] No secrets in code
 - [ ] Input validated at boundaries
 - [ ] No injection vulnerabilities
+- [ ] Auth checks in place
+- [ ] External data treated as untrusted
 
 ### Performance
 - [ ] No N+1 patterns
 - [ ] No unbounded operations
 - [ ] Pagination on list endpoints
+- [ ] No large objects in hot paths
+- [ ] Sync operations that should be async
+
+### Verification
+- [ ] Tests pass
+- [ ] Build succeeds
+- [ ] Manual verification done (if applicable)
 
 ### Verdict
 - [ ] **Approve** — Ready to merge
