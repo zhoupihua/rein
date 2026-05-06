@@ -290,15 +290,14 @@ else
         echo "ℹ Existing rein installation detected — upgrading" >&2
     fi
 
-    # [1/6] Check global binary
+    # [1/6] Ensure rein CLI exists globally
     echo "[1/6] Checking rein CLI..."
-    GLOBAL_BIN="$CONFIG_DIR/bin/rein"
-    if [ ! -f "$GLOBAL_BIN" ] && [ ! -f "$GLOBAL_BIN.exe" ]; then
-        echo "  ⚠ rein CLI not found globally" >&2
-        echo "  ℹ Run 'bash $0 --global' first to install the binary" >&2
-        echo "  ℹ Continuing with resource installation..." >&2
+    GLOBAL_BIN_DIR="$CONFIG_DIR/bin"
+    if [ ! -f "$GLOBAL_BIN_DIR/rein" ] && [ ! -f "$GLOBAL_BIN_DIR/rein.exe" ]; then
+        echo "  ℹ rein CLI not found, installing to $GLOBAL_BIN_DIR/"
+        install_binary "$GLOBAL_BIN_DIR"
     else
-        echo "  ✓ rein CLI found at $CONFIG_DIR/bin/"
+        echo "  ✓ rein CLI found at $GLOBAL_BIN_DIR/"
     fi
 
     # [2/6] Copy resources
@@ -330,10 +329,10 @@ else
 
     # [6/6] Verification
     echo "[6/6] Verifying installation..."
-    if [ -f "$GLOBAL_BIN" ] || [ -f "$GLOBAL_BIN.exe" ]; then
-        echo "  ✓ rein CLI available globally"
+    if [ -f "$GLOBAL_BIN_DIR/rein" ] || [ -f "$GLOBAL_BIN_DIR/rein.exe" ]; then
+        echo "  ✓ rein CLI available at $GLOBAL_BIN_DIR/"
     else
-        echo "  ⚠ rein CLI not found — run install.sh --global to install it"
+        echo "  ⚠ rein CLI not found — installation may have failed"
     fi
 
     echo ""
