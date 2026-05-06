@@ -13,12 +13,13 @@ var validateCmd = &cobra.Command{
 	Short: "Validate artifact completeness for a feature",
 	Long: `Validate that all required artifacts exist for each workflow phase.
 
-Phases and their required artifacts:
-  DEFINE: refine.md, spec.md, design.md
+Required artifacts:
+  DEFINE: spec.md (refine.md and design.md are optional)
   PLAN:   plan.md, task.md
   REVIEW: review.md
 
 A phase is COMPLETE only when ALL its required artifacts exist.
+Optional artifacts are shown when present but do not affect completeness.
 A feature is READY for its current phase only when all prior phases are complete.`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runValidate,
@@ -86,6 +87,11 @@ func runValidate(cmd *cobra.Command, args []string) error {
 						fmt.Printf("%s ✓", a.File)
 					} else {
 						fmt.Printf("%s ✗", a.File)
+					}
+				}
+				for _, a := range pr.Optional {
+					if a.Exists {
+						fmt.Printf(", %s ✓ (optional)", a.File)
 					}
 				}
 				fmt.Println()

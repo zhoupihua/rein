@@ -16,9 +16,14 @@ const (
 
 // PhaseArtifact defines which artifacts each phase must produce.
 var PhaseArtifact = map[string][]string{
-	"DEFINE": {"refine.md", "spec.md", "design.md"},
+	"DEFINE": {"spec.md"},
 	"PLAN":   {"plan.md", "task.md"},
 	"REVIEW": {"review.md"},
+}
+
+// OptionalArtifact lists artifacts that are checked when present but not required.
+var OptionalArtifact = map[string][]string{
+	"DEFINE": {"refine.md", "design.md"},
 }
 
 // PhaseOrder is the canonical order of phases.
@@ -82,10 +87,11 @@ type ArtifactStatus struct {
 
 // PhaseResult reports completeness of a single phase.
 type PhaseResult struct {
-	Phase    string          `json:"phase"`
-	Complete bool            `json:"complete"`
-	Artifacts []ArtifactStatus `json:"artifacts"`
-	Missing  []string        `json:"missing,omitempty"`
+	Phase       string            `json:"phase"`
+	Complete    bool              `json:"complete"`
+	Artifacts   []ArtifactStatus  `json:"artifacts"`
+	Optional    []ArtifactStatus  `json:"optional,omitempty"`
+	Missing     []string          `json:"missing,omitempty"`
 }
 
 // ValidateResult reports completeness of all phases for a feature.
@@ -140,6 +146,17 @@ func Validate(p *Project, name string) ValidateResult {
 				pr.Missing = append(pr.Missing, f)
 			}
 		}
+		// Add optional artifacts for visibility without affecting completeness
+		if optional, ok := OptionalArtifact[phase]; ok {
+			for _, f := range optional {
+				exists := lookupExists(f)
+				pr.Optional = append(pr.Optional, ArtifactStatus{
+					File:   f,
+					Exists: exists,
+					Dir:    filepath.Join(ChangesDir, name),
+				})
+			}
+		}
 		pr.Complete = len(pr.Missing) == 0
 		result.Phases = append(result.Phases, pr)
 	}
@@ -151,13 +168,10 @@ func Validate(p *Project, name string) ValidateResult {
 }
 
 // DeterminePhase returns the first incomplete phase based on missing artifacts.
+// Optional artifacts (refine.md, design.md) do not block phase progression.
 func DeterminePhase(fa FeatureArtifacts) string {
 	switch {
-	case !fa.Refine:
-		return "DEFINE"
 	case !fa.Spec:
-		return "DEFINE"
-	case !fa.Design:
 		return "DEFINE"
 	case !fa.Plan:
 		return "PLAN"
