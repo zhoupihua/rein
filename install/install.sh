@@ -53,25 +53,29 @@ install_binary() {
 copy_resources() {
     local target_dir="$1"
 
-    # Skills
+    # Skills — clean first to remove deleted skills on upgrade
+    rm -rf "$target_dir/skills"
     mkdir -p "$target_dir/skills"
     cp -r "$WORKFLOW_DIR/skills/"* "$target_dir/skills/"
     local skill_count=$(ls -d "$target_dir/skills/"*/ 2>/dev/null | wc -l)
     echo "  ✓ $skill_count skills installed"
 
-    # Commands
+    # Commands — clean first
+    rm -rf "$target_dir/commands"
     mkdir -p "$target_dir/commands"
     cp "$WORKFLOW_DIR/commands/"*.md "$target_dir/commands/"
     local cmd_count=$(ls "$target_dir/commands/"*.md 2>/dev/null | wc -l)
     echo "  ✓ $cmd_count commands installed"
 
-    # Agents
+    # Agents — clean first
+    rm -rf "$target_dir/agents"
     mkdir -p "$target_dir/agents"
     cp "$WORKFLOW_DIR/agents/"*.md "$target_dir/agents/"
     local agent_count=$(ls "$target_dir/agents/"*.md 2>/dev/null | wc -l)
     echo "  ✓ $agent_count agents installed"
 
-    # Checklists
+    # Checklists — clean first
+    rm -rf "$target_dir/checklists"
     mkdir -p "$target_dir/checklists"
     if [ -f "$WORKFLOW_DIR/templates/checklists/review.md" ]; then
         cp "$WORKFLOW_DIR/templates/checklists/review.md" "$target_dir/checklists/"

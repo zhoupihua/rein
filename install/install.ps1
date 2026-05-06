@@ -142,25 +142,29 @@ function Generate-Manifest([string]$BaseDir) {
 
 # --- Shared helper: copy resources ---
 function Copy-Resources([string]$TargetDir) {
-    # Skills
+    # Skills — clean first to remove deleted skills on upgrade
+    if (Test-Path "$TargetDir\skills") { Remove-Item "$TargetDir\skills" -Recurse -Force }
     New-Item -ItemType Directory -Path "$TargetDir\skills" -Force | Out-Null
     Copy-Item -Path "$WorkflowDir\skills\*" -Destination "$TargetDir\skills\" -Recurse -Force
     $SkillCount = (Get-ChildItem "$TargetDir\skills" -Directory).Count
     Write-Host "  OK $SkillCount skills installed"
 
-    # Commands
+    # Commands — clean first
+    if (Test-Path "$TargetDir\commands") { Remove-Item "$TargetDir\commands" -Recurse -Force }
     New-Item -ItemType Directory -Path "$TargetDir\commands" -Force | Out-Null
     Copy-Item "$WorkflowDir\commands\*.md" "$TargetDir\commands\"
     $CmdCount = (Get-ChildItem "$TargetDir\commands\*.md").Count
     Write-Host "  OK $CmdCount commands installed"
 
-    # Agents
+    # Agents — clean first
+    if (Test-Path "$TargetDir\agents") { Remove-Item "$TargetDir\agents" -Recurse -Force }
     New-Item -ItemType Directory -Path "$TargetDir\agents" -Force | Out-Null
     Copy-Item "$WorkflowDir\agents\*.md" "$TargetDir\agents\"
     $AgentCount = (Get-ChildItem "$TargetDir\agents\*.md").Count
     Write-Host "  OK $AgentCount agents installed"
 
-    # Checklists
+    # Checklists — clean first
+    if (Test-Path "$TargetDir\checklists") { Remove-Item "$TargetDir\checklists" -Recurse -Force }
     New-Item -ItemType Directory -Path "$TargetDir\checklists" -Force | Out-Null
     if (Test-Path "$WorkflowDir\templates\checklists\review.md") {
         Copy-Item "$WorkflowDir\templates\checklists\review.md" "$TargetDir\checklists\" -Force
