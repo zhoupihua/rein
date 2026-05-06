@@ -255,15 +255,10 @@ if ($Global) {
         Write-Host "INFO Existing rein installation detected — upgrading" -ForegroundColor Yellow
     }
 
-    # [1/6] Ensure rein CLI exists globally
-    Write-Host "[1/6] Checking rein CLI..." -ForegroundColor Yellow
+    # [1/6] Install/upgrade rein CLI globally
+    Write-Host "[1/6] Installing rein CLI..." -ForegroundColor Yellow
     $GlobalBinDir = "$ConfigDir\bin"
-    if (-not (Test-Path "$GlobalBinDir\rein.exe")) {
-        Write-Host "  INFO rein CLI not found, installing to $GlobalBinDir\" -ForegroundColor Gray
-        Install-Binary $GlobalBinDir
-    } else {
-        Write-Host "  OK rein CLI found at $GlobalBinDir\" -ForegroundColor Green
-    }
+    Install-Binary $GlobalBinDir
 
     # [2/6] Copy resources
     Write-Host "[2/6] Installing resources..." -ForegroundColor Yellow
