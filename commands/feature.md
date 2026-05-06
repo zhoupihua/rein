@@ -1,18 +1,13 @@
-L3 full change — the 8-step iron triangle workflow.
+L3 full change — the 6-step workflow.
 
 ## The Full Workflow
 
-### Step 1: Idea Refine
-Invoke `refine` skill. Diverge and converge on the idea. Output a markdown one-pager with Problem Statement, Recommended Direction, Key Assumptions, MVP Scope, and Not Doing list. Save to `docs/rein/changes/<name>/refine.md` and commit.
+### Step 1: Define
+Invoke `refine` skill for divergent/convergent thinking, then `spec-driven` skill to write the PRD. The spec includes Context, Goals, Non-Goals, Requirements, Decisions, and Risks — all in one document. Save to `docs/rein/changes/<name>/spec.md` and commit.
 
-### Step 2: Spec-Driven Development
-Invoke `spec-driven` skill. Write a PRD covering Objective, Commands, Project Structure, Code Style, Testing Strategy, and Boundaries. Save to `docs/rein/changes/<name>/spec.md` and commit.
+No separate refine.md or design.md files. The refine thinking is internal; the design decisions are a section within spec.md.
 
-### Step 3: Generate Design Spec
-Use `/spec <name>` to generate the design spec:
-- `docs/rein/changes/<name>/design.md` — Design spec with requirements and decisions
-
-### Step 4: Branch Setup
+### Step 2: Branch Setup
 Create a feature branch from current branch. Ask the user whether to use worktree isolation:
 
 - **直接开发（默认）**：在当前目录创建 feature 分支，直接开发。适合大多数场景。
@@ -22,10 +17,10 @@ If the user chooses worktree: invoke `git-worktrees` skill, create an isolated w
 
 If the user chooses direct development: create the feature branch and stay in the current directory.
 
-### Step 5: Plan Tasks
+### Step 3: Plan Tasks
 Invoke `planning` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/rein/changes/<name>/plan.md` and tasks to `docs/rein/changes/<name>/task.md`, then commit.
 
-### Step 6: Implement
+### Step 4: Implement
 Invoke `incremental` + `tdd` skills:
 - Build in thin vertical slices
 - RED → GREEN → REFACTOR for each slice
@@ -37,14 +32,14 @@ Routing:
 - Parallel tasks → invoke `subagent`
 - Hit a bug → invoke `debugging`
 
-### Step 7: Code Review
+### Step 5: Code Review
 Invoke `code-review` skill. Five-axis review: Correctness, Readability, Architecture, Security, Performance. Save review report to `docs/rein/changes/<name>/review.md` and commit.
 
 If issues found:
 - Security concerns → invoke `security`
 - Performance concerns → invoke `performance`
 
-### Step 8: Verify and Ship
+### Step 6: Verify and Ship
 Invoke `verify` skill. Verify with fresh evidence.
 
 Then invoke `git-workflow` skill to:

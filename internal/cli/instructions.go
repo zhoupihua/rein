@@ -42,15 +42,15 @@ func init() {
 }
 
 type InstructionsResult struct {
-	Phase        string               `json:"phase"`
-	Feature      string               `json:"feature"`
-	Ready        bool                 `json:"ready"`
-	Missing      string               `json:"missing,omitempty"`
-	CurrentTask  *artifact.Task       `json:"currentTask,omitempty"`
-	TaskDetail   *artifact.TaskDetail `json:"taskDetail,omitempty"`
-	SpecContext  string               `json:"specContext,omitempty"`
-	PlanGoal     string               `json:"planGoal,omitempty"`
-	Progress     string               `json:"progress"`
+	Phase       string               `json:"phase"`
+	Feature     string               `json:"feature"`
+	Ready       bool                 `json:"ready"`
+	Missing     string               `json:"missing,omitempty"`
+	CurrentTask *artifact.Task       `json:"currentTask,omitempty"`
+	TaskDetail  *artifact.TaskDetail `json:"taskDetail,omitempty"`
+	SpecContext string               `json:"specContext,omitempty"`
+	PlanGoal    string               `json:"planGoal,omitempty"`
+	Progress    string               `json:"progress"`
 }
 
 func resolveFeatureName(p *project.Project, args []string) string {
@@ -134,6 +134,15 @@ func runInstructionsApply(cmd *cobra.Command, args []string) error {
 					ctx.WriteString(fmt.Sprintf("  - %s: WHEN %s THEN %s\n", s.Name, s.When, s.Then))
 				}
 			}
+			if len(spec.Decisions) > 0 {
+				ctx.WriteString("Decisions:\n")
+				for _, d := range spec.Decisions {
+					ctx.WriteString(fmt.Sprintf("- %s (rationale: %s)\n", d.Choice, d.Rationale))
+				}
+			}
+			if spec.Risks != "" {
+				ctx.WriteString("Risks: " + spec.Risks + "\n")
+			}
 			result.SpecContext = ctx.String()
 		}
 	}
@@ -151,7 +160,7 @@ func runInstructionsSpecs(cmd *cobra.Command, args []string) error {
 
 	instruction := map[string]string{
 		"phase": "DEFINE",
-		"task":  "Write refine.md, spec.md, and design.md",
+		"task":  "Write spec.md (includes refine thinking and design decisions)",
 		"template": `# Feature Name — Spec
 
 ## Context
@@ -169,9 +178,9 @@ Describe the current state and why this change is needed.
 - **THEN** <expected result>
 
 ## Decisions
-- Key technical decisions and their rationale
+- **Decision:** <key technical choice> — **Rationale:** <why this choice>
 
-## Risks
+## Risks / Trade-offs
 - Potential issues and mitigations`,
 	}
 

@@ -1,36 +1,30 @@
-Generate design spec artifacts. Replaces /opsx:propose + /opsx:explore.
+Generate spec.md — the single DEFINE phase artifact that includes requirements, decisions, and risks.
 
-**This command generates design specs ONLY. It does NOT generate tasks.** Use `/plan` to break specs into tasks, then `/do` to execute.
+**This command generates spec ONLY. It does NOT generate tasks.** Use `/plan` to break specs into tasks, then `/do` to execute.
 
 ## Modes
 
 ### No arguments: Interactive mode
 1. Ask what the user wants to build
 2. Explore the codebase for context (invoke `refine` for divergent thinking)
-3. Propose a change name and generate artifacts step by step
-4. After each artifact, ask if they want to continue to the next
+3. Propose a change name and generate spec.md
+4. After generation, ask if they want to continue to `/plan`
 
 ### /spec <name>: Direct generation
-1. Generate design spec:
-   - `docs/rein/changes/<name>/design.md` — Design spec with requirements and decisions
+1. Generate spec:
+   - `docs/rein/changes/<name>/spec.md` — Spec with Context, Goals, Requirements, Decisions, Risks
 
 ### /spec --validate: Validate artifacts
-Check that the current spec is complete (has Context, Goals, Decisions, Risks).
-
-## Artifact Templates
-
-Read templates from the `templates/` directory:
-- `templates/proposal.md` — Proposal structure
-- `templates/design.md` — Design document structure
+Check that the current spec is complete (has Context, Goals, Requirements, Decisions, Risks).
 
 ## Spec Content Rules
 
-The design spec must contain ONLY:
-- **Why**: Problem statement, motivation
-- **What**: Requirements, capabilities, impact
-- **Decisions**: Design choices and rationale
-- **Risks**: Known risks and trade-offs
-- **Non-Goals**: What is explicitly out of scope
+The spec must contain:
+- **Context**: Why this change is needed, current state
+- **Goals / Non-Goals**: What this achieves and what is explicitly out of scope
+- **Requirements**: Capabilities with WHEN/THEN scenarios
+- **Decisions**: Key technical choices and rationale (`- **Decision:** ... — **Rationale:** ...`)
+- **Risks / Trade-offs**: Known risks and mitigations
 
 The spec must NOT contain:
 - Task lists or checklists
@@ -41,7 +35,7 @@ The spec must NOT contain:
 
 After generation, report:
 ```
-Created spec: docs/rein/changes/<name>/design.md
+Created spec: docs/rein/changes/<name>/spec.md
 
 Next step: /plan to break this into tasks, then /do to implement
 ```

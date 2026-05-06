@@ -11,9 +11,7 @@ Resume work from a breakpoint.
 
 | Condition | Phase | Skill to invoke |
 |-----------|-------|----------------|
-| No refine.md in feature dir | DEFINE | refine |
-| No spec.md in feature dir | DEFINE | spec-driven |
-| No design.md in feature dir | DESIGN | spec-driven |
+| No spec.md in feature dir | DEFINE | refine + spec-driven |
 | No plan.md in feature dir | PLAN | planning |
 | No task.md in feature dir | PLAN | planning |
 | Tasks unchecked in task.md | BUILD | incremental + tdd |

@@ -12,14 +12,17 @@ var (
 	scenarioRe    = regexp.MustCompile(`^####\s+Scenario:\s*(.+)$`)
 	whenRe        = regexp.MustCompile(`^-\s+\*\*WHEN\*\*\s*(.+)$`)
 	thenRe        = regexp.MustCompile(`^-\s+\*\*THEN\*\*\s*(.+)$`)
+	decisionRe    = regexp.MustCompile(`^-\s+\*\*Decision:\*\*\s*(.+?)\s*—\s*\*\*Rationale:\*\*\s*(.+)$`)
 )
 
 type Spec struct {
 	Sections     []string
 	Requirements []Requirement
+	Decisions    []Decision
 	Goals        string
 	NonGoals     string
 	Context      string
+	Risks        string
 }
 
 type Requirement struct {
@@ -31,6 +34,11 @@ type Scenario struct {
 	Name string
 	When string
 	Then string
+}
+
+type Decision struct {
+	Choice     string
+	Rationale  string
 }
 
 func ParseSpecFile(path string) (*Spec, error) {
@@ -45,40 +53,53 @@ func ParseSpecContent(content string) *Spec {
 	spec := &Spec{}
 	var currentReq *Requirement
 	var currentScenario *Scenario
+	var currentSection string
+	var sectionBuf *strings.Builder
+
+	flushReq := func() {
+		if currentScenario != nil && currentReq != nil {
+			currentReq.Scenarios = append(currentReq.Scenarios, *currentScenario)
+			currentScenario = nil
+		}
+		if currentReq != nil {
+			spec.Requirements = append(spec.Requirements, *currentReq)
+			currentReq = nil
+		}
+	}
+
+	flushSection := func() {
+		if sectionBuf == nil {
+			return
+		}
+		text := strings.TrimSpace(sectionBuf.String())
+		switch currentSection {
+		case "Context":
+			spec.Context = text
+		case "Goals":
+			spec.Goals = text
+		case "Non-Goals":
+			spec.NonGoals = text
+		case "Risks", "Risks / Trade-offs":
+			spec.Risks = text
+		}
+	}
 
 	scanner := bufio.NewScanner(strings.NewReader(content))
 	for scanner.Scan() {
 		line := scanner.Text()
 
 		if m := sectionRe.FindStringSubmatch(line); m != nil {
-			if currentScenario != nil && currentReq != nil {
-				currentReq.Scenarios = append(currentReq.Scenarios, *currentScenario)
-				currentScenario = nil
-			}
-			if currentReq != nil {
-				spec.Requirements = append(spec.Requirements, *currentReq)
-				currentReq = nil
-			}
+			flushReq()
+			flushSection()
+			currentSection = m[1]
+			sectionBuf = &strings.Builder{}
 			spec.Sections = append(spec.Sections, m[1])
-			switch m[1] {
-			case "Context":
-				spec.Context = ""
-			case "Goals":
-				spec.Goals = ""
-			case "Non-Goals":
-				spec.NonGoals = ""
-			}
 			continue
 		}
 
+		// Parse structured entries
 		if m := requirementRe.FindStringSubmatch(line); m != nil {
-			if currentScenario != nil && currentReq != nil {
-				currentReq.Scenarios = append(currentReq.Scenarios, *currentScenario)
-				currentScenario = nil
-			}
-			if currentReq != nil {
-				spec.Requirements = append(spec.Requirements, *currentReq)
-			}
+			flushReq()
 			currentReq = &Requirement{Name: m[1]}
 			continue
 		}
@@ -97,15 +118,28 @@ func ParseSpecContent(content string) *Spec {
 			} else if m := thenRe.FindStringSubmatch(line); m != nil {
 				currentScenario.Then = m[1]
 			}
+			continue
+		}
+
+		if m := decisionRe.FindStringSubmatch(line); m != nil {
+			spec.Decisions = append(spec.Decisions, Decision{
+				Choice:    m[1],
+				Rationale: m[2],
+			})
+			continue
+		}
+
+		// Accumulate section text
+		if sectionBuf != nil {
+			if sectionBuf.Len() > 0 {
+				sectionBuf.WriteString("\n")
+			}
+			sectionBuf.WriteString(line)
 		}
 	}
 
-	if currentScenario != nil && currentReq != nil {
-		currentReq.Scenarios = append(currentReq.Scenarios, *currentScenario)
-	}
-	if currentReq != nil {
-		spec.Requirements = append(spec.Requirements, *currentReq)
-	}
+	flushReq()
+	flushSection()
 
 	return spec
 }
