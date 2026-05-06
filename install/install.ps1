@@ -1,236 +1,314 @@
 # rein install script (Windows)
-# Run from your project root: powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
+# Project install: powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
+# Global install:  powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1 -Global
 
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $WorkflowDir = Split-Path -Parent $ScriptDir
-$ProjectDir = Get-Location
 
-Write-Host "=== rein Installer ===" -ForegroundColor Cyan
-Write-Host "Workflow source: $WorkflowDir"
-Write-Host "Target project:  $ProjectDir"
-Write-Host ""
-
-# 1. Create artifact directories
-Write-Host "[1/9] Creating artifact directories..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\specs" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\plans" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\tasks" -Force | Out-Null
-New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
-Write-Host "  OK docs/rein/specs/, docs/rein/plans/, docs/rein/tasks/, docs/rein/archive/"
-
-# 2. Copy commands
-Write-Host "[2/9] Installing commands..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\.claude\commands" -Force | Out-Null
-Copy-Item "$WorkflowDir\commands\*.md" "$ProjectDir\.claude\commands\"
-$CmdCount = (Get-ChildItem "$ProjectDir\.claude\commands\*.md").Count
-Write-Host "  OK $CmdCount commands installed"
-
-# 3. Copy skills
-Write-Host "[3/9] Installing skills..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\.claude\skills" -Force | Out-Null
-Copy-Item -Path "$WorkflowDir\skills\*" -Destination "$ProjectDir\.claude\skills\" -Recurse -Force
-$SkillCount = (Get-ChildItem "$ProjectDir\.claude\skills" -Directory).Count
-Write-Host "  OK $SkillCount skills installed"
-
-# 4. Copy agents
-Write-Host "[4/9] Installing agents..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\.claude\agents" -Force | Out-Null
-Copy-Item "$WorkflowDir\agents\*.md" "$ProjectDir\.claude\agents\"
-$AgentCount = (Get-ChildItem "$ProjectDir\.claude\agents\*.md").Count
-Write-Host "  OK $AgentCount agents installed"
-
-# 5. Copy hooks
-Write-Host "[5/9] Installing hooks..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\.claude\hooks" -Force | Out-Null
-Copy-Item "$WorkflowDir\hooks\session-start.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\session-start.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\format.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\format.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\gate.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\gate.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\leak-guard.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\leak-guard.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\inject.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\inject.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\guard.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\guard.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\guard-bash.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\guard-bash.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\checkbox-guard.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\checkbox-guard.ps1" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\task-progress.sh" "$ProjectDir\.claude\hooks\"
-Copy-Item "$WorkflowDir\hooks\task-progress.ps1" "$ProjectDir\.claude\hooks\"
-Write-Host "  OK All hooks installed"
-
-# 6. Copy checklists
-Write-Host "[6/9] Installing checklists..." -ForegroundColor Yellow
-New-Item -ItemType Directory -Path "$ProjectDir\.claude\checklists" -Force | Out-Null
-if (Test-Path "$WorkflowDir\templates\checklists\review.md") {
-    Copy-Item "$WorkflowDir\templates\checklists\review.md" "$ProjectDir\.claude\checklists\" -Force
-    Write-Host "  OK review.md checklist installed"
-} else {
-    Write-Host "  SKIP No review checklist template found"
+# Parse arguments
+$Global = $false
+if ($args -contains "--global" -or $args -contains "-Global") {
+    $Global = $true
 }
 
-# 7. Generate manifest
-Write-Host "[7/9] Generating protection manifest..." -ForegroundColor Yellow
-$ManifestFile = "$ProjectDir\.claude\.rein-manifest"
-$ManifestLines = @(
-    "# rein Managed Files - DO NOT EDIT",
-    "# These files are protected from modification by the guard hook.",
-    "# To allow edits to a specific file, remove its line from this manifest.",
-    ""
-)
-# Enumerate installed files relative to project root
-$Dirs = @(
-    "$ProjectDir\.claude\hooks",
-    "$ProjectDir\.claude\commands",
-    "$ProjectDir\.claude\agents",
-    "$ProjectDir\.claude\checklists"
-)
-foreach ($Dir in $Dirs) {
-    if (Test-Path $Dir) {
-        Get-ChildItem $Dir -File | ForEach-Object {
-            $RelPath = $_.FullName.Substring($ProjectDir.Length + 1).Replace('\', '/')
+# --- Shared helper: build/download binary ---
+function Install-Binary([string]$BinDir) {
+    $ReinVersion = "v0.1.0"
+    $Arch = if ([Environment]::Is64BitOperatingSystem) { "amd64" } else { "386" }
+    $BinaryName = "rein-windows-$Arch.exe"
+    New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
+
+    # Check existing binary
+    if (Test-Path "$BinDir\rein.exe") {
+        $existingVersion = & "$BinDir\rein.exe" --version 2>$null
+        Write-Host "  INFO Existing rein found: $existingVersion — upgrading" -ForegroundColor Gray
+    }
+
+    if (Test-Path "$WorkflowDir\cmd\rein\main.go") {
+        # Dev mode: build from source
+        Write-Host "  Building from source..." -ForegroundColor Gray
+        Push-Location $WorkflowDir
+        go build -o "$BinDir\rein.exe" .\cmd\rein\
+        Pop-Location
+    } else {
+        Invoke-WebRequest -Uri "https://github.com/zhoupihua/rein/releases/download/$ReinVersion/$BinaryName" `
+            -OutFile "$BinDir\rein.exe"
+    }
+    Write-Host "  OK rein CLI installed to $BinDir\rein.exe"
+}
+
+# --- Shared helper: generate settings.json ---
+function Configure-Settings([string]$SettingsFile, [string]$HookCmd) {
+    if (Test-Path $SettingsFile) {
+        # Smart merge
+        $data = Get-Content $SettingsFile -Raw | ConvertFrom-Json
+
+        $reinHooks = @{}
+        $reinHooks["SessionStart"] = @([PSCustomObject]@{matcher = ""; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd session-start"})})
+        $reinHooks["PreToolUse"] = @(
+            [PSCustomObject]@{matcher = "Edit|Write|MultiEdit"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd guard"})},
+            [PSCustomObject]@{matcher = "Bash"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd guard-bash"}, [PSCustomObject]@{type = "command"; command = "$HookCmd gate"})}
+        )
+        $reinHooks["PostToolUse"] = @(
+            [PSCustomObject]@{matcher = "Write|Edit|MultiEdit"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd format"}, [PSCustomObject]@{type = "command"; command = "$HookCmd checkbox-guard"}, [PSCustomObject]@{type = "command"; command = "$HookCmd task-progress"})},
+            [PSCustomObject]@{matcher = "Read|Bash"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd leak-guard"})}
+        )
+        $reinHooks["UserPromptExpansion"] = @([PSCustomObject]@{matcher = "code-review"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd inject"})})
+
+        if (-not $data.hooks) { $data | Add-Member -NotePropertyName hooks -NotePropertyValue @{} }
+        foreach ($event in $reinHooks.Keys) {
+            $existing = $data.hooks.$event
+            if ($existing) {
+                $filtered = @($existing | Where-Object {
+                    -not ($_.hooks | Where-Object { $_.command -match "rein.*hook" })
+                })
+                $data.hooks.$event = @($filtered) + @($reinHooks.$event)
+            } else {
+                $data.hooks | Add-Member -NotePropertyName $event -NotePropertyValue $reinHooks.$event -Force
+            }
+        }
+
+        # Add Bash(rein *) to permissions.allow
+        if (-not $data.permissions) { $data | Add-Member -NotePropertyName permissions -NotePropertyValue @{} }
+        if (-not $data.permissions.allow) { $data.permissions | Add-Member -NotePropertyName allow -NotePropertyValue @() }
+        if ($data.permissions.allow -notcontains "Bash(rein *)") {
+            $data.permissions.allow += "Bash(rein *)"
+        }
+
+        $data | ConvertTo-Json -Depth 10 | Set-Content $SettingsFile
+        Write-Host "  OK settings.json merged (hooks + permissions)"
+    } else {
+        $Settings = @"
+{
+  "hooks": {
+    "SessionStart": [{"matcher": "", "hooks": [{"type": "command", "command": "$HookCmd session-start"}]}],
+    "PreToolUse": [
+      {"matcher": "Edit|Write|MultiEdit", "hooks": [{"type": "command", "command": "$HookCmd guard"}]},
+      {"matcher": "Bash", "hooks": [
+        {"type": "command", "command": "$HookCmd guard-bash"},
+        {"type": "command", "command": "$HookCmd gate"}
+      ]}
+    ],
+    "PostToolUse": [
+      {"matcher": "Write|Edit|MultiEdit", "hooks": [
+        {"type": "command", "command": "$HookCmd format"},
+        {"type": "command", "command": "$HookCmd checkbox-guard"},
+        {"type": "command", "command": "$HookCmd task-progress"}
+      ]},
+      {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": "$HookCmd leak-guard"}]}
+    ],
+    "UserPromptExpansion": [{"matcher": "code-review", "hooks": [{"type": "command", "command": "$HookCmd inject"}]}]
+  },
+  "permissions": {
+    "allow": ["Bash(rein *)"]
+  }
+}
+"@
+        Set-Content -Path $SettingsFile -Value $Settings
+        Write-Host "  OK settings.json created with hooks + permissions"
+    }
+}
+
+# --- Shared helper: generate manifest ---
+function Generate-Manifest([string]$BaseDir) {
+    $ManifestFile = "$BaseDir\.rein-manifest"
+    $ManifestLines = @(
+        "# rein Managed Files - DO NOT EDIT",
+        "# To allow edits, remove the file's line from this manifest.",
+        ""
+    )
+    $Dirs = @("bin", "commands", "agents", "checklists")
+    foreach ($Dir in $Dirs) {
+        $DirPath = "$BaseDir\$Dir"
+        if (Test-Path $DirPath) {
+            Get-ChildItem $DirPath -File | ForEach-Object {
+                $RelPath = $_.FullName.Substring($BaseDir.Length + 1).Replace('\', '/')
+                $ManifestLines += $RelPath
+            }
+        }
+    }
+    if (Test-Path "$BaseDir\skills") {
+        Get-ChildItem "$BaseDir\skills" -Directory | ForEach-Object {
+            $RelPath = $_.FullName.Substring($BaseDir.Length + 1).Replace('\', '/') + "/"
             $ManifestLines += $RelPath
         }
     }
+    Set-Content -Path $ManifestFile -Value $ManifestLines
+    $ManifestCount = ($ManifestLines | Where-Object { $_ -notmatch '^\s*#' -and $_ -ne '' }).Count
+    Write-Host "  OK $ManifestCount entries in .rein-manifest"
 }
-# Skills are directories with subdirectories
-if (Test-Path "$ProjectDir\.claude\skills") {
-    Get-ChildItem "$ProjectDir\.claude\skills" -Directory | ForEach-Object {
-        $SkillDir = $_.FullName.Substring($ProjectDir.Length + 1).Replace('\', '/') + "/"
-        $ManifestLines += $SkillDir
+
+# --- Shared helper: copy resources ---
+function Copy-Resources([string]$TargetDir) {
+    # Skills
+    New-Item -ItemType Directory -Path "$TargetDir\skills" -Force | Out-Null
+    Copy-Item -Path "$WorkflowDir\skills\*" -Destination "$TargetDir\skills\" -Recurse -Force
+    $SkillCount = (Get-ChildItem "$TargetDir\skills" -Directory).Count
+    Write-Host "  OK $SkillCount skills installed"
+
+    # Commands
+    New-Item -ItemType Directory -Path "$TargetDir\commands" -Force | Out-Null
+    Copy-Item "$WorkflowDir\commands\*.md" "$TargetDir\commands\"
+    $CmdCount = (Get-ChildItem "$TargetDir\commands\*.md").Count
+    Write-Host "  OK $CmdCount commands installed"
+
+    # Agents
+    New-Item -ItemType Directory -Path "$TargetDir\agents" -Force | Out-Null
+    Copy-Item "$WorkflowDir\agents\*.md" "$TargetDir\agents\"
+    $AgentCount = (Get-ChildItem "$TargetDir\agents\*.md").Count
+    Write-Host "  OK $AgentCount agents installed"
+
+    # Checklists
+    New-Item -ItemType Directory -Path "$TargetDir\checklists" -Force | Out-Null
+    if (Test-Path "$WorkflowDir\templates\checklists\review.md") {
+        Copy-Item "$WorkflowDir\templates\checklists\review.md" "$TargetDir\checklists\" -Force
+        Write-Host "  OK review.md checklist installed"
     }
 }
-Set-Content -Path $ManifestFile -Value $ManifestLines
-$ManifestCount = ($ManifestLines | Where-Object { $_ -notmatch '^\s*#' -and $_ -ne '' }).Count
-Write-Host "  OK $ManifestCount entries in .rein-manifest"
 
-# 8. Configure settings.json
-Write-Host "[8/9] Configuring hooks in settings.json..." -ForegroundColor Yellow
-$SettingsFile = "$ProjectDir\.claude\settings.json"
-if (Test-Path $SettingsFile) {
-    Write-Host "  INFO settings.json exists - merge hooks manually if needed"
-    Write-Host "  See hooks/hooks.json for the full configuration template"
+# ============================================================
+# Global Install
+# ============================================================
+if ($Global) {
+    $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+    $BinDir = "$ConfigDir\bin"
+
+    Write-Host "=== rein Global Installer ===" -ForegroundColor Cyan
+    Write-Host "Target: $ConfigDir"
+    Write-Host ""
+
+    # Check existing installation
+    if (Test-Path "$ConfigDir\.rein-manifest") {
+        Write-Host "INFO Existing rein installation detected — upgrading" -ForegroundColor Yellow
+    }
+
+    # [1/8] Install binary
+    Write-Host "[1/8] Installing rein CLI..." -ForegroundColor Yellow
+    Install-Binary $BinDir
+
+    # [2/8] Copy resources
+    Write-Host "[2/8] Installing resources..." -ForegroundColor Yellow
+    Copy-Resources $ConfigDir
+
+    # [3/8] Generate manifest
+    Write-Host "[3/8] Generating protection manifest..." -ForegroundColor Yellow
+    Generate-Manifest $ConfigDir
+
+    # [4/8] Configure settings.json (hooks use $CLAUDE_CONFIG_DIR)
+    Write-Host "[4/8] Configuring settings.json..." -ForegroundColor Yellow
+    $HookCmd = '$CLAUDE_CONFIG_DIR/bin/rein.exe hook'
+    Configure-Settings "$ConfigDir\settings.json" $HookCmd
+
+    # Clean up old bash/ps1 hooks
+    if (Test-Path "$ConfigDir\hooks") {
+        Remove-Item "$ConfigDir\hooks\*.sh", "$ConfigDir\hooks\*.ps1" -Force -ErrorAction SilentlyContinue
+        Write-Host "  OK Cleaned old hook scripts"
+    }
+
+    # [5/8] Add to PATH
+    Write-Host "[5/8] Adding to PATH..." -ForegroundColor Yellow
+    $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($currentPath -notlike "*$BinDir*") {
+        [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$BinDir", "User")
+        Write-Host "  OK Added $BinDir to User PATH"
+        Write-Host "  INFO Restart terminal for PATH to take effect"
+    } else {
+        Write-Host "  OK PATH already configured"
+    }
+
+    # [6/8] Create artifact directories
+    Write-Host "[6/8] Creating artifact directories..." -ForegroundColor Yellow
+    $ProjectDir = Get-Location
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\specs" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\plans" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\tasks" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
+    Write-Host "  OK docs/rein/{specs,plans,tasks,archive}"
+
+    Write-Host ""
+    Write-Host "=== Global Installation Complete ===" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Installed:"
+    Write-Host "  Binary:    $BinDir\rein.exe"
+    Write-Host "  Resources: $ConfigDir\skills\, commands\, agents\"
+    Write-Host "  Hooks:     $ConfigDir\settings.json"
+    Write-Host "  Artifacts: $ProjectDir\docs\rein\"
+    Write-Host ""
+    Write-Host "Run 'rein status' to check current phase"
+
+# ============================================================
+# Project Install
+# ============================================================
 } else {
-    New-Item -ItemType Directory -Path "$ProjectDir\.claude" -Force | Out-Null
-    $Settings = @'
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\session-start.ps1\""
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\guard.ps1\""
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\guard-bash.ps1\""
-          },
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\gate.ps1\""
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\format.ps1\""
-          },
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\checkbox-guard.ps1\""
-          },
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\task-progress.ps1\""
-          }
-        ]
-      },
-      {
-        "matcher": "Read|Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\leak-guard.ps1\""
-          }
-        ]
-      }
-    ],
-    "UserPromptExpansion": [
-      {
-        "matcher": "code-review",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -ExecutionPolicy Bypass -File \"${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\inject.ps1\""
-          }
-        ]
-      }
-    ]
-  }
-}
-'@
-    Set-Content -Path $SettingsFile -Value $Settings
-    Write-Host "  OK settings.json created with all hooks"
-}
+    $ProjectDir = Get-Location
+    $ClaudeDir = "$ProjectDir\.claude"
+    $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
 
-# 9. Handle AGENTS.md (Codex CLI compatibility)
-Write-Host "[9/9] Checking for Codex CLI..." -ForegroundColor Yellow
-$AgentsMd = "$ProjectDir\AGENTS.md"
-if (Test-Path $AgentsMd) {
-    Write-Host "  INFO AGENTS.md found - Codex CLI detected"
-} else {
-    Write-Host "  INFO No AGENTS.md found - skipping Codex CLI setup"
-}
+    Write-Host "=== rein Project Installer ===" -ForegroundColor Cyan
+    Write-Host "Target: $ProjectDir"
+    Write-Host ""
 
-Write-Host ""
-Write-Host "=== Installation Complete ===" -ForegroundColor Green
-Write-Host ""
-Write-Host "Installed hooks:" -ForegroundColor Cyan
-Write-Host "  1. session-start   - Inject using-rein skill (SessionStart)"
-Write-Host "  2. guard           - Block edits to rein-managed files (PreToolUse: Edit|Write|MultiEdit)"
-Write-Host "  3. guard-bash      - Block destructive cmds on rein files (PreToolUse: Bash)"
-Write-Host "  4. gate            - Run tests before deploy (PreToolUse: Bash)"
-Write-Host "  5. format          - Auto-format with Prettier (PostToolUse: Write|Edit|MultiEdit)"
-Write-Host "  6. checkbox-guard  - Warn when task checkbox not updated (PostToolUse: Write|Edit|MultiEdit)"
-Write-Host "  7. leak-guard      - Block secrets in output (PostToolUse: Read|Bash)"
-Write-Host "  8. inject          - Inject review checklist (UserPromptExpansion: /code-review)"
-Write-Host "  9. task-progress   - Auto-check task checkboxes on file match (PostToolUse: Write|Edit|MultiEdit)"
-Write-Host ""
-Write-Host "Protection:" -ForegroundColor Cyan
-Write-Host "  rein-managed files are listed in .claude/.rein-manifest"
-Write-Host "  Edit/Write on these files will be blocked automatically"
-Write-Host "  To allow edits, remove the file's entry from the manifest"
-Write-Host ""
-Write-Host "Verification steps:"
-Write-Host "1. Start a new Claude Code session"
-Write-Host "2. The using-rein skill should be auto-injected"
-Write-Host "3. Try /triage to test the workflow"
-Write-Host "4. Try /code-review to test checklist injection"
+    # Check existing installation
+    if (Test-Path "$ClaudeDir\.rein-manifest") {
+        Write-Host "INFO Existing rein installation detected — upgrading" -ForegroundColor Yellow
+    }
+
+    # [1/6] Check global binary
+    Write-Host "[1/6] Checking rein CLI..." -ForegroundColor Yellow
+    $GlobalBin = "$ConfigDir\bin\rein.exe"
+    if (-not (Test-Path $GlobalBin)) {
+        Write-Host "  WARN rein CLI not found globally" -ForegroundColor Yellow
+        Write-Host "  INFO Run 'install.ps1 -Global' first to install the binary" -ForegroundColor Gray
+        Write-Host "  INFO Continuing with resource installation..." -ForegroundColor Gray
+    } else {
+        Write-Host "  OK rein CLI found at $ConfigDir\bin\" -ForegroundColor Green
+    }
+
+    # [2/6] Copy resources
+    Write-Host "[2/6] Installing resources..." -ForegroundColor Yellow
+    Copy-Resources $ClaudeDir
+
+    # [3/6] Generate manifest
+    Write-Host "[3/6] Generating protection manifest..." -ForegroundColor Yellow
+    Generate-Manifest $ClaudeDir
+
+    # [4/6] Configure settings.json (hooks use global binary)
+    Write-Host "[4/6] Configuring settings.json..." -ForegroundColor Yellow
+    $HookCmd = '$CLAUDE_CONFIG_DIR/bin/rein.exe hook'
+    Configure-Settings "$ClaudeDir\settings.json" $HookCmd
+
+    # Clean up old bash/ps1 hooks
+    if (Test-Path "$ClaudeDir\hooks") {
+        Remove-Item "$ClaudeDir\hooks\*.sh", "$ClaudeDir\hooks\*.ps1" -Force -ErrorAction SilentlyContinue
+        Write-Host "  OK Cleaned old hook scripts"
+    }
+
+    # [5/6] Create artifact directories
+    Write-Host "[5/6] Creating artifact directories..." -ForegroundColor Yellow
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\specs" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\plans" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\tasks" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
+    Write-Host "  OK docs/rein/{specs,plans,tasks,archive}"
+
+    # [6/6] Verification
+    Write-Host "[6/6] Verifying installation..." -ForegroundColor Yellow
+    if (Test-Path $GlobalBin) {
+        $ver = & "$GlobalBin" --version 2>$null
+        Write-Host "  OK rein $ver available globally" -ForegroundColor Green
+    } else {
+        Write-Host "  WARN rein CLI not found — run install.ps1 -Global to install it" -ForegroundColor Yellow
+    }
+
+    Write-Host ""
+    Write-Host "=== Project Installation Complete ===" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Installed:"
+    Write-Host "  Resources: $ClaudeDir\skills\, commands\, agents\"
+    Write-Host "  Hooks:     $ClaudeDir\settings.json"
+    Write-Host "  Artifacts: $ProjectDir\docs\rein\"
+    Write-Host ""
+    Write-Host "Run 'rein status' to check current phase"
+}
