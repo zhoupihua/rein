@@ -12,8 +12,15 @@ Invoke `spec-driven` skill. Write a PRD covering Objective, Commands, Project St
 Use `/spec <name>` to generate the design spec:
 - `docs/rein/specs/YYYY-MM-DD-<name>-spec.md` — Design spec with requirements and decisions
 
-### Step 4: Branch Isolation
-Invoke `git-worktrees` skill. Create an isolated worktree with a new branch. Verify clean test baseline.
+### Step 4: Branch Setup
+Create a feature branch from current branch. Ask the user whether to use worktree isolation:
+
+- **直接开发（默认）**：在当前目录创建 feature 分支，直接开发。适合大多数场景。
+- **Worktree 隔离**：调用 `git-worktrees` skill 创建隔离工作区。适合需要同时在多个分支上工作的场景。
+
+If the user chooses worktree: invoke `git-worktrees` skill, create an isolated worktree with the new branch, verify clean test baseline.
+
+If the user chooses direct development: create the feature branch and stay in the current directory.
 
 ### Step 5: Plan Tasks
 Invoke `planning` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/rein/plans/` and tasks to `docs/rein/tasks/`, then commit.
@@ -49,6 +56,7 @@ Post-merge:
 - Invoke `shipping` for release checks (if applicable)
 - Invoke `docs-and-adrs` for decision documentation
 - Archive completed `docs/rein/` artifacts to `docs/rein/archive/YYYY-MM-DD-<name>/`
+- If worktree was used: clean up the worktree
 
 ## Resuming
 
