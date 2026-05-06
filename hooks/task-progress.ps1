@@ -14,15 +14,14 @@ if ($ToolInput -match '"file_path"\s*:\s*"([^"]+)"') {
 } else { exit 0 }
 
 # Skip task.md edits (avoid recursive triggers)
-if ($Target -match 'docs/rein/tasks/.*task\.md$') { exit 0 }
+if ($Target -match 'docs/rein/changes/.*task\.md$') { exit 0 }
 
 # Extract short filename for matching
 $EditedFile = [System.IO.Path]::GetFileName($Target)
 
-$TasksDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\tasks"
-if (-not (Test-Path $TasksDir)) { exit 0 }
+$ChangesDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\changes"
+if (-not (Test-Path $ChangesDir)) { exit 0 }
 
-$PlansDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\plans"
 $MatchedTask = ""
 $MatchedTaskfile = $null
 
@@ -42,37 +41,39 @@ function Extract-Refs {
     return $refs | Select-Object -Unique
 }
 
-# Phase 1: Scan tasks.md for file references in task lines
-foreach ($taskfile in Get-ChildItem "$TasksDir\*task.md" -File) {
-    $content = Get-Content $taskfile
+# Scan each feature directory
+foreach ($featureDir in Get-ChildItem $ChangesDir -Directory) {
+    $taskfile = Join-Path $featureDir.FullName "task.md"
+    $planfile = Join-Path $featureDir.FullName "plan.md"
 
-    foreach ($line in $content) {
-        if ($line -notmatch '^\s*- \[ \]') { continue }
+    # Phase 1: Scan task.md for file references in task lines
+    if (Test-Path $taskfile) {
+        $content = Get-Content $taskfile
 
-        if ($line -match '^\s*- \[ \] (\d+\.\d+)') {
-            $taskNum = $Matches[1]
-        } else { continue }
+        foreach ($line in $content) {
+            if ($line -notmatch '^\s*- \[ \]') { continue }
 
-        $refs = Extract-Refs -Line $line
+            if ($line -match '^\s*- \[ \] (\d+\.\d+)') {
+                $taskNum = $Matches[1]
+            } else { continue }
 
-        foreach ($ref in $refs) {
-            $refBase = [System.IO.Path]::GetFileName($ref)
-            if ($refBase -eq $EditedFile) {
-                $MatchedTask = $taskNum
-                $MatchedTaskfile = $taskfile
-                break
+            $refs = Extract-Refs -Line $line
+
+            foreach ($ref in $refs) {
+                $refBase = [System.IO.Path]::GetFileName($ref)
+                if ($refBase -eq $EditedFile) {
+                    $MatchedTask = $taskNum
+                    $MatchedTaskfile = $taskfile
+                    break
+                }
             }
-        }
 
-        if ($MatchedTask) { break }
+            if ($MatchedTask) { break }
+        }
     }
 
-    if ($MatchedTask) { break }
-}
-
-# Phase 2: If no match in tasks.md, scan plan.md **Files:** fields
-if (-not $MatchedTask -and (Test-Path $PlansDir)) {
-    foreach ($planfile in Get-ChildItem "$PlansDir\*plan.md" -File) {
+    # Phase 2: If no match in task.md, scan plan.md **Files:** fields
+    if (-not $MatchedTask -and (Test-Path $planfile) -and (Test-Path $taskfile)) {
         $planContent = Get-Content $planfile
         $currentTask = ""
 
@@ -89,24 +90,21 @@ if (-not $MatchedTask -and (Test-Path $PlansDir)) {
                 foreach ($ref in $refs) {
                     $refBase = [System.IO.Path]::GetFileName($ref)
                     if ($refBase -eq $EditedFile) {
-                        # Find taskfile with this unchecked task
-                        foreach ($tf in Get-ChildItem "$TasksDir\*task.md" -File) {
-                            $tfContent = Get-Content $tf
-                            if ($tfContent | Where-Object { $_ -match "^\s*- \[ \] $currentTask" }) {
-                                $MatchedTask = $currentTask
-                                $MatchedTaskfile = $tf
-                                break
-                            }
+                        # Find this unchecked task in task.md
+                        $tfContent = Get-Content $taskfile
+                        if ($tfContent | Where-Object { $_ -match "^\s*- \[ \] $currentTask" }) {
+                            $MatchedTask = $currentTask
+                            $MatchedTaskfile = $taskfile
+                            break
                         }
-                        if ($MatchedTask) { break }
                     }
                 }
                 if ($MatchedTask) { break }
             }
         }
-
-        if ($MatchedTask) { break }
     }
+
+    if ($MatchedTask) { break }
 }
 
 if ($MatchedTask -and $MatchedTaskfile) {

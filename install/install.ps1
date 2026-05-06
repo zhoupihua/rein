@@ -225,11 +225,9 @@ if ($Global) {
     # [6/8] Create artifact directories
     Write-Host "[6/8] Creating artifact directories..." -ForegroundColor Yellow
     $ProjectDir = Get-Location
-    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\specs" -Force | Out-Null
-    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\plans" -Force | Out-Null
-    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\tasks" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\changes" -Force | Out-Null
     New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
-    Write-Host "  OK docs/rein/{specs,plans,tasks,archive}"
+    Write-Host "  OK docs/rein/{changes,archive}"
 
     Write-Host ""
     Write-Host "=== Global Installation Complete ===" -ForegroundColor Green
@@ -285,11 +283,9 @@ if ($Global) {
 
     # [5/6] Create artifact directories
     Write-Host "[5/6] Creating artifact directories..." -ForegroundColor Yellow
-    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\specs" -Force | Out-Null
-    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\plans" -Force | Out-Null
-    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\tasks" -Force | Out-Null
+    New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\changes" -Force | Out-Null
     New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
-    Write-Host "  OK docs/rein/{specs,plans,tasks,archive}"
+    Write-Host "  OK docs/rein/{changes,archive}"
 
     # [6/6] Verification
     Write-Host "[6/6] Verifying installation..." -ForegroundColor Yellow

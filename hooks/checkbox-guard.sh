@@ -16,8 +16,8 @@ TARGET=$(echo "$TOOL_INPUT" | sed -n 's/.*"file_path"\s*:\s*"\([^"]*\)".*/\1/p')
 # Unescape JSON \\ to \, then normalize to forward slashes
 TARGET=$(echo "$TARGET" | sed 's/\\\\/\\/g' | tr '\\' '/')
 
-# Only trigger on task.md files in docs/rein/tasks/
-echo "$TARGET" | grep -qE 'docs/rein/tasks/.*task\.md$' || exit 0
+# Only trigger on task.md files in docs/rein/changes/
+echo "$TARGET" | grep -qE 'docs/rein/changes/.*task\.md$' || exit 0
 
 # Check if the file exists
 [ -f "$TARGET" ] || exit 0

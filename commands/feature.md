@@ -3,14 +3,14 @@ L3 full change — the 8-step iron triangle workflow.
 ## The Full Workflow
 
 ### Step 1: Idea Refine
-Invoke `refine` skill. Diverge and converge on the idea. Output a markdown one-pager with Problem Statement, Recommended Direction, Key Assumptions, MVP Scope, and Not Doing list. Save to `docs/rein/specs/YYYY-MM-DD-<name>-spec.md` and commit.
+Invoke `refine` skill. Diverge and converge on the idea. Output a markdown one-pager with Problem Statement, Recommended Direction, Key Assumptions, MVP Scope, and Not Doing list. Save to `docs/rein/changes/<name>/refine.md` and commit.
 
 ### Step 2: Spec-Driven Development
-Invoke `spec-driven` skill. Write a PRD covering Objective, Commands, Project Structure, Code Style, Testing Strategy, and Boundaries. Save to `docs/rein/specs/YYYY-MM-DD-<name>-spec.md` and commit.
+Invoke `spec-driven` skill. Write a PRD covering Objective, Commands, Project Structure, Code Style, Testing Strategy, and Boundaries. Save to `docs/rein/changes/<name>/spec.md` and commit.
 
 ### Step 3: Generate Design Spec
 Use `/spec <name>` to generate the design spec:
-- `docs/rein/specs/YYYY-MM-DD-<name>-spec.md` — Design spec with requirements and decisions
+- `docs/rein/changes/<name>/design.md` — Design spec with requirements and decisions
 
 ### Step 4: Branch Setup
 Create a feature branch from current branch. Ask the user whether to use worktree isolation:
@@ -23,7 +23,7 @@ If the user chooses worktree: invoke `git-worktrees` skill, create an isolated w
 If the user chooses direct development: create the feature branch and stay in the current directory.
 
 ### Step 5: Plan Tasks
-Invoke `planning` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/rein/plans/` and tasks to `docs/rein/tasks/`, then commit.
+Invoke `planning` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/rein/changes/<name>/plan.md` and tasks to `docs/rein/changes/<name>/task.md`, then commit.
 
 ### Step 6: Implement
 Invoke `incremental` + `tdd` skills:
@@ -38,7 +38,7 @@ Routing:
 - Hit a bug → invoke `debugging`
 
 ### Step 7: Code Review
-Invoke `code-review` skill. Five-axis review: Correctness, Readability, Architecture, Security, Performance. Save review report to `docs/rein/reviews/YYYY-MM-DD-<name>-review.md` and commit.
+Invoke `code-review` skill. Five-axis review: Correctness, Readability, Architecture, Security, Performance. Save review report to `docs/rein/changes/<name>/review.md` and commit.
 
 If issues found:
 - Security concerns → invoke `security`
@@ -55,7 +55,7 @@ Then invoke `git-workflow` skill to:
 Post-merge:
 - Invoke `shipping` for release checks (if applicable)
 - Invoke `docs-and-adrs` for decision documentation
-- Archive completed `docs/rein/` artifacts to `docs/rein/archive/YYYY-MM-DD-<name>/`
+- Archive completed feature: move `docs/rein/changes/<name>/` to `docs/rein/archive/<name>/`
 - If worktree was used: clean up the worktree
 
 ## Resuming

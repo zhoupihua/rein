@@ -13,8 +13,8 @@ Build in thin vertical slices — implement one piece, test it, verify it, then 
 
 ## Pre-Execution: Load and Review Plan
 
-1. Read `docs/rein/plans/YYYY-MM-DD-<name>-plan.md` for architecture context and decisions
-2. Read `docs/rein/tasks/YYYY-MM-DD-<name>-task.md` for the ordered task list
+1. Read `docs/rein/changes/<name>/plan.md` for architecture context and decisions
+2. Read `docs/rein/changes/<name>/task.md` for the ordered task list
 3. Review critically — identify any questions or concerns about the plan
 4. If concerns: Raise them with your human partner before starting
 5. If no concerns: Proceed with the first unchecked task
@@ -171,7 +171,7 @@ During execution, use **plan.md** as the implementation reference and **tasks.md
 
 After completing each task increment, execute this two-step sequence — **both steps are required**:
 
-1. **Edit** `docs/rein/tasks/YYYY-MM-DD-<name>-task.md` — change the task's `- [ ]` to `- [x]`
+1. **Edit** `docs/rein/changes/<name>/task.md` — change the task's `- [ ]` to `- [x]`
 2. **Read** the same file back — confirm the checkbox now shows `- [x]`. If not, fix it immediately.
 
 Only after both steps are done may you proceed to the next task.

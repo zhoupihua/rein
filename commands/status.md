@@ -2,8 +2,8 @@ Show task progress and detect stale checkboxes.
 
 ## Instructions
 
-1. Scan `docs/rein/tasks/` for task files
-2. For each task file:
+1. Scan `docs/rein/changes/` for feature directories
+2. For each feature with a task.md:
    a. Count total tasks, checked (`- [x]`), and unchecked (`- [ ]`)
    b. List all unchecked tasks with task numbers and descriptions
 3. Check for drift:
@@ -19,8 +19,8 @@ Show task progress and detect stale checkboxes.
 ## Output
 
 ```
-Task Progress: docs/rein/tasks/YYYY-MM-DD-<name>-task.md
-  Completed: 3/8  Remaining: 5
+Feature: <name> (docs/rein/changes/<name>/)
+  Task Progress: 3/8  Remaining: 5
 
   Remaining tasks:
   - [ ] 2.1 Add API endpoint for X

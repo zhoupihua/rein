@@ -260,11 +260,9 @@ if [ "$GLOBAL" = true ]; then
     # [6/8] Create artifact directories
     echo "[6/8] Creating artifact directories..."
     PROJECT_DIR="$(pwd)"
-    mkdir -p "$PROJECT_DIR/docs/rein/specs"
-    mkdir -p "$PROJECT_DIR/docs/rein/plans"
-    mkdir -p "$PROJECT_DIR/docs/rein/tasks"
+    mkdir -p "$PROJECT_DIR/docs/rein/changes"
     mkdir -p "$PROJECT_DIR/docs/rein/archive"
-    echo "  ✓ docs/rein/{specs,plans,tasks,archive}"
+    echo "  ✓ docs/rein/{changes,archive}"
 
     echo ""
     echo "=== Global Installation Complete ==="
@@ -320,11 +318,9 @@ else
 
     # [5/6] Create artifact directories
     echo "[5/6] Creating artifact directories..."
-    mkdir -p "$PROJECT_DIR/docs/rein/specs"
-    mkdir -p "$PROJECT_DIR/docs/rein/plans"
-    mkdir -p "$PROJECT_DIR/docs/rein/tasks"
+    mkdir -p "$PROJECT_DIR/docs/rein/changes"
     mkdir -p "$PROJECT_DIR/docs/rein/archive"
-    echo "  ✓ docs/rein/{specs,plans,tasks,archive}"
+    echo "  ✓ docs/rein/{changes,archive}"
 
     # [6/6] Verification
     echo "[6/6] Verifying installation..."

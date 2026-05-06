@@ -15,8 +15,8 @@ if ($ToolInput -match '"file_path"\s*:\s*"([^"]+)"') {
     exit 0
 }
 
-# Only trigger on task.md files in docs/rein/tasks/
-if ($Target -notmatch 'docs/rein/tasks/.*task\.md$') { exit 0 }
+# Only trigger on task.md files in docs/rein/changes/
+if ($Target -notmatch 'docs/rein/changes/.*task\.md$') { exit 0 }
 
 # Check if the file exists
 if (-not (Test-Path $Target)) { exit 0 }

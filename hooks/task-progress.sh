@@ -15,14 +15,13 @@ TARGET=$(echo "$TOOL_INPUT" | sed -n 's/.*"file_path"\s*:\s*"\([^"]*\)".*/\1/p')
 TARGET=$(echo "$TARGET" | sed 's/\\\\/\\/g' | tr '\\' '/')
 
 # Skip task.md edits (avoid recursive triggers)
-echo "$TARGET" | grep -qE 'docs/rein/tasks/.*task\.md$' && exit 0
+echo "$TARGET" | grep -qE 'docs/rein/changes/.*task\.md$' && exit 0
 
 # Extract short filename for matching
 EDITED_FILE=$(basename "$TARGET")
 
-TASKS_DIR="${CLAUDE_PROJECT_DIR}/docs/rein/tasks"
-PLANS_DIR="${CLAUDE_PROJECT_DIR}/docs/rein/plans"
-[ -d "$TASKS_DIR" ] || exit 0
+CHANGES_DIR="${CLAUDE_PROJECT_DIR}/docs/rein/changes"
+[ -d "$CHANGES_DIR" ] || exit 0
 
 MATCHED_TASK=""
 MATCHED_TASKFILE=""
@@ -37,40 +36,40 @@ extract_refs() {
     echo "$bt_refs $plain_refs"
 }
 
-# Phase 1: Scan tasks.md for file references in task lines
-for taskfile in "$TASKS_DIR"/*task.md; do
-    [ -f "$taskfile" ] || continue
+# Scan each feature directory
+for feature_dir in "$CHANGES_DIR"/*/; do
+    [ -d "$feature_dir" ] || continue
+    taskfile="$feature_dir/task.md"
+    planfile="$feature_dir/plan.md"
 
-    while IFS= read -r line; do
-        # Only process unchecked tasks
-        echo "$line" | grep -qE '^\s*- \[ \]' || continue
+    # Phase 1: Scan task.md for file references in task lines
+    if [ -f "$taskfile" ]; then
+        while IFS= read -r line; do
+            # Only process unchecked tasks
+            echo "$line" | grep -qE '^\s*- \[ \]' || continue
 
-        # Extract task number (e.g., "1.1" from "- [ ] 1.1 ...")
-        TASK_NUM=$(echo "$line" | sed -n 's/^\s*- \[ \] \([0-9]\+\.[0-9]\+\).*/\1/p')
-        [ -n "$TASK_NUM" ] || continue
+            # Extract task number (e.g., "1.1" from "- [ ] 1.1 ...")
+            TASK_NUM=$(echo "$line" | sed -n 's/^\s*- \[ \] \([0-9]\+\.[0-9]\+\).*/\1/p')
+            [ -n "$TASK_NUM" ] || continue
 
-        REFS=$(extract_refs "$line")
-        for ref in $REFS; do
-            [ -z "$ref" ] && continue
-            REF_BASE=$(basename "$ref")
-            if [ "$REF_BASE" = "$EDITED_FILE" ]; then
-                MATCHED_TASK="$TASK_NUM"
-                MATCHED_TASKFILE="$taskfile"
-                break 2
-            fi
-        done
-    done < "$taskfile"
-done
+            REFS=$(extract_refs "$line")
+            for ref in $REFS; do
+                [ -z "$ref" ] && continue
+                REF_BASE=$(basename "$ref")
+                if [ "$REF_BASE" = "$EDITED_FILE" ]; then
+                    MATCHED_TASK="$TASK_NUM"
+                    MATCHED_TASKFILE="$taskfile"
+                    break 2
+                fi
+            done
+        done < "$taskfile"
+    fi
 
-# Phase 2: If no match in tasks.md, scan plan.md **Files:** fields
-FOUND=0
-if [ -z "$MATCHED_TASK" ] && [ -d "$PLANS_DIR" ]; then
-    for planfile in "$PLANS_DIR"/*plan.md; do
-        [ "$FOUND" = "1" ] && break
-        [ -f "$planfile" ] || continue
+    # Phase 2: If no match in task.md, scan plan.md **Files:** fields
+    if [ -z "$MATCHED_TASK" ] && [ -f "$planfile" ] && [ -f "$taskfile" ]; then
         CURRENT_TASK=""
         while IFS= read -r line; do
-            [ "$FOUND" = "1" ] && break
+            [ -n "$MATCHED_TASK" ] && break
             # Track current task section: ### 1.1 ...
             if echo "$line" | grep -qE '^### [0-9]+\.[0-9]+'; then
                 CURRENT_TASK=$(echo "$line" | sed -n 's/^### \([0-9]\+\.[0-9]\+\).*/\1/p')
@@ -82,23 +81,20 @@ if [ -z "$MATCHED_TASK" ] && [ -d "$PLANS_DIR" ]; then
                     [ -z "$ref" ] && continue
                     REF_BASE=$(basename "$ref")
                     if [ "$REF_BASE" = "$EDITED_FILE" ]; then
-                        # Find taskfile with this unchecked task
-                        for tf in "$TASKS_DIR"/*task.md; do
-                            [ -f "$tf" ] || continue
-                            if grep -qE "^\s*- \[ \] ${CURRENT_TASK}" "$tf"; then
-                                MATCHED_TASK="$CURRENT_TASK"
-                                MATCHED_TASKFILE="$tf"
-                                FOUND=1
-                                break
-                            fi
-                        done
-                        [ "$FOUND" = "1" ] && break
+                        # Find this unchecked task in task.md
+                        if grep -qE "^\s*- \[ \] ${CURRENT_TASK}" "$taskfile"; then
+                            MATCHED_TASK="$CURRENT_TASK"
+                            MATCHED_TASKFILE="$taskfile"
+                            break
+                        fi
                     fi
                 done
             fi
         done < "$planfile"
-    done
-fi
+    fi
+
+    [ -n "$MATCHED_TASK" ] && break
+done
 
 if [ -n "$MATCHED_TASK" ] && [ -n "$MATCHED_TASKFILE" ]; then
     # Escape dots for sed pattern

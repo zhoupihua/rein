@@ -58,12 +58,12 @@ digraph process {
         "Mark task complete in tasks.md and TodoWrite" [shape=box];
     }
 
-    "Read docs/rein/plans/<name>-plan.md for architecture + docs/rein/tasks/<name>-task.md for task list, create TodoWrite" [shape=box];
+    "Read docs/rein/changes/<name>/plan.md for architecture + docs/rein/changes/<name>/task.md for task list, create TodoWrite" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
     "Use rein:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Read docs/rein/plans/<name>-plan.md for architecture + docs/rein/tasks/<name>-task.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Read docs/rein/changes/<name>/plan.md for architecture + docs/rein/changes/<name>/task.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
     "Implementer subagent asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Dispatch implementer subagent (./implementer-prompt.md)";
@@ -128,7 +128,7 @@ During execution, use **plan.md** as the implementation reference and **tasks.md
 
 **After each task is verified complete** (whether through full review or justified skip), the controller executes this two-step sequence — **both steps are required**:
 
-1. **Edit** `docs/rein/tasks/YYYY-MM-DD-<name>-task.md` — change the task's `- [ ]` to `- [x]`
+1. **Edit** `docs/rein/changes/<name>/task.md` — change the task's `- [ ]` to `- [x]`
 2. **Read** the same file back — confirm the checkbox now shows `- [x]`. If not, fix it immediately.
 
 Only after both steps are done may you proceed to the next task.
@@ -152,8 +152,8 @@ The tasks.md checkbox state is the **single source of truth** for progress — `
 ```
 You: I'm using Subagent-Driven Development to execute this plan.
 
-[Read docs/rein/plans/YYYY-MM-DD-<name>-plan.md for architecture context]
-[Read docs/rein/tasks/YYYY-MM-DD-<name>-task.md for task list]
+[Read docs/rein/changes/<name>/plan.md for architecture context]
+[Read docs/rein/changes/<name>/task.md for task list]
 [Create TodoWrite with all tasks]
 
 Task 1: Hook installation script
@@ -178,8 +178,8 @@ Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
 [Get git SHAs, dispatch code quality reviewer]
 Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
 
-[Edit docs/rein/tasks/YYYY-MM-DD-<name>-task.md: change "- [ ] 1.1 ..." to "- [x] 1.1 ..."]
-[Read docs/rein/tasks/YYYY-MM-DD-<name>-task.md — confirm 1.1 shows "- [x]"]
+[Edit docs/rein/changes/<name>/task.md: change "- [ ] 1.1 ..." to "- [x] 1.1 ..."]
+[Read docs/rein/changes/<name>/task.md — confirm 1.1 shows "- [x]"]
 
 Task 2: Recovery modes
 
@@ -213,8 +213,8 @@ Implementer: Extracted PROGRESS_INTERVAL constant
 [Code reviewer reviews again]
 Code reviewer: ✅ Approved
 
-[Edit docs/rein/tasks/YYYY-MM-DD-<name>-task.md: change "- [ ] 2.1 ..." to "- [x] 2.1 ..."]
-[Read docs/rein/tasks/YYYY-MM-DD-<name>-task.md — confirm 2.1 shows "- [x]"]
+[Edit docs/rein/changes/<name>/task.md: change "- [ ] 2.1 ..." to "- [x] 2.1 ..."]
+[Read docs/rein/changes/<name>/task.md — confirm 2.1 shows "- [x]"]
 
 ...
 

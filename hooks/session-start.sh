@@ -14,10 +14,10 @@ if [ -f "$SKILL_FILE" ]; then
   CONTENT=$(cat "$SKILL_FILE" | sed 's/\\/\\\\/g; s/"/\\"/g; s/\t/\\t/g' | sed ':a;N;$!ba;s/\n/\\n/g')
 
   # Scan for active tasks
-  TASKS_DIR="${CLAUDE_PROJECT_DIR}/docs/rein/tasks"
+  CHANGES_DIR="${CLAUDE_PROJECT_DIR}/docs/rein/changes"
   ACTIVE_MSG=""
-  if [ -d "$TASKS_DIR" ]; then
-    for taskfile in "$TASKS_DIR"/*task.md; do
+  if [ -d "$CHANGES_DIR" ]; then
+    for taskfile in "$CHANGES_DIR"/*/task.md; do
       [ -f "$taskfile" ] || continue
       UNCHECKED=$(grep -cE '^\s*- \[ \]' "$taskfile" 2>/dev/null || echo "0")
       if [ "$UNCHECKED" -gt 0 ]; then

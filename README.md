@@ -161,9 +161,9 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 | 检测条件 | 阶段 | 调用技能 |
 |----------|------|----------|
-| `docs/rein/specs/` 无文件 | DEFINE | refine |
-| `docs/rein/plans/` 无文件 | PLAN | planning |
-| `docs/rein/tasks/` 有未勾选项 | BUILD | incremental + TDD |
+| `docs/rein/changes/<name>/` 无 refine.md | DEFINE | refine |
+| `docs/rein/changes/<name>/` 无 plan.md | PLAN | planning |
+| `docs/rein/changes/<name>/task.md` 有未勾选项 | BUILD | incremental + TDD |
 | 任务全勾选，无审查 | REVIEW | code-review |
 | 审查完成，未提交 | SHIP | git-workflow |
 
@@ -182,8 +182,8 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 | Command | Purpose | Output |
 |---------|---------|--------|
-| `/spec` | Generate design spec | `docs/rein/specs/` |
-| `/plan` | Break spec into tasks with dependency graph | `docs/rein/plans/` + `docs/rein/tasks/` |
+| `/spec` | Generate design spec | `docs/rein/changes/<name>/design.md` |
+| `/plan` | Break spec into tasks with dependency graph | `docs/rein/changes/<name>/plan.md` + `docs/rein/changes/<name>/task.md` |
 | `/do` | Execute tasks from tasks file | Code + commits |
 | `/test` | TDD workflow | Tests passing |
 | `/code-review` | 5-axis code review + security + performance | Review report |
@@ -264,26 +264,29 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 <project-root>/
 └── docs/
     └── rein/
-        ├── specs/                 # Design specs only (no tasks)
-        │   └── YYYY-MM-DD-<name>-spec.md
-        ├── plans/                 # Implementation plans (decision layer)
-        │   └── YYYY-MM-DD-<name>-plan.md
-        ├── tasks/                 # Task checklists (single source of truth)
-        │   └── YYYY-MM-DD-<name>-task.md
+        ├── changes/               # Active feature work
+        │   └── <name>/            # One directory per feature
+        │       ├── refine.md      # Step 1: Refined idea
+        │       ├── spec.md        # Step 2: PRD specification
+        │       ├── design.md      # Step 3: Design decisions
+        │       ├── plan.md        # Step 5: Implementation plan (decision layer)
+        │       ├── task.md        # Step 5: Task checklist (single source of truth)
+        │       └── review.md      # Step 7: Code review report
         └── archive/               # Archived artifacts
-            └── YYYY-MM-DD-<name>/
+            └── <name>/
 ```
 
-- **specs/** 只放设计文档（需求、决策、风险），不放任务清单
-- **tasks/** 是任务的唯一来源，由 `/plan` 生成，由 `/do` 执行并勾选
-- 工件按日期前缀 + 主题命名，同一特性的 spec/plan/tasks 共享相同前缀
+- **changes/<name>/** 每个功能一个目录，所有工件集中管理
+- **task.md** 是任务的唯一来源，由 `/plan` 生成，由 `/do` 执行并勾选
+- 同一功能的 refine/spec/design/plan/task/review 都在同一个目录下
 
 ### 生成流程
 
 ```
-/spec  → specs/ (设计文档，不含任务)
-/plan  → plans/ (决策层) + tasks/ (执行层，唯一任务源)
-/do    → 读 tasks/ 逐项执行，勾选 [x]
+/refine → changes/<name>/refine.md
+/spec   → changes/<name>/spec.md + design.md
+/plan   → changes/<name>/plan.md + task.md
+/do     → 读 task.md 逐项执行，勾选 [x]
 ```
 
 ## File Protection

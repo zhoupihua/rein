@@ -134,8 +134,8 @@ OpenSpec CLI 的每个功能都有替代实现：
 | `openspec init` | 创建制品目录 | install 脚本创建 `docs/rein/` 目录 |
 | `openspec update` | 生成 `.claude/skills/` 等指令文件 | 不需要——我们自己写 skills，不存在自动生成 |
 | `openspec validate` | 验证制品完整性 | `spec` 命令内置验证步骤（AI 检查制品是否齐全）|
-| `openspec list` | 列出变更 | `continue` 命令扫描 `docs/rein/tasks/` 目录 |
-| `openspec status` | 查看制品进度 | `continue` 命令读取 `tasks.md` checkbox 状态 |
+| `openspec list` | 列出变更 | `continue` 命令扫描 `docs/rein/changes/` 目录 |
+| `openspec status` | 查看制品进度 | `continue` 命令读取 `task.md` checkbox 状态 |
 | `openspec archive` | 归档 | `ship` 命令结尾执行归档（mv 到 `docs/rein/archive/`） |
 | `/opsx:propose` | 提出变更 + 生成制品 | `spec` 命令（生成设计规格，不含任务）|
 | `/opsx:explore` | 探索性对话 | `spec` 命令（内置 explore 模式）|
@@ -151,17 +151,19 @@ OpenSpec CLI 的每个功能都有替代实现：
 <project-root>/
 └── docs/
     └── rein/
-        ├── specs/                 # 设计规格（长期存在）
-        │   └── YYYY-MM-DD-<name>-spec.md
-        ├── plans/                 # 实现计划（决策层）
-        │   └── YYYY-MM-DD-<name>-plan.md
-        ├── tasks/                 # 任务清单（执行层，checkbox 格式）
-        │   └── YYYY-MM-DD-<name>-task.md
+        ├── changes/               # 活跃的功能变更
+        │   └── <name>/            # 每个功能一个目录
+        │       ├── refine.md      # Step 1: 精炼后的想法
+        │       ├── spec.md        # Step 2: PRD 规格
+        │       ├── design.md      # Step 3: 设计决策
+        │       ├── plan.md        # Step 5: 实现计划（决策层）
+        │       ├── task.md        # Step 5: 任务清单（执行层，唯一任务源）
+        │       └── review.md      # Step 7: 代码审查报告
         └── archive/               # 已归档变更
-            └── YYYY-MM-DD-<name>/
+            └── <name>/
 ```
 
-> 工件按日期前缀 + 主题命名，同一特性的 spec/plan/tasks 共享相同前缀，便于关联。
+> 每个功能一个目录，所有工件集中管理。同一功能的 refine/spec/design/plan/task/review 都在同一个目录下。
 
 ### 制品模板（templates/）
 
@@ -252,7 +254,7 @@ Bug: debugging → tdd → verify → 提交
 ```
 1. refine → 发散/收敛，输出 one-pager
 2. spec-driven → 生成 PRD
-3. spec → 生成 `docs/rein/specs/` 设计文档（不含任务）
+3. spec → 生成 `docs/rein/changes/<name>/design.md` 设计文档（不含任务）
 4. git-worktrees → 分支隔离 + baseline
 5. planning → 细化任务
 6. incremental + tdd → 实现
@@ -267,7 +269,7 @@ Bug: debugging → tdd → verify → 提交
    → git-workflow → 提交
    → shipping → 发布检查
    → docs-and-adrs → 文档
-   → 归档 `docs/rein/` 制品到 `docs/rein/archive/`
+   → 归档：移动 `docs/rein/changes/<name>/` 到 `docs/rein/archive/<name>/`
 ```
 
 **`/triage`** — 自动分级判定
@@ -315,7 +317,7 @@ powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 
 ### install 脚本做的事
 
-1. 创建制品目录：`docs/rein/specs/`、`docs/rein/plans/`、`docs/rein/tasks/`、`docs/rein/archive/`
+1. 创建制品目录：`docs/rein/changes/`、`docs/rein/archive/`
 2. 创建 `.claude/commands/` 目录，将 `commands/*.md` 复制进去
 3. 创建 `.claude/skills/` 目录，将 `skills/` 复制进去
 4. 创建 `.claude/agents/` 目录，将 `agents/*.md` 复制进去
@@ -342,7 +344,7 @@ install 脚本检测平台，如果是 Codex CLI：
 1. 运行 install 脚本，确认目录和文件全部创建
 2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-rein 元技能
 3. 测试 `/triage`：输入一个变更描述，确认正确分级
-4. 测试 `/spec test-feature`：确认生成 `docs/rein/specs/` 设计文档
+4. 测试 `/spec test-feature`：确认生成 `docs/rein/changes/test-feature/design.md` 设计文档
 5. 测试 `/do`：确认读取 tasks.md 并执行
 6. 测试 `/ship`：确认 fan-out 3 专家代理
 7. 测试 `/continue`：中断后确认能恢复

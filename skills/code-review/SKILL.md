@@ -253,7 +253,7 @@ Before adding any dependency:
 
 ## Review Report
 
-After completing the review (L3 feature workflow only), save a review report to `docs/rein/reviews/YYYY-MM-DD-<name>-review.md`.
+After completing the review (L3 feature workflow only), save a review report to `docs/rein/changes/<name>/review.md`.
 
 **Report template:**
 
