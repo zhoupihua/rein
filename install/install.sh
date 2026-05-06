@@ -204,7 +204,7 @@ echo "  5. format          — Auto-format with Prettier (PostToolUse: Write|Edi
 echo "  6. checkbox-guard  — Warn when task checkbox not updated (PostToolUse: Write|Edit|MultiEdit)"
 echo "  7. leak-guard      — Block secrets in output (PostToolUse: Read|Bash)"
 echo "  8. inject          — Inject review checklist (UserPromptExpansion: /code-review)"
-echo "  9. task-progress   — Inject task progress after code edits (PostToolUse: Write|Edit|MultiEdit)"
+echo "  9. task-progress   — Auto-check task checkboxes on file match (PostToolUse: Write|Edit|MultiEdit)"
 echo ""
 echo "Protection:"
 echo "  rein-managed files are listed in .claude/.rein-manifest"

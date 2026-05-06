@@ -205,7 +205,7 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 | gate | PreToolUse | Bash | deploy/push/publish 前自动跑测试 |
 | format | PostToolUse | Write\|Edit\|MultiEdit | 自动 Prettier 格式化 |
 | checkbox-guard | PostToolUse | Write\|Edit\|MultiEdit | 编辑 task 文件未更新 checkbox 时警告 |
-| task-progress | PostToolUse | Write\|Edit\|MultiEdit | 代码编辑后注入任务进度，让 AI 可见 checkbox 状态 |
+| task-progress | PostToolUse | Write\|Edit\|MultiEdit | 编辑代码文件时自动勾选匹配的 task checkbox |
 | leak-guard | PostToolUse | Read\|Bash | 拦截密钥泄露 (AKIA/sk-/ghp_) |
 | inject | UserPromptExpansion | /code-review | 注入审查清单 |
 

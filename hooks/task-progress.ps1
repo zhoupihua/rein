@@ -22,9 +22,27 @@ $EditedFile = [System.IO.Path]::GetFileName($Target)
 $TasksDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\tasks"
 if (-not (Test-Path $TasksDir)) { exit 0 }
 
+$PlansDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\plans"
 $MatchedTask = ""
 $MatchedTaskfile = $null
 
+# Code file extensions for plain filename matching
+$CodeExts = @('go','ts','tsx','js','jsx','py','rs','java','rb','sql','yaml','yml','json','toml','proto','graphql','css','scss','html','sh','ps1','mod','sum','env','conf','xml','dart','swift','kt','c','cpp','h','hpp','php','tf','lock','txt','md')
+$ExtPattern = ($CodeExts | ForEach-Object { [regex]::Escape($_) }) -join '|'
+
+function Extract-Refs {
+    param([string]$Line)
+    $refs = @()
+    # 1. Backtick-enclosed references
+    $btRefs = [regex]::Matches($Line, '`([^`]+)`') | ForEach-Object { $_.Groups[1].Value }
+    $refs += $btRefs
+    # 2. Plain filenames with code extensions (excludes task numbers like 1.1)
+    $plainRefs = [regex]::Matches($Line, "(?i)\b[A-Za-z0-9_/.-]+\.($ExtPattern)\b") | ForEach-Object { $_.Value }
+    $refs += $plainRefs
+    return $refs | Select-Object -Unique
+}
+
+# Phase 1: Scan tasks.md for file references in task lines
 foreach ($taskfile in Get-ChildItem "$TasksDir\*task.md" -File) {
     $content = Get-Content $taskfile
 
@@ -35,8 +53,7 @@ foreach ($taskfile in Get-ChildItem "$TasksDir\*task.md" -File) {
             $taskNum = $Matches[1]
         } else { continue }
 
-        # Extract backtick file references
-        $refs = [regex]::Matches($line, '`([^`]+)`') | ForEach-Object { $_.Groups[1].Value }
+        $refs = Extract-Refs -Line $line
 
         foreach ($ref in $refs) {
             $refBase = [System.IO.Path]::GetFileName($ref)
@@ -53,7 +70,46 @@ foreach ($taskfile in Get-ChildItem "$TasksDir\*task.md" -File) {
     if ($MatchedTask) { break }
 }
 
-if ($MatchedTask) {
+# Phase 2: If no match in tasks.md, scan plan.md **Files:** fields
+if (-not $MatchedTask -and (Test-Path $PlansDir)) {
+    foreach ($planfile in Get-ChildItem "$PlansDir\*plan.md" -File) {
+        $planContent = Get-Content $planfile
+        $currentTask = ""
+
+        foreach ($line in $planContent) {
+            # Track current task section: ### 1.1 ...
+            if ($line -match '^### (\d+\.\d+)') {
+                $currentTask = $Matches[1]
+            }
+
+            # Check **Files:** line within a task section
+            if ($currentTask -and $line -match '\*\*Files\*\*:') {
+                $refs = Extract-Refs -Line $line
+
+                foreach ($ref in $refs) {
+                    $refBase = [System.IO.Path]::GetFileName($ref)
+                    if ($refBase -eq $EditedFile) {
+                        # Find taskfile with this unchecked task
+                        foreach ($tf in Get-ChildItem "$TasksDir\*task.md" -File) {
+                            $tfContent = Get-Content $tf
+                            if ($tfContent | Where-Object { $_ -match "^\s*- \[ \] $currentTask" }) {
+                                $MatchedTask = $currentTask
+                                $MatchedTaskfile = $tf
+                                break
+                            }
+                        }
+                        if ($MatchedTask) { break }
+                    }
+                }
+                if ($MatchedTask) { break }
+            }
+        }
+
+        if ($MatchedTask) { break }
+    }
+}
+
+if ($MatchedTask -and $MatchedTaskfile) {
     # Auto-check
     $pattern = "- [ ] $MatchedTask"
     $replacement = "- [x] $MatchedTask"

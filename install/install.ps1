@@ -222,7 +222,7 @@ Write-Host "  5. format          - Auto-format with Prettier (PostToolUse: Write
 Write-Host "  6. checkbox-guard  - Warn when task checkbox not updated (PostToolUse: Write|Edit|MultiEdit)"
 Write-Host "  7. leak-guard      - Block secrets in output (PostToolUse: Read|Bash)"
 Write-Host "  8. inject          - Inject review checklist (UserPromptExpansion: /code-review)"
-Write-Host "  9. task-progress   - Inject task progress after code edits (PostToolUse: Write|Edit|MultiEdit)"
+Write-Host "  9. task-progress   - Auto-check task checkboxes on file match (PostToolUse: Write|Edit|MultiEdit)"
 Write-Host ""
 Write-Host "Protection:" -ForegroundColor Cyan
 Write-Host "  rein-managed files are listed in .claude/.rein-manifest"
