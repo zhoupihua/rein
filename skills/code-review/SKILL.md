@@ -251,6 +251,44 @@ Before adding any dependency:
 - No regression tests with bug fix PRs
 - Review comments without severity labels
 
+## Review Report
+
+After completing the review (L3 feature workflow only), save a review report to `docs/rein/reviews/YYYY-MM-DD-<name>-review.md`.
+
+**Report template:**
+
+```markdown
+# Review: <name>
+
+## 范围
+- 分支: <branch-name>
+- 提交: <commit-range>
+- 文件: <N> changed
+- 行数: +<N> / -<N>
+
+## 五轴评分
+
+| 维度 | 评分 | 说明 |
+|------|------|------|
+| 正确性 | ✅/⚠️/❌ | |
+| 可读性 | ✅/⚠️/❌ | |
+| 架构 | ✅/⚠️/❌ | |
+| 安全性 | ✅/⚠️/❌ | |
+| 性能 | ✅/⚠️/❌ | |
+
+## 发现
+
+| 级别 | 问题 | 位置 | 状态 |
+|------|------|------|------|
+| Critical/Important/Nit/Suggestion | <描述> | <file:line> | 已修复/待修复/忽略(原因) |
+
+## 结论
+- [ ] **通过** — 可以合并
+- [ ] **需修改** — 上述问题解决后重新审查
+```
+
+Commit the report after saving.
+
 ## Verification
 
 After review is complete:

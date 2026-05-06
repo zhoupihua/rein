@@ -38,7 +38,7 @@ Routing:
 - Hit a bug → invoke `debugging`
 
 ### Step 7: Code Review
-Invoke `code-review` skill. Five-axis review: Correctness, Readability, Architecture, Security, Performance.
+Invoke `code-review` skill. Five-axis review: Correctness, Readability, Architecture, Security, Performance. Save review report to `docs/rein/reviews/YYYY-MM-DD-<name>-review.md` and commit.
 
 If issues found:
 - Security concerns → invoke `security`
