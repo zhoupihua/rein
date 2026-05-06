@@ -35,6 +35,8 @@ func runHook(cmd *cobra.Command, args []string) error {
 		hook.TaskProgress()
 	case "leak-guard":
 		hook.LeakGuard()
+	case "artifact-validate":
+		hook.ArtifactValidate()
 	case "inject":
 		hook.Inject()
 	default:

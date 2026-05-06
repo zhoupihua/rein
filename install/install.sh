@@ -134,7 +134,8 @@ rein_hooks = {
         {"matcher": "Write|Edit|MultiEdit", "hooks": [
             {"type": "command", "command": f"{hook_cmd} format"},
             {"type": "command", "command": f"{hook_cmd} checkbox-guard"},
-            {"type": "command", "command": f"{hook_cmd} task-progress"}
+            {"type": "command", "command": f"{hook_cmd} task-progress"},
+            {"type": "command", "command": f"{hook_cmd} artifact-validate"}
         ]},
         {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": f"{hook_cmd} leak-guard"}]}
     ],
@@ -181,7 +182,8 @@ PYEOF
       {"matcher": "Write|Edit|MultiEdit", "hooks": [
         {"type": "command", "command": "$hook_cmd format"},
         {"type": "command", "command": "$hook_cmd checkbox-guard"},
-        {"type": "command", "command": "$hook_cmd task-progress"}
+        {"type": "command", "command": "$hook_cmd task-progress"},
+        {"type": "command", "command": "$hook_cmd artifact-validate"}
       ]},
       {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": "$hook_cmd leak-guard"}]}
     ],

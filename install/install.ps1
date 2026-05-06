@@ -52,7 +52,7 @@ function Configure-Settings([string]$SettingsFile, [string]$HookCmd) {
             [PSCustomObject]@{matcher = "Bash"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd guard-bash"}, [PSCustomObject]@{type = "command"; command = "$HookCmd gate"})}
         )
         $reinHooks["PostToolUse"] = @(
-            [PSCustomObject]@{matcher = "Write|Edit|MultiEdit"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd format"}, [PSCustomObject]@{type = "command"; command = "$HookCmd checkbox-guard"}, [PSCustomObject]@{type = "command"; command = "$HookCmd task-progress"})},
+            [PSCustomObject]@{matcher = "Write|Edit|MultiEdit"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd format"}, [PSCustomObject]@{type = "command"; command = "$HookCmd checkbox-guard"}, [PSCustomObject]@{type = "command"; command = "$HookCmd task-progress"}, [PSCustomObject]@{type = "command"; command = "$HookCmd artifact-validate"})},
             [PSCustomObject]@{matcher = "Read|Bash"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd leak-guard"})}
         )
         $reinHooks["UserPromptExpansion"] = @([PSCustomObject]@{matcher = "code-review"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd inject"})})
@@ -95,7 +95,8 @@ function Configure-Settings([string]$SettingsFile, [string]$HookCmd) {
       {"matcher": "Write|Edit|MultiEdit", "hooks": [
         {"type": "command", "command": "$HookCmd format"},
         {"type": "command", "command": "$HookCmd checkbox-guard"},
-        {"type": "command", "command": "$HookCmd task-progress"}
+        {"type": "command", "command": "$HookCmd task-progress"},
+        {"type": "command", "command": "$HookCmd artifact-validate"}
       ]},
       {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": "$HookCmd leak-guard"}]}
     ],

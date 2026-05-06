@@ -8,28 +8,51 @@ if (Test-Path $SkillFile) {
     # Escape for JSON
     $Content = $Content -replace '\\', '\\' -replace '"', '\"' -replace "`t", '\t' -replace "`r`n", '\n' -replace "`n", '\n'
 
-    # Scan for active tasks
+    # Scan for active features and their status
     $ChangesDir = Join-Path $env:CLAUDE_PROJECT_DIR "docs\rein\changes"
     if (Test-Path $ChangesDir) {
         $FeatureDirs = Get-ChildItem $ChangesDir -Directory
         foreach ($FeatureDir in $FeatureDirs) {
+            $FName = $FeatureDir.Name
+
+            # Check for active tasks
             $TaskFile = Join-Path $FeatureDir.FullName "task.md"
-            if (-not (Test-Path $TaskFile)) { continue }
-            $Unchecked = (Select-String -Path $TaskFile -Pattern '^\s*- \[ \]' -SimpleMatch:$false).Count
-            if ($Unchecked -gt 0) {
-                $FName = $FeatureDir.Name
-                $ActiveMsg = "\n\nACTIVE TASKS: $Unchecked unchecked task(s) in $FName. Use /continue to resume or /status to check progress."
-                $Content = $Content + $ActiveMsg
-                break
+            if (Test-Path $TaskFile) {
+                $Unchecked = (Select-String -Path $TaskFile -Pattern '^\s*- \[ \]' -SimpleMatch:$false).Count
+                if ($Unchecked -gt 0) {
+                    $ActiveMsg = "\n\nACTIVE TASKS: $Unchecked unchecked task(s) in $FName. Use /continue to resume or /status to check progress."
+                    $Content = $Content + $ActiveMsg
+                }
             }
-        }
-    }
-            $Unchecked = (Select-String -Path $TaskFile.FullName -Pattern '^\s*- \[ \]' -SimpleMatch:$false).Count
-            if ($Unchecked -gt 0) {
-                $FName = $TaskFile.Name
-                $ActiveMsg = "\n\nACTIVE TASKS: $Unchecked unchecked task(s) in $FName. Use /continue to resume or /status to check progress."
-                $Content = $Content + $ActiveMsg
-                break
+
+            # Check phase completeness
+            # DEFINE: refine.md, spec.md, design.md
+            $DefineMissing = @()
+            if (-not (Test-Path (Join-Path $FeatureDir.FullName "refine.md"))) { $DefineMissing += " refine.md" }
+            if (-not (Test-Path (Join-Path $FeatureDir.FullName "spec.md"))) { $DefineMissing += " spec.md" }
+            if (-not (Test-Path (Join-Path $FeatureDir.FullName "design.md"))) { $DefineMissing += " design.md" }
+            $HasDefineArtifact = (Test-Path (Join-Path $FeatureDir.FullName "refine.md")) -or (Test-Path (Join-Path $FeatureDir.FullName "spec.md")) -or (Test-Path (Join-Path $FeatureDir.FullName "design.md"))
+            if ($DefineMissing.Count -gt 0 -and $HasDefineArtifact) {
+                $MissingStr = $DefineMissing -join ""
+                $Content = $Content + "\n⚠️ DEFINE stage incomplete, missing:$MissingStr"
+            }
+
+            # PLAN: plan.md, task.md
+            $PlanMissing = @()
+            if (-not (Test-Path (Join-Path $FeatureDir.FullName "plan.md"))) { $PlanMissing += " plan.md" }
+            if (-not (Test-Path (Join-Path $FeatureDir.FullName "task.md"))) { $PlanMissing += " task.md" }
+            $HasPlanArtifact = (Test-Path (Join-Path $FeatureDir.FullName "plan.md")) -or (Test-Path (Join-Path $FeatureDir.FullName "task.md"))
+            if ($PlanMissing.Count -gt 0 -and $HasPlanArtifact) {
+                $MissingStr = $PlanMissing -join ""
+                $Content = $Content + "\n⚠️ PLAN stage incomplete, missing:$MissingStr"
+            }
+
+            # REVIEW: review.md (only check if tasks are all done)
+            if (Test-Path $TaskFile) {
+                $UncheckedR = (Select-String -Path $TaskFile -Pattern '^\s*- \[ \]' -SimpleMatch:$false).Count
+                if ($UncheckedR -eq 0 -and -not (Test-Path (Join-Path $FeatureDir.FullName "review.md"))) {
+                    $Content = $Content + "\n⚠️ REVIEW stage incomplete, missing: review.md"
+                }
             }
         }
     }
