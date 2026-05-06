@@ -198,7 +198,7 @@ if ($Global) {
 
     # [4/8] Configure settings.json (hooks use $CLAUDE_CONFIG_DIR)
     Write-Host "[4/8] Configuring settings.json..." -ForegroundColor Yellow
-    $HookCmd = '$CLAUDE_CONFIG_DIR/bin/rein.exe hook'
+    $HookCmd = '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein.exe hook'
     Configure-Settings "$ConfigDir\settings.json" $HookCmd
 
     # Clean up old bash/ps1 hooks
@@ -276,7 +276,7 @@ if ($Global) {
 
     # [4/6] Configure settings.json (hooks use global binary)
     Write-Host "[4/6] Configuring settings.json..." -ForegroundColor Yellow
-    $HookCmd = '$CLAUDE_CONFIG_DIR/bin/rein.exe hook'
+    $HookCmd = '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein.exe hook'
     Configure-Settings "$ClaudeDir\settings.json" $HookCmd
 
     # Clean up old bash/ps1 hooks

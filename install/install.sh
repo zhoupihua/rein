@@ -222,7 +222,7 @@ if [ "$GLOBAL" = true ]; then
 
     # [4/8] Configure settings.json (hooks use $CLAUDE_CONFIG_DIR)
     echo "[4/8] Configuring settings.json..."
-    HOOK_CMD='$CLAUDE_CONFIG_DIR/bin/rein hook'
+    HOOK_CMD='${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein hook'
     configure_settings "$CONFIG_DIR/settings.json" "$HOOK_CMD"
 
     # Clean up old bash/ps1 hooks
@@ -311,7 +311,7 @@ else
 
     # [4/6] Configure settings.json (hooks use global binary)
     echo "[4/6] Configuring settings.json..."
-    HOOK_CMD='$CLAUDE_CONFIG_DIR/bin/rein hook'
+    HOOK_CMD='${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein hook'
     configure_settings "$CLAUDE_DIR/settings.json" "$HOOK_CMD"
 
     # Clean up old bash/ps1 hooks
