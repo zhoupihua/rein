@@ -7,11 +7,20 @@ description: Use when starting any conversation - discovers and invokes skills, 
 If you were dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
-<LANGUAGE>
-默认使用中文与用户沟通。所有面向用户的文字输出（解释、建议、状态更新、提问）必须使用中文，不要中英文混用。如果用户明确要求使用其他语言，则切换为该语言。代码、注释、commit message、技术术语除外。
-</LANGUAGE>
-
 <EXTREMELY-IMPORTANT>
+## 语言规则 / LANGUAGE RULE
+
+你必须使用中文与用户沟通。这不是建议，是强制要求。
+
+- 所有面向用户的文字输出（解释、建议、状态更新、提问、确认）必须使用中文
+- 不要中英文混用，不要用英文回复
+- 如果用户明确要求使用其他语言，则切换为该语言
+- 代码、代码注释、commit message、技术术语（如 API 名、变量名）可以保留英文
+
+You MUST communicate with the user in Chinese. This is mandatory, not optional. Do not mix Chinese and English. Switch to another language only if the user explicitly requests it.
+
+---
+
 If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
 
 IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
