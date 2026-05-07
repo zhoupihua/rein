@@ -25,7 +25,7 @@ If you think there is even a 1% chance a skill might apply to what you are doing
 
 IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
 
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
+This is not negotiable. This is not optional. You cannot rationalize your way out of it.
 </EXTREMELY-IMPORTANT>
 
 ## Instruction Priority
@@ -63,7 +63,7 @@ digraph skill_flow {
     "User message received" [shape=doublecircle];
     "About to EnterPlanMode?" [shape=doublecircle];
     "Already brainstormed?" [shape=diamond];
-    "Invoke refine skill" [shape=box];
+    "Invoke define skill" [shape=box];
     "Might any skill apply?" [shape=diamond];
     "Invoke Skill tool" [shape=box];
     "Announce: 'Using [skill] to [purpose]'" [shape=box];
@@ -73,9 +73,9 @@ digraph skill_flow {
     "Respond (including clarifications)" [shape=doublecircle];
 
     "About to EnterPlanMode?" -> "Already brainstormed?";
-    "Already brainstormed?" -> "Invoke refine skill" [label="no"];
+    "Already brainstormed?" -> "Invoke define skill" [label="no"];
     "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
-    "Invoke refine skill" -> "Might any skill apply?";
+    "Invoke define skill" -> "Might any skill apply?";
 
     "User message received" -> "Might any skill apply?";
     "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
@@ -95,28 +95,23 @@ When a task arrives, identify the development phase and apply the corresponding 
 ```
 Task arrives
     │
-    ├── Vague idea/need refinement? ──→ refine
-    ├── New project/feature/change? ──→ spec-driven
-    ├── Have a spec, need tasks? ──────→ planning
-    ├── Implementing code? ────────────→ incremental
-    │   ├── UI work? ─────────────────→ frontend
-    │   ├── API work? ────────────────→ api-design
-    │   ├── Parallel tasks? ─────────→ subagent
-    │   ├── Need better context? ─────→ context-engineering
-    │   └── Need doc-verified code? ───→ source-driven
-    ├── Writing/running tests? ────────→ tdd
-    │   └── Browser-based? ───────────→ browser-testing
-    ├── Something broke? ──────────────→ debugging
-    ├── Need to verify work? ─────────→ verify
-    ├── Reviewing code? ───────────────→ code-review
-    │   ├── Security concerns? ───────→ security
-    │   ├── Performance concerns? ───→ performance
-    │   └── Can simplify? ───────────→ simplify
-    ├── Committing/branching? ─────────→ git-workflow
-    ├── CI/CD pipeline work? ──────────→ cicd
-    ├── Writing docs/ADRs? ───────────→ docs-and-adrs
-    ├── Deprecating/removing code? ───→ migration
-    └── Deploying/launching? ─────────→ shipping
+    ├── Vague idea / new feature / change? → define
+    ├── Have a spec, need tasks? ──────────→ planning
+    ├── Implementing code? ────────────────→ executing-plans
+    │   ├── UI work? ─────────────────────→ frontend
+    │   ├── Parallel tasks? ──────────────→ subagent
+    │   └── Need better context? ─────────→ context-engineering
+    ├── Writing/running tests? ────────────→ tdd
+    │   └── Browser-based? ──────────────→ browser-testing
+    ├── Something broke? ──────────────────→ debugging
+    ├── Need to verify work? ─────────────→ verify
+    ├── Reviewing code? ──────────────────→ code-review
+    │   ├── Security concerns? ──────────→ security
+    │   └── Performance concerns? ──────→ performance
+    ├── Committing/branching? ────────────→ git-workflow
+    ├── Writing docs/ADRs? ──────────────→ docs-and-adrs
+    ├── Deprecating/removing code? ──────→ migration
+    └── Deploying/launching? ────────────→ shipping
 ```
 
 ## Red Flags
@@ -142,10 +137,10 @@ These thoughts mean STOP—you're rationalizing:
 
 When multiple skills could apply, use this order:
 
-1. **Process skills first** (refine, debugging) - these determine HOW to approach the task
-2. **Implementation skills second** (frontend, api-design) - these guide execution
+1. **Process skills first** (define, debugging) - these determine HOW to approach the task
+2. **Implementation skills second** (frontend, executing-plans) - these guide execution
 
-"Let's build X" → refine first, then implementation skills.
+"Let's build X" → define first, then implementation skills.
 "Fix this bug" → debugging first, then domain-specific skills.
 
 ## Skill Types
@@ -191,11 +186,11 @@ When you encounter inconsistencies, conflicting requirements, or unclear specifi
 You are not a yes-machine. When an approach has clear problems:
 
 - Point out the issue directly
-- Explain the concrete downside (quantify when possible — "this adds ~200ms latency" not "this might be slower")
+- Explain the concrete downside (quantify when possible)
 - Propose an alternative
 - Accept the human's decision if they override with full information
 
-Sycophancy is a failure mode. "Of course!" followed by implementing a bad idea helps no one. Honest technical disagreement is more valuable than false agreement.
+Sycophancy is a failure mode. Honest technical disagreement is more valuable than false agreement.
 
 ### 4. Enforce Simplicity
 
@@ -206,7 +201,7 @@ Before finishing any implementation, ask:
 - Are these abstractions earning their complexity?
 - Would a staff engineer look at this and say "why didn't you just..."?
 
-If you build 1000 lines and 100 would suffice, you have failed. Prefer the boring, obvious solution. Cleverness is expensive.
+If you build 1000 lines and 100 would suffice, you have failed. Prefer the boring, obvious solution.
 
 ### 5. Maintain Scope Discipline
 
@@ -245,17 +240,16 @@ These are the subtle errors that look like productivity but create problems:
 For a complete feature, the typical skill sequence is:
 
 ```
-1. refine                 → Refine vague ideas
-2. spec-driven     → Define what we're building
-3. planning → Break into verifiable chunks
-4. git-worktrees         → Isolate workspace
-5. incremental  → Build slice by slice
-6. tdd     → Prove each slice works
-7. code-review     → Review before merge
-8. verify → Verify with evidence
-9. git-workflow → Clean commit history
-10. docs-and-adrs     → Document decisions
-11. shipping        → Deploy safely
+1. define             → Refine ideas, write spec
+2. planning           → Break into verifiable chunks
+3. git-workflow       → Isolate workspace (worktree)
+4. executing-plans    → Build slice by slice
+5. tdd                → Prove each slice works
+6. code-review        → Review before merge
+7. verify             → Verify with evidence
+8. git-workflow       → Clean commit history
+9. docs-and-adrs      → Document decisions
+10. shipping          → Deploy safely
 ```
 
 Not every task needs every skill. A bug fix might only need: `debugging` → `tdd` → `code-review`.
@@ -265,30 +259,25 @@ Not every task needs every skill. A bug fix might only need: `debugging` → `td
 | Phase | Skill | One-Line Summary |
 |-------|-------|-----------------|
 | Meta | using-rein | Discovery and operating behaviors for all skills |
-| Define | refine | Refine ideas through structured divergent and convergent thinking |
-| Define | spec-driven | Requirements and acceptance criteria before code |
+| Meta | writing-skills | How to create new skills |
+| Define | define | Refine ideas through divergent/convergent thinking, then write spec |
 | Plan | planning | Decompose into small, verifiable tasks |
-| Plan | git-worktrees | Isolated workspace on new branch |
-| Build | incremental | Thin vertical slices, test each before expanding |
+| Build | executing-plans | Thin vertical slices, test each increment, commit frequently |
+| Build | subagent | Dispatch implementer agents per task (sequential or parallel) |
 | Build | tdd | Failing test first, then make it pass |
-| Build | subagent | Dispatch parallel implementer agents |
-| Build | parallel-dispatch | Independent task parallelization |
-| Build | context-engineering | Right context at the right time |
-| Build | source-driven | Verify against official docs before implementing |
+| Build | context-engineering | Right context at the right time, verify against official docs |
 | Build | frontend | Production-quality UI with accessibility |
-| Build | api-design | Stable interfaces with clear contracts |
-| Build | simplify | Reduce complexity preserving behavior |
 | Verify | debugging | Reproduce → localize → fix → guard |
 | Verify | browser-testing | Chrome DevTools MCP for runtime verification |
 | Verify | verify | No claims without fresh evidence |
-| Review | code-review | Five-axis review with quality gates |
+| Verify | integration-testing | Testing beyond per-task TDD |
+| Review | code-review | Five-axis review with quality gates (includes simplification) |
 | Review | security | OWASP prevention, input validation, least privilege |
 | Review | performance | Measure first, optimize only what matters |
-| Ship | git-workflow | Atomic commits, clean history |
-| Ship | cicd | Automated quality gates on every change |
+| Ship | git-workflow | Atomic commits, clean history, worktree isolation |
+| Ship | shipping | Pre-launch checklist, CI/CD, monitoring, rollback plan |
 | Ship | migration | Safe removal and migration of code |
 | Ship | docs-and-adrs | Document the why, not just the what |
-| Ship | shipping | Pre-launch checklist, monitoring, rollback plan |
 
 ## User Instructions
 

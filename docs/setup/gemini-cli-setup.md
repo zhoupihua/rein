@@ -33,7 +33,7 @@ For skills you want always loaded as persistent project context:
 
 ```bash
 # Create GEMINI.md with core skills
-cat .claude/skills/incremental/SKILL.md > GEMINI.md
+cat .claude/skills/executing-plans/SKILL.md > GEMINI.md
 echo -e "\n---\n" >> GEMINI.md
 cat .claude/skills/code-review/SKILL.md >> GEMINI.md
 ```
@@ -44,7 +44,7 @@ Or modularize by importing from separate files:
 # Project Instructions
 
 @skills/tdd/SKILL.md
-@skills/incremental/SKILL.md
+@skills/executing-plans/SKILL.md
 ```
 
 > **Skills vs GEMINI.md:** Skills are on-demand expertise that activate only when relevant, keeping your context window clean. GEMINI.md provides persistent context loaded for every prompt.
@@ -55,15 +55,15 @@ Or modularize by importing from separate files:
 
 Add these as persistent context for every session:
 
-- `incremental` — Build in small verifiable slices
-- `code-review` — Five-axis review
+- `executing-plans` — Build in small verifiable slices
+- `code-review` — Five-axis review (includes simplification)
 
 ### On-Demand (Skills)
 
 Install these as skills so they activate only when relevant:
 
 - `tdd` — Activates when implementing logic or fixing bugs
-- `spec-driven` — Activates when starting a new project or feature
+- `define` — Activates when starting a new project or feature
 - `frontend` — Activates when building UI
 - `security` — Activates during security reviews
 - `performance` — Activates during performance work
@@ -76,10 +76,8 @@ The repo ships slash commands under `.gemini/commands/` that map to the developm
 |---------|--------------|
 | `/spec` | Write a structured spec before writing code |
 | `/planning` | Break work into small, verifiable tasks |
-| `/build` | Implement the next task incrementally |
-| `/test` | Run TDD workflow — red, green, refactor |
-| `/review` | Five-axis code review |
-| `/code-simplify` | Reduce complexity without changing behavior |
+| `/do` | Execute tasks incrementally from task.md |
+| `/code-review` | Five-axis code review (includes simplification) |
 | `/ship` | Pre-launch checklist via parallel persona fan-out |
 
 > **Note:** Use `/planning` instead of `/plan` — `/plan` conflicts with a Gemini CLI internal command name.

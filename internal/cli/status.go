@@ -81,9 +81,9 @@ func suggestNext(phase string, ready bool, phases []project.PhaseResult) string 
 
 	switch phase {
 	case "NONE":
-		return "Run /spec or /triage to start a workflow"
+		return "Run /spec or /feature to start a workflow"
 	case "DEFINE":
-		return "Run /refine then /spec-driven then /spec to produce all DEFINE artifacts"
+		return "Run /spec to produce spec.md"
 	case "PLAN":
 		return "Run /plan to create plan.md + task.md"
 	case "BUILD":

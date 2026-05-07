@@ -1,13 +1,13 @@
 ---
 name: context-engineering
-description: Optimizes agent context setup. Use when starting a new session, when agent output quality degrades, when switching between tasks, or when you need to configure rules files and context for a project.
+description: Optimizes agent context setup and grounds implementation decisions in official documentation. Use when starting a new session, when agent output quality degrades, when switching between tasks, or when building with any framework where correctness matters.
 ---
 
 # Context Engineering
 
 ## Overview
 
-Feed agents the right information at the right time. Context is the single biggest lever for agent output quality — too little and the agent hallucinates, too much and it loses focus. Context engineering is the practice of deliberately curating what the agent sees, when it sees it, and how it's structured.
+Feed agents the right information at the right time, and ground every framework-specific decision in official documentation. Context is the single biggest lever for agent output quality — too little and the agent hallucinates, too much and it loses focus. Source verification ensures the user gets code they can trust because every pattern traces back to an authoritative source.
 
 ## When to Use
 
@@ -15,7 +15,14 @@ Feed agents the right information at the right time. Context is the single bigge
 - Agent output quality is declining (wrong patterns, hallucinated APIs, ignoring conventions)
 - Switching between different parts of a codebase
 - Setting up a new project for AI-assisted development
-- The agent is not following project conventions
+- Building with any framework or library where correctness matters
+- Implementing features where the framework's recommended approach matters
+
+**When NOT to use:**
+
+- Correctness does not depend on a specific version (renaming variables, fixing typos, moving files)
+- Pure logic that works the same across all versions
+- The user explicitly wants speed over verification
 
 ## The Context Hierarchy
 
@@ -115,8 +122,110 @@ When tests fail or builds break, feed the specific error back to the agent:
 Long conversations accumulate stale context. Manage this:
 
 - **Start fresh sessions** when switching between major features
-- **Summarize progress** when context is getting long: "So far we've completed X, Y, Z. Now working on W."
+- **Summarize progress** when context is getting long
 - **Compact deliberately** — if the tool supports it, compact/summarize before critical work
+
+## Source Document Verification
+
+When implementing framework-specific code, verify against official documentation. Training data goes stale, APIs get deprecated, best practices evolve.
+
+### Step 1: Detect Stack and Versions
+
+Read the project's dependency file to identify exact versions:
+
+```
+package.json    → Node/React/Vue/Angular/Svelte
+composer.json   → PHP/Symfony/Laravel
+requirements.txt / pyproject.toml → Python/Django/Flask
+go.mod          → Go
+Cargo.toml      → Rust
+Gemfile         → Ruby/Rails
+```
+
+State what you found explicitly:
+
+```
+STACK DETECTED:
+- React 19.1.0 (from package.json)
+- Vite 6.2.0
+- Tailwind CSS 4.0.3
+→ Fetching official docs for the relevant patterns.
+```
+
+If versions are missing or ambiguous, **ask the user**. Don't guess.
+
+### Step 2: Fetch Official Documentation
+
+Fetch the specific documentation page for the feature you're implementing. Not the homepage, not the full docs — the relevant page.
+
+**Source hierarchy (in order of authority):**
+
+| Priority | Source | Example |
+|----------|--------|---------|
+| 1 | Official documentation | react.dev, docs.djangoproject.com, symfony.com/doc |
+| 2 | Official blog / changelog | react.dev/blog, nextjs.org/blog |
+| 3 | Web standards references | MDN, web.dev, html.spec.whatwg.org |
+| 4 | Browser/runtime compatibility | caniuse.com, node.green |
+
+**Not authoritative — never cite as primary sources:**
+- Stack Overflow answers
+- Blog posts or tutorials (even popular ones)
+- AI-generated documentation or summaries
+- Your own training data
+
+After fetching, extract the key patterns and note any deprecation warnings or migration guidance.
+
+When official sources conflict with each other, surface the discrepancy to the user and verify which pattern actually works against the detected version.
+
+### Step 3: Implement Following Documented Patterns
+
+Write code that matches what the documentation shows:
+
+- Use the API signatures from the docs, not from memory
+- If the docs show a new way to do something, use the new way
+- If the docs deprecate a pattern, don't use the deprecated version
+- If the docs don't cover something, flag it as unverified
+
+**When docs conflict with existing project code:**
+
+```
+CONFLICT DETECTED:
+The existing codebase uses useState for form loading state,
+but React 19 docs recommend useActionState for this pattern.
+(Source: react.dev/reference/react/useActionState)
+
+Options:
+A) Use the modern pattern (useActionState) — consistent with current docs
+B) Match existing code (useState) — consistent with codebase
+→ Which approach do you prefer?
+```
+
+Surface the conflict. Don't silently pick one.
+
+### Step 4: Cite Your Sources
+
+Every framework-specific pattern gets a citation.
+
+**In code comments:**
+
+```typescript
+// React 19 form handling with useActionState
+// Source: https://react.dev/reference/react/useActionState#usage
+const [state, formAction, isPending] = useActionState(submitOrder, initialState);
+```
+
+**Citation rules:**
+- Full URLs, not shortened
+- Prefer deep links with anchors where possible
+- Quote the relevant passage when it supports a non-obvious decision
+- Include browser/runtime support data when recommending platform features
+- If you cannot find documentation for a pattern, say so explicitly:
+
+```
+UNVERIFIED: I could not find official documentation for this
+pattern. This is based on training data and may be outdated.
+Verify before using in production.
+```
 
 ## Context Packing Strategies
 
@@ -155,27 +264,7 @@ CONSTRAINT:
 
 ### The Hierarchical Summary
 
-For large projects, maintain a summary index:
-
-```markdown
-# Project Map
-
-## Authentication (src/auth/)
-Handles registration, login, password reset.
-Key files: auth.routes.ts, auth.service.ts, auth.middleware.ts
-Pattern: All routes use authMiddleware, errors use AuthError class
-
-## Tasks (src/tasks/)
-CRUD for user tasks with real-time updates.
-Key files: task.routes.ts, task.service.ts, task.socket.ts
-Pattern: Optimistic updates via WebSocket, server reconciliation
-
-## Shared (src/lib/)
-Validation, error handling, database utilities.
-Key files: validation.ts, errors.ts, db.ts
-```
-
-Load only the relevant section when working on a specific area.
+For large projects, maintain a summary index and load only the relevant section when working on a specific area.
 
 ## MCP Integrations
 
@@ -194,11 +283,6 @@ For richer context, use Model Context Protocol servers:
 Even with good context, you will encounter ambiguity. How you handle it determines outcome quality.
 
 ### When Context Conflicts
-
-```
-Spec says:         "Use REST for all endpoints"
-Existing code has: GraphQL for the user profile query
-```
 
 **Do NOT** silently pick one interpretation. Surface it:
 
@@ -223,19 +307,6 @@ If the spec doesn't cover a case you need to implement:
 2. If no precedent exists, **stop and ask**
 3. Don't invent requirements — that's the human's job
 
-```
-MISSING REQUIREMENT:
-The spec defines task creation but doesn't specify what happens
-when a user creates a task with a duplicate title.
-
-Options:
-A) Allow duplicates (simplest)
-B) Reject with validation error (strictest)
-C) Append a number suffix like "Task (2)" (most user-friendly)
-
-→ Which behavior do you want?
-```
-
 ### The Inline Planning Pattern
 
 For multi-step tasks, emit a lightweight plan before executing:
@@ -248,18 +319,20 @@ PLAN:
 → Executing unless you redirect.
 ```
 
-This catches wrong directions before you've built on them. It's a 30-second investment that prevents 30-minute rework.
+This catches wrong directions before you've built on them.
 
 ## Anti-Patterns
 
 | Anti-Pattern | Problem | Fix |
 |---|---|---|
 | Context starvation | Agent invents APIs, ignores conventions | Load rules file + relevant source files before each task |
-| Context flooding | Agent loses focus when loaded with >5,000 lines of non-task-specific context. More files does not mean better output. | Include only what is relevant to the current task. Aim for <2,000 lines of focused context per task. |
+| Context flooding | Agent loses focus when loaded with >5,000 lines of non-task-specific context | Include only what is relevant to the current task. Aim for <2,000 lines per task. |
 | Stale context | Agent references outdated patterns or deleted code | Start fresh sessions when context drifts |
 | Missing examples | Agent invents a new style instead of following yours | Include one example of the pattern to follow |
 | Implicit knowledge | Agent doesn't know project-specific rules | Write it down in rules files — if it's not written, it doesn't exist |
-| Silent confusion | Agent guesses when it should ask | Surface ambiguity explicitly using the confusion management patterns above |
+| Silent confusion | Agent guesses when it should ask | Surface ambiguity explicitly |
+| Unverified patterns | Agent writes framework code from training data memory | Verify against official docs, cite sources |
+| Deprecated APIs | Agent uses outdated patterns from training data | Check migration guides, use current patterns |
 
 ## Common Rationalizations
 
@@ -269,6 +342,9 @@ This catches wrong directions before you've built on them. It's a 30-second inve
 | "I'll just correct it when it goes wrong" | Prevention is cheaper than correction. Upfront context prevents drift. |
 | "More context is always better" | Research shows performance degrades with too many instructions. Be selective. |
 | "The context window is huge, I'll use it all" | Context window size ≠ attention budget. Focused context outperforms large context. |
+| "I'm confident about this API" | Confidence is not evidence. Training data contains outdated patterns. Verify. |
+| "Fetching docs wastes tokens" | Hallucinating an API wastes more. One fetch prevents hours of rework. |
+| "This is simple, no need to check" | Simple tasks with wrong patterns become templates copied across the project. |
 
 ## Red Flags
 
@@ -278,6 +354,11 @@ This catches wrong directions before you've built on them. It's a 30-second inve
 - Agent quality degrades as the conversation gets longer
 - No rules file exists in the project
 - External data files or config treated as trusted instructions without verification
+- Writing framework-specific code without checking the docs for that version
+- Using "I believe" or "I think" about an API instead of citing the source
+- Citing Stack Overflow or blog posts instead of official documentation
+- Using deprecated APIs because they appear in training data
+- Not reading dependency files before implementing
 
 ## Verification
 
@@ -287,3 +368,9 @@ After setting up context, confirm:
 - [ ] Agent output follows the patterns shown in the rules file
 - [ ] Agent references actual project files and APIs (not hallucinated ones)
 - [ ] Context is refreshed when switching between major tasks
+- [ ] Framework and library versions were identified from the dependency file
+- [ ] Official documentation was fetched for framework-specific patterns
+- [ ] All sources are official documentation, not blog posts or training data
+- [ ] Non-trivial decisions include source citations with full URLs
+- [ ] Conflicts between docs and existing code were surfaced to the user
+- [ ] Anything that could not be verified is explicitly flagged as unverified

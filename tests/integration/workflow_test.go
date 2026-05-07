@@ -54,12 +54,12 @@ func TestSchemaJSONLoading(t *testing.T) {
 		t.Fatalf("LoadArtifactGraph failed: %v", err)
 	}
 
-	if g.Name != "spec-driven" {
-		t.Errorf("expected name 'spec-driven', got %q", g.Name)
+	if g.Name != "define" {
+		t.Errorf("expected name 'define', got %q", g.Name)
 	}
 
-	if len(g.Artifacts) != 5 {
-		t.Fatalf("expected 5 artifacts, got %d", len(g.Artifacts))
+	if len(g.Artifacts) != 4 {
+		t.Fatalf("expected 4 artifacts, got %d", len(g.Artifacts))
 	}
 
 	// Verify build order
@@ -67,11 +67,11 @@ func TestSchemaJSONLoading(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BuildOrder failed: %v", err)
 	}
-	if order[0].ID != "proposal" {
-		t.Errorf("expected proposal first, got %q", order[0].ID)
+	if order[0].ID != "spec" {
+		t.Errorf("expected spec first, got %q", order[0].ID)
 	}
-	if order[4].ID != "review" {
-		t.Errorf("expected review last, got %q", order[4].ID)
+	if order[3].ID != "review" {
+		t.Errorf("expected review last, got %q", order[3].ID)
 	}
 }
 

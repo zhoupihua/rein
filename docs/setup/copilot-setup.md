@@ -10,7 +10,7 @@ Copilot supports creating agent skills using a `.github/skills` directory in you
 mkdir -p .github/skills
 
 # Copy essential rein skills
-cp -r .claude/skills/spec-driven .github/skills/
+cp -r .claude/skills/define .github/skills/
 cp -r .claude/skills/tdd .github/skills/
 cp -r .claude/skills/code-review .github/skills/
 ```

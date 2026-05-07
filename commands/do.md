@@ -11,7 +11,7 @@ You MUST follow this exact loop. Each iteration starts by reading task.md fresh 
 ```
 LOOP:
   1. Read task.md — find the FIRST line matching `- [ ]`
-  2. If no `- [ ]` found → all tasks complete → invoke `integration-testing` skill → then suggest `/code-review` or `/ship`
+  2. If no `- [ ]` found → all tasks complete → invoke `integration-testing` skill → then invoke `git-workflow` skill to complete
   3. Found task X.Y → read plan.md for X.Y details
   4. If task has RED/GREEN/REFACTOR sub-tasks, execute them in order:
      a. RED: write failing test → check off sub-task

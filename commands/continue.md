@@ -15,18 +15,16 @@ Resume work from a breakpoint.
 
 | Condition | Phase | Skill to invoke |
 |-----------|-------|----------------|
-| No spec.md and no proposal.md | DEFINE | refine (then spec-driven) |
-| No spec.md but proposal.md exists | DEFINE | spec-driven |
-| No proposal.md | — | Optional; skip for L2 /fix |
+| No spec.md | DEFINE | define |
 | No plan.md in feature dir | PLAN | planning |
 | No task.md in feature dir | PLAN | planning |
-| Tasks unchecked in task.md | BUILD | incremental + tdd |
+| Tasks unchecked in task.md | BUILD | executing-plans + tdd |
 | All tasks checked, no review.md | REVIEW | code-review |
 | Review done, not committed | SHIP | git-workflow |
 
 7. Invoke the appropriate skill and continue from that point
 8. During BUILD phase: after each completed task, MUST update task.md checkbox (IRON RULE)
-9. If no active changes found, suggest starting with `/triage`
+9. If no active changes found, suggest starting with `/quick` or `/feature`
 
 ## Plan-Task Consistency Check
 

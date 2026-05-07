@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Use when making any code change — committing, branching, resolving conflicts, completing a development branch. Git is your safety net: commits are save points, branches are sandboxes, history is documentation.
+description: Use when making any code change — committing, branching, resolving conflicts, completing a development branch. Use when starting feature work that needs isolation from current workspace.
 ---
 
 # Git Workflow and Versioning
@@ -90,18 +90,96 @@ chore/<short-description>
 refactor/<short-description>
 ```
 
-## Working with Worktrees
+## Worktree Isolation
 
-For parallel AI agent work, use git worktrees:
+For parallel work or when you need an isolated workspace, use git worktrees.
+
+**Announce at start:** "I'm using the git-workflow skill to set up an isolated workspace."
+
+### Directory Selection Process
+
+Follow this priority order:
+
+#### 1. Check Existing Directories
 
 ```bash
-git worktree add ../project-feature-a feature/task-creation
-git worktree add ../project-feature-b feature/user-settings
-
-# Each worktree is a separate directory with its own branch
-# When done, merge and clean up
-git worktree remove ../project-feature-a
+ls -d .worktrees 2>/dev/null     # Preferred (hidden)
+ls -d worktrees 2>/dev/null      # Alternative
 ```
+
+**If found:** Use that directory. If both exist, `.worktrees` wins.
+
+#### 2. Check CLAUDE.md
+
+```bash
+grep -i "worktree.*director" CLAUDE.md 2>/dev/null
+```
+
+**If preference specified:** Use it without asking.
+
+#### 3. Ask User
+
+If no directory exists and no CLAUDE.md preference:
+
+```
+No worktree directory found. Where should I create worktrees?
+
+1. .worktrees/ (project-local, hidden)
+2. ~/.config/rein/worktrees/<project-name>/ (global location)
+
+Which would you prefer?
+```
+
+### Safety Verification
+
+#### For Project-Local Directories (.worktrees or worktrees)
+
+**MUST verify directory is ignored before creating worktree:**
+
+```bash
+git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
+```
+
+**If NOT ignored:**
+
+1. Add appropriate line to .gitignore
+2. Commit the change
+3. Proceed with worktree creation
+
+**Why critical:** Prevents accidentally committing worktree contents to repository.
+
+#### For Global Directory (~/.config/rein/worktrees)
+
+No .gitignore verification needed - outside project entirely.
+
+### Creation Steps
+
+1. **Detect Project Name:** `project=$(basename "$(git rev-parse --show-toplevel)")`
+2. **Create Worktree:**
+   ```bash
+   git worktree add "$LOCATION/$BRANCH_NAME" -b "$BRANCH_NAME"
+   cd "$LOCATION/$BRANCH_NAME"
+   ```
+3. **Run Project Setup** — Auto-detect from project files (package.json → npm install, Cargo.toml → cargo build, go.mod → go mod download, etc.)
+4. **Verify Clean Baseline** — Run tests to ensure worktree starts clean. If tests fail, report and ask.
+5. **Report Location:**
+   ```
+   Worktree ready at <full-path>
+   Tests passing (<N> tests, 0 failures)
+   Ready to implement <feature-name>
+   ```
+
+### Quick Reference
+
+| Situation | Action |
+|-----------|--------|
+| `.worktrees/` exists | Use it (verify ignored) |
+| `worktrees/` exists | Use it (verify ignored) |
+| Both exist | Use `.worktrees/` |
+| Neither exists | Check CLAUDE.md → Ask user |
+| Directory not ignored | Add to .gitignore + commit |
+| Tests fail during baseline | Report failures + ask |
+| No package.json/Cargo.toml | Skip dependency install |
 
 ## The Save Point Pattern
 
@@ -203,16 +281,11 @@ Don't add explanation — keep options concise.
 #### Option 1: Merge Locally
 
 ```bash
-# Get main repo root for CWD safety
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
 cd "$MAIN_ROOT"
-
-# Merge first — verify success before removing anything
 git checkout <base-branch>
 git pull
 git merge <feature-branch>
-
-# Verify tests on merged result
 <test command>
 ```
 
@@ -263,7 +336,7 @@ WORKTREE_PATH=$(git rev-parse --show-toplevel)
 MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
 cd "$MAIN_ROOT"
 git worktree remove "$WORKTREE_PATH"
-git worktree prune  # Self-healing: clean up any stale registrations
+git worktree prune
 ```
 
 **Otherwise:** The host environment owns this workspace. Do NOT remove it.
@@ -288,6 +361,8 @@ git log --grep="keyword" --oneline  # Search commit messages
 | "The message doesn't matter" | Messages are documentation. Future you needs to understand why. |
 | "I'll squash it all later" | Squashing destroys the development narrative. Clean incremental commits from the start. |
 | "I'll split this change later" | Large changes are harder to review, riskier to deploy. Split before submitting. |
+| "Skipping ignore verification is fine" | Worktree contents get tracked, pollute git status. Always use `git check-ignore`. |
+| "Proceeding with failing tests is fine" | Can't distinguish new bugs from pre-existing issues. Report and ask. |
 
 ## Red Flags
 
@@ -304,6 +379,8 @@ git log --grep="keyword" --oneline  # Search commit messages
 - Removing a worktree you didn't create (provenance check)
 - Running `git worktree remove` from inside the worktree
 - Cleaning up worktree for PR option (user needs it for iteration)
+- Creating worktree without verifying it's ignored (project-local)
+- Assuming directory location when ambiguous
 
 ## Verification
 

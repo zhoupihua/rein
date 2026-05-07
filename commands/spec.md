@@ -10,7 +10,7 @@ Generate spec.md — the DEFINE phase artifact for requirements, decisions, and 
 
 ### No arguments: Interactive mode
 1. Ask what the user wants to build
-2. Explore the codebase for context (invoke `refine` for divergent thinking)
+2. Explore the codebase for context (invoke `define` for divergent thinking)
 3. Propose a change name and generate spec.md
 4. After generation, ask if they want to continue to `/plan`
 

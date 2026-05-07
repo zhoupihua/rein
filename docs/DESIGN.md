@@ -12,12 +12,13 @@
 rein/
 ├── README.md
 │
-├── skills/                          # 28 个统一技能
+├── skills/                          # 20 个统一技能
 │   │
 │   │── # ===== 元技能 =====
-│   ├── using-rein/              # 参考 SP:using-superpowers + AS:using-agent-skills
-│   │   └── SKILL.md
-│   ├── writing-skills/          # 参考 SP:writing-skills
+│   ├── using-rein/              # 技能发现与操作行为
+│   │   ├── SKILL.md
+│   │   └── references/         # 平台适配文档
+│   ├── writing-skills/          # 技能创建方法
 │   │   ├── SKILL.md
 │   │   ├── anthropic-best-practices.md
 │   │   ├── persuasion-principles.md
@@ -25,7 +26,7 @@ rein/
 │   │   └── graphviz-conventions.dot
 │   │
 │   │── # ===== DEFINE 阶段 =====
-│   ├── refine/                 # 参考 SP:brainstorming + AS:refine
+│   ├── define/                  # 合并自 refine + spec-driven
 │   │   ├── SKILL.md
 │   │   ├── examples.md
 │   │   ├── frameworks.md
@@ -34,73 +35,57 @@ rein/
 │   │   ├── spec-reviewer-prompt.md
 │   │   ├── frame-template.html
 │   │   └── helper.js
-│   ├── spec-driven/     # AS 独有
-│   │   └── SKILL.md
 │   │
 │   │── # ===== PLAN 阶段 =====
-│   ├── planning/ # 参考 SP:writing-plans + AS:planning
+│   ├── planning/
 │   │   ├── SKILL.md
 │   │   └── plan-reviewer-prompt.md
-│   ├── git-worktrees/         # SP 独有
-│   │   └── SKILL.md
 │   │
 │   │── # ===== BUILD 阶段 =====
-│   ├── incremental/  # 参考 SP:executing-plans + AS:incremental
+│   ├── executing-plans/         # 合并自 executing-plans + incremental
 │   │   └── SKILL.md
-│   ├── executing-plans/  # 参考 SP:executing-plans（轻量内联执行）
-│   │   └── SKILL.md
-│   ├── tdd/     # 参考 SP:TDD + AS:TDD
-│   │   └── SKILL.md
-│   ├── subagent/ # SP 独有
+│   ├── subagent/                # 合并自 subagent + parallel-dispatch
 │   │   ├── SKILL.md
 │   │   ├── implementer-prompt.md
 │   │   ├── spec-reviewer-prompt.md
 │   │   └── code-quality-reviewer-prompt.md
-│   ├── parallel-dispatch/ # SP 独有
+│   ├── tdd/
 │   │   └── SKILL.md
-│   ├── context-engineering/         # AS 独有
+│   ├── context-engineering/     # 合并自 context-engineering + source-driven
 │   │   └── SKILL.md
-│   ├── source-driven/   # AS 独有
-│   │   └── SKILL.md
-│   ├── frontend/     # AS 独有
-│   │   └── SKILL.md
-│   ├── api-design/    # AS 独有
+│   ├── frontend/
 │   │   └── SKILL.md
 │   │
 │   │── # ===== VERIFY 阶段 =====
-│   ├── debugging/ # 参考 SP:systematic-debugging + AS:debugging
+│   ├── debugging/
 │   │   ├── SKILL.md
 │   │   ├── root-cause-tracing.md
 │   │   ├── defense-in-depth.md
 │   │   ├── condition-based-waiting.md
 │   │   └── testing-anti-patterns.md
-│   ├── browser-testing/ # AS 独有
+│   ├── browser-testing/
 │   │   └── SKILL.md
-│   ├── integration-testing/  # 参考 AS
+│   ├── integration-testing/
 │   │   └── SKILL.md
-│   ├── verify/ # SP 独有
+│   ├── verify/
 │   │   └── SKILL.md
 │   │
 │   │── # ===== REVIEW 阶段 =====
-│   ├── code-review/     # 参考 SP:requesting+receiving-code-review + AS:code-review
+│   ├── code-review/             # 合并自 code-review + simplify
 │   │   └── SKILL.md
-│   ├── simplify/         # AS 独有
+│   ├── security/
 │   │   └── SKILL.md
-│   ├── security/      # AS 独有
-│   │   └── SKILL.md
-│   ├── performance/    # AS 独有
+│   ├── performance/
 │   │   └── SKILL.md
 │   │
 │   │── # ===== SHIP 阶段 =====
-│   ├── git-workflow/ # AS 独有（融入 SP:finishing-a-development-branch）
+│   ├── git-workflow/            # 合并自 git-workflow + git-worktrees
 │   │   └── SKILL.md
-│   ├── shipping/         # AS 独有
+│   ├── shipping/                # 合并自 shipping + cicd
 │   │   └── SKILL.md
-│   ├── cicd/        # AS 独有
+│   ├── migration/
 │   │   └── SKILL.md
-│   ├── migration/   # AS 独有
-│   │   └── SKILL.md
-│   └── docs-and-adrs/      # AS 独有
+│   └── docs-and-adrs/
 │       └── SKILL.md
 │
 ├── agents/                          # 3 个专家代理
@@ -108,73 +93,52 @@ rein/
 │   ├── test-engineer.md             # QA Specialist
 │   └── security-auditor.md         # Security Engineer
 │
-├── commands/                        # 14 个统一斜杠命令
+├── commands/                        # 11 个统一斜杠命令
 │   ├── quick.md                     # L1 轻量变更
 │   ├── fix.md                       # L2 标准变更
 │   ├── feature.md                   # L3 完整变更（6 步流程）
-│   ├── triage.md                    # 自动分级判定
 │   ├── continue.md                  # 断点恢复
-│   ├── spec.md                      # 定义规格（替代 /opsx:propose + /opsx:explore）
-│   ├── plan.md                      # 拆解任务（替代 /opsx:continue + /opsx:ff）
+│   ├── spec.md                      # 定义规格
+│   ├── plan.md                      # 拆解任务
 │   ├── do.md                        # 增量构建
-│   ├── test.md                      # TDD
 │   ├── code-review.md               # 5 轴审查
 │   ├── ship.md                      # 并行专家审查 + GO/NO-GO
-│   ├── simplify.md                  # 代码简化
 │   ├── status.md                    # 任务进度 & 漂移检测
 │   └── archive.md                   # 归档已完成工件
 │
 ├── hooks/                           # 会话钩子
 │   ├── session-start.sh/ps1         # 注入 using-rein 元技能
-│   ├── guard.sh/ps1                 # 文件保护（阻止修改 rein 管理的文件）
-│   ├── guard-bash.sh/ps1            # Bash 保护（阻止破坏性命令操作 rein 文件）
-│   ├── gate.sh/ps1                  # 测试网关（deploy/push 前自动跑测试）
+│   ├── guard.sh/ps1                 # 文件保护
+│   ├── guard-bash.sh/ps1            # Bash 保护
+│   ├── gate.sh/ps1                  # 测试网关
 │   ├── format.sh/ps1                # 自动 Prettier 格式化
-│   ├── checkbox-guard.sh/ps1        # 编辑 task 文件未更新 checkbox 时警告
-│   ├── task-progress.sh/ps1         # 编辑代码文件时自动勾选匹配的 task checkbox
+│   ├── checkbox-guard.sh/ps1        # checkbox 警告
+│   ├── task-progress.sh/ps1         # 自动勾选 task
 │   ├── leak-guard.sh/ps1            # 密钥泄露拦截
 │   └── inject.sh/ps1                # 注入审查清单
 │
-├── references/                      # 参考清单（来自 AS）
+├── references/                      # 参考清单
 │   ├── testing-patterns.md
 │   ├── security-checklist.md
 │   ├── performance-checklist.md
 │   ├── accessibility-checklist.md
-│   └── orchestration-patterns.md
+│   ├── orchestration-patterns.md
+│   └── api-design.md              # 降级自 api-design 技能
 │
 ├── install/                         # 安装脚本
-│   ├── install.sh                   # Linux/Mac
-│   └── install.ps1                  # Windows
+│   ├── install.sh
+│   └── install.ps1
 │
-└── templates/                       # 制品模板（替代 OpenSpec CLI 的模板生成）
+└── templates/                       # 制品模板
     ├── proposal.md
     ├── spec.md
-    └── tasks.md
+    ├── tasks.md
+    └── checklists/review.md
 ```
 
 ---
 
-## OpenSpec CLI 去除方案
-
-OpenSpec CLI 的每个功能都有替代实现：
-
-| OpenSpec CLI | 原功能 | 替代方案 |
-|-------------|--------|---------|
-| `openspec init` | 创建制品目录 | install 脚本创建 `docs/rein/` 目录 |
-| `openspec update` | 生成 `.claude/skills/` 等指令文件 | 不需要——我们自己写 skills，不存在自动生成 |
-| `openspec validate` | 验证制品完整性 | `spec` 命令内置验证步骤（AI 检查制品是否齐全）|
-| `openspec list` | 列出变更 | `continue` 命令扫描 `docs/rein/changes/` 目录 |
-| `openspec status` | 查看制品进度 | `continue` 命令读取 `task.md` checkbox 状态 |
-| `openspec archive` | 归档 | `ship` 命令结尾执行归档（mv 到 `docs/rein/archive/`） |
-| `/opsx:propose` | 提出变更 + 生成制品 | `spec` 命令（生成设计规格，不含任务）|
-| `/opsx:explore` | 探索性对话 | `spec` 命令（内置 explore 模式）|
-| `/opsx:apply` | 按 tasks.md 实现 | `do` 命令 |
-| `/opsx:verify` | 验证实现 | `review` 命令内置验证 |
-| `/opsx:archive` | 归档变更 | `ship` 命令结尾 |
-| `/opsx:continue` | 创建下一个制品 | `spec` 命令（可逐步或一次性生成）|
-| `/opsx:ff` | 快进生成所有制品 | `spec` 命令的 `--full` 模式 |
-
-### 制品目录结构
+## 制品目录结构
 
 ```
 <project-root>/
@@ -182,8 +146,7 @@ OpenSpec CLI 的每个功能都有替代实现：
     └── rein/
         ├── changes/               # 活跃的功能变更
         │   └── <name>/            # 每个功能一个目录
-        │       ├── proposal.md    # DEFINE 阶段（Why, What Changes, Goals, Non-Goals, Assumptions, Open Questions）
-        │       ├── spec.md        # DEFINE 阶段（Requirements, Decisions, Risks）
+        │       ├── spec.md        # DEFINE 阶段（Why, Goals, Non-Goals, Requirements, Decisions, Risks）
         │       ├── plan.md        # PLAN 阶段（Architecture, Dependency Graph, 实现计划）
         │       ├── task.md        # PLAN 阶段（任务清单，执行层，唯一任务源）
         │       └── review.md      # REVIEW 阶段（代码审查报告）
@@ -194,150 +157,98 @@ OpenSpec CLI 的每个功能都有替代实现：
             └── <name>/
 ```
 
-> 每个功能一个目录，所有工件集中管理。proposal.md 是 refine 阶段的产出（动机、目标、假设），L2 可选。spec.md 是 PRD 工件（需求、决策、风险）。plan.md 遵循 Superpowers 规范（架构、依赖图、切片策略、风险缓解、并行化、自审、交接）。task.md 是执行层唯一任务源。
+> 每个功能一个目录，所有工件集中管理。spec.md 是 PRD 工件（Why、Goals、Non-Goals、需求、决策、风险）。plan.md 遵循 Superpowers 规范（架构、依赖图、切片策略、风险缓解、并行化、自审、交接）。task.md 是执行层唯一任务源。
 
-### 制品模板（templates/）
+### 生成流程
 
-`spec` 命令不再依赖 OpenSpec 的 TypeScript 模板引擎，而是直接在命令中内嵌模板内容。AI 读取模板后按项目上下文填充。
+```
+/spec   → changes/<name>/spec.md      (发散/收敛思考 + 生成 PRD)
+/plan   → changes/<name>/plan.md + task.md
+/do     → 读 task.md 逐项执行，勾选 [x]
+```
 
 ---
 
-## 技能设计策略（6 组参考）
+## 技能设计策略
 
-### 1. refine ← SP:brainstorming + AS:refine
+### 1. define ← refine + spec-driven
 
-**骨架**：SP brainstorming（更强的流程关卡、自审循环、到 planning 的显式交接）
-**注入 AS 元素**：
-- 7 个发散视角（逆向、约束移除、受众切换、组合、简化、10x、专家视角）
-- "How Might We" 问题重构
-- 假设显式化 + 验证策略
-- "不做清单"作为必填输出
-- 收敛时的三维度压力测试（用户价值/可行性/差异化）
+**合并逻辑：** refine 的发散/收敛思维和 spec-driven 的规格文档输出是同一个流程的两个阶段——先发散理解需求，再收敛写入规格。
+
+**define/SKILL.md 结构：**
+- Phase 1: Explore & Expand（原 refine Phase 1-2 的发散/收敛思维）
+- Phase 2: Specify（原 spec-driven 的规格文档输出）
+- Hard gate: 两个阶段都需人类审批后才继续
+- 输出：`docs/rein/changes/<name>/spec.md`
 
 ### 2. planning ← SP:writing-plans + AS:planning
 
 **骨架**：SP writing-plans（执行就绪的计划格式、无占位符规则、自审、显式交接）
-**注入 AS 元素**：
-- 依赖图可视化（ASCII 树）
-- 垂直切片 vs 水平切片原则
-- 任务大小表（XS/S/M/L/XL）+ 何时进一步拆分
-- 风险/缓解表
-- 并行化分类（safe/sequential/needs-coordination）
-- 反合理化表
+**注入 AS 元素**：依赖图可视化、垂直切片原则、任务大小表、风险/缓解表、并行化分类
 
-### 3. incremental ← SP:executing-plans + AS:incremental
+### 3. executing-plans ← executing-plans + incremental
 
-**骨架**：AS incremental（实现规则、范围纪律、feature flags、rollback-friendly）
-**注入 SP 元素**：
-- 执行前审阅计划步骤
-- 遇阻时的 stop-and-ask 协议
-- 到 git-workflow 的显式交接
+**合并逻辑：** 两者都是"执行计划"——executing-plans 是轻量内联执行，incremental 是切片策略和实现规则。合并为一个完整的执行技能。
+
+**合并后结构：**
+- Checkbox 循环（原 executing-plans 核心）
+- 切片策略：垂直切片、Contract-First、Risk-First（原 incremental）
+- 实现规则：Simplicity First、Scope Discipline 等（原 incremental）
 
 ### 4. tdd ← SP:TDD + AS:TDD
 
-**骨架**：SP TDD（铁律、删除先写代码的规则、12 条反合理化）
-**注入 AS 元素**：
-- 测试金字塔（80/15/5）+ 测试大小（S/M/L）
-- DAMP over DRY 原则
-- 状态测试 > 交互测试
-- mock 偏好序：real > fake > stub > mock
-- Prove-It 模式（bug 修复专用）
-- 浏览器测试集成（DevTools MCP）
+**骨架**：SP TDD（铁律）+ AS 元素（测试金字塔、DAMP over DRY、Prove-It 模式）
 
 ### 5. debugging ← SP:systematic-debugging + AS:debugging
 
-**骨架**：AS debugging（6 步分诊、错误分类决策树、不可重现 bug 处理、安全回退）
-**注入 SP 元素**：
-- 铁律（无根因分析不修复）
-- 3 次修复失败 → 质疑架构
-- 反合理化表（8 条）
-- 多组件诊断仪器
+**骨架**：AS debugging + SP 元素（铁律、3 次修复失败 → 质疑架构、反合理化表）
 
-### 6. code-review ← SP:requesting+receiving-code-review + AS:code-review
+### 6. code-review ← code-review + simplify
 
-**骨架**：AS code-review（5 轴审查、变更大小控制、严重性分类、多模型审查模式）
-**注入 SP receiving-code-review 元素**：
-- 禁止回复清单（不得说"好观点！"、"你说得对！"）
-- YAGNI 检查（审查建议的"专业"特性）
-- 不同来源的处理方式（人 vs 外部审查者）
-- 多项反馈的实现顺序
-- 反对时的优雅纠正
+**合并逻辑：** 简化是代码审查的一个输出——当审查发现复杂度问题时，简化是修复方式。
 
 ---
 
 ## 命令设计
 
-### L1/L2/L3 分级命令（我们的定制）
+### L1/L2/L3 分级命令
 
 **`/quick`** — L1 轻量变更（≤5 行，无逻辑影响）
-```
-直接修改 → 确认测试通过 → 提交
-```
-
-**`/fix`** — L2 标准变更（单文件/2-3 文件，需求明确）
-```
-Bug: debugging → tdd → verify → 提交
-功能: tdd → verify → 提交
-前端 Bug: + browser-testing
-```
-
+**`/fix`** — L2 标准变更（1-3 文件，需求明确）
 **`/feature`** — L3 完整变更（6 步流程）
+
 ```
-1. define → refine（发散/收敛 → proposal.md）+ spec-driven（读取 proposal.md，生成 spec.md）
-2. branch → git-worktrees 分支隔离 + baseline
+1. define → define（发散/收敛 → 生成 spec.md）
+2. branch → git-workflow 分支隔离（worktree 或直接分支）
 3. plan → planning 细化任务（plan.md + task.md）
-4. implement → incremental + tdd 逐任务实现
-   - 前端 → frontend
-   - API → api-design
-   - 并行 → subagent
-   - 遇 bug → debugging
-5. review → code-review 5 轴审查
-   - 安全 → security
-   - 性能 → performance
+4. implement → executing-plans + tdd 逐任务实现
+5. review → code-review 5 轴审查（含简化）
 6. ship → verify 验证 + git-workflow 提交 + shipping 发布检查
-   → docs-and-adrs → 文档
-   → 归档：移动 `docs/rein/changes/<name>/` 到 `docs/rein/archive/<name>/`
 ```
 
-**`/triage`** — 自动分级判定
+### 工作流命令
 
-**`/continue`** — 断点恢复（读取 tasks.md checkbox 状态）
-
-### 工作流命令（替代 OpenSpec 的 /opsx:*）
-
-**`/spec`** — 替代 `/opsx:propose` + `/opsx:explore` + `/opsx:continue` + `/opsx:ff`
-- 无参数：交互式选择模式（explore → propose → 逐步生成）
-- `/spec <name>`：直接生成规格文档（spec.md，含 refine 思考和设计决策）
-- `/spec --step`：逐个生成制品（替代 /opsx:continue）
-- `/spec --validate`：验证当前变更的制品完整性（替代 `openspec validate`）
-
-**`/do`** — 替代 `/opsx:apply`
-- 读取 tasks.md，逐项执行，勾选 checkbox
-
-**`/plan`** — 独立调用 planning
-
-**`/test`** — 独立调用 tdd + browser-testing
-
-**`/code-review`** — 独立调用 code-review + security + performance
-
-**`/ship`** — 并行 fan-out（3 专家代理）→ GO/NO-GO → 归档
-
-**`/simplify`** — 独立调用 simplify
+| 命令 | 用途 |
+|------|------|
+| `/spec` | 生成 spec.md |
+| `/plan` | 拆解 spec 为任务 |
+| `/do` | 逐项执行 task.md |
+| `/code-review` | 5 轴审查 |
+| `/ship` | 并行 fan-out + GO/NO-GO |
+| `/continue` | 断点恢复 |
+| `/status` | 任务进度 |
+| `/archive` | 归档 |
 
 ---
 
 ## 安装流程
 
-### 一条命令安装（零 npm 依赖）
-
 ```bash
 # Linux/Mac
-git clone https://github.com/<org>/rein.git
 cd your-project
 bash /path/to/rein/install/install.sh
 
 # Windows
-git clone https://github.com/<org>/rein.git
 cd your-project
 powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 ```
@@ -345,24 +256,12 @@ powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 ### install 脚本做的事
 
 1. 创建制品目录：`docs/rein/changes/`、`docs/rein/archive/`
-2. 创建 `.claude/commands/` 目录，将 `commands/*.md` 复制进去
-3. 创建 `.claude/skills/` 目录，将 `skills/` 复制进去
-4. 创建 `.claude/agents/` 目录，将 `agents/*.md` 复制进去
-5. 创建 `.claude/hooks/` 目录，将 `hooks/` 复制进去
-6. 配置 `.claude/settings.json` 中的 hooks（session-start、guard、guard-bash、gate、format、checkbox-guard、task-progress、leak-guard、inject）
+2. 复制 `commands/*.md` 到 `.claude/commands/`
+3. 复制 `skills/` 到 `.claude/skills/`
+4. 复制 `agents/*.md` 到 `.claude/agents/`
+5. 复制 `hooks/` 到 `.claude/hooks/`
+6. 配置 `.claude/settings.json` 中的 hooks
 7. 生成 `.claude/.rein-manifest` 保护清单
-8. 如有 `AGENTS.md`（Codex CLI），追加命令定义
-
-> 不需要 `npm install -g`，不需要 `/plugin install`，不需要任何外部依赖。
-
----
-
-## 与 Codex CLI 兼容
-
-install 脚本检测平台，如果是 Codex CLI：
-- 将命令内容写入 `AGENTS.md` 的 `## /command` 段落
-- 将技能关键内容内联到 `AGENTS.md`（因为 Codex 无插件机制）
-- 将强制规则写入 `AGENTS.md`（替代 hooks）
 
 ---
 
@@ -370,9 +269,8 @@ install 脚本检测平台，如果是 Codex CLI：
 
 1. 运行 install 脚本，确认目录和文件全部创建
 2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-rein 元技能
-3. 测试 `/triage`：输入一个变更描述，确认正确分级
-4. 测试 `/spec test-feature`：确认生成 `docs/rein/changes/test-feature/spec.md` 规格文档
-5. 测试 `/do`：确认读取 tasks.md 并执行
-6. 测试 `/ship`：确认 fan-out 3 专家代理
-7. 测试 `/continue`：中断后确认能恢复
-8. 测试 hooks：编辑 sqlmigration 文件，确认被阻断
+3. 测试 `/spec test-feature`：确认生成 `docs/rein/changes/test-feature/spec.md`
+4. 测试 `/do`：确认读取 tasks.md 并执行
+5. 测试 `/ship`：确认 fan-out 3 专家代理
+6. 测试 `/continue`：中断后确认能恢复
+7. 测试 hooks：编辑 rein 管理文件，确认被阻断

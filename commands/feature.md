@@ -7,17 +7,17 @@ L3 full change — the 6-step workflow.
 ## The Full Workflow
 
 ### Step 1: Define
-Invoke `refine` skill for divergent/convergent thinking, output `proposal.md`. Then invoke `spec-driven` skill to write the PRD (`spec.md`), using proposal.md as input context.
+Invoke `define` skill for divergent/convergent thinking and spec writing, output `spec.md`.
 
-The proposal includes Context, Goals, Non-Goals. The spec includes Requirements, Decisions, and Risks. Save proposal to `docs/rein/changes/<name>/proposal.md` and spec to `docs/rein/changes/<name>/spec.md`, then commit.
+The spec includes Context, Goals, Non-Goals, Requirements, Decisions, and Risks. Save spec to `docs/rein/changes/<name>/spec.md`, then commit.
 
 ### Step 2: Branch Setup
 Create a feature branch from current branch. Ask the user whether to use worktree isolation:
 
 - **直接开发（默认）**：在当前目录创建 feature 分支，直接开发。适合大多数场景。
-- **Worktree 隔离**：调用 `git-worktrees` skill 创建隔离工作区。适合需要同时在多个分支上工作的场景。
+- **Worktree 隔离**：调用 `git-workflow` skill 的 worktree 章节创建隔离工作区。适合需要同时在多个分支上工作的场景。
 
-If the user chooses worktree: invoke `git-worktrees` skill, create an isolated worktree with the new branch, verify clean test baseline.
+If the user chooses worktree: invoke `git-workflow` skill's worktree section, create an isolated worktree with the new branch, verify clean test baseline.
 
 If the user chooses direct development: create the feature branch and stay in the current directory.
 
@@ -25,14 +25,14 @@ If the user chooses direct development: create the feature branch and stay in th
 Invoke `planning` skill. Break the spec into verifiable tasks with dependency graph, acceptance criteria, and checkpoints. Save plan to `docs/rein/changes/<name>/plan.md` and tasks to `docs/rein/changes/<name>/task.md`, then commit.
 
 ### Step 4: Implement
-Invoke `incremental` + `tdd` skills:
+Invoke `executing-plans` + `tdd` skills:
 - Build in thin vertical slices
 - RED → GREEN → REFACTOR for each slice
 - Commit after each verified increment
 
 Routing:
 - Frontend work → also invoke `frontend`
-- API work → also invoke `api-design`
+- API work → also reference `references/api-design.md`
 - Parallel tasks → invoke `subagent`
 - Hit a bug → invoke `debugging`
 

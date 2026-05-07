@@ -1,17 +1,11 @@
 {
-  "name": "spec-driven",
+  "name": "define",
   "artifacts": [
-    {
-      "id": "proposal",
-      "generates": "proposal.md",
-      "requires": [],
-      "description": "Change proposal with motivation, goals, and assumptions"
-    },
     {
       "id": "spec",
       "generates": "spec.md",
       "requires": [],
-      "description": "Feature specification with requirements, scenarios, and decisions"
+      "description": "Feature specification with requirements, decisions, and risks"
     },
     {
       "id": "plan",

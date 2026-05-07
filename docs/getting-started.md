@@ -55,9 +55,9 @@ Start with the `using-rein` skill loaded. It contains a flowchart that maps task
 
 Load three essential skills into your rules file:
 
-1. **spec-driven** — For defining what to build
+1. **define** — For defining what to build (explore requirements + write spec)
 2. **tdd** — For proving it works
-3. **code-review** — For verifying quality before merge
+3. **code-review** — For verifying quality before merge (includes simplification)
 
 These three cover the most critical quality gaps in AI-assisted development.
 
@@ -66,8 +66,8 @@ These three cover the most critical quality gaps in AI-assisted development.
 For comprehensive coverage, load skills by phase:
 
 ```
-Starting a project:  spec-driven → planning
-During development:  incremental + tdd
+Starting a project:  define → planning
+During development:  executing-plans + tdd
 Before merge:        code-review + security
 Before deploy:       shipping
 ```
@@ -78,7 +78,7 @@ Don't load all skills at once — it wastes context. Load skills relevant to the
 
 - Working on UI? Load `frontend`
 - Debugging? Load `debugging`
-- Setting up CI? Load `cicd`
+- Setting up CI? Load `shipping` (includes CI/CD automation)
 
 ## Skill Anatomy
 
@@ -117,15 +117,12 @@ The `commands/` directory contains slash commands for Claude Code:
 |---------|---------|
 | `/quick` | L1 lightweight change (≤5 lines) |
 | `/fix` | L2 bug fix or small feature (1-3 files) |
-| `/feature` | L3 full feature (6-step workflow) |
+| `/feature` | L3 full feature (6-step workflow, auto-detects scope) |
 | `/spec` | Generate spec.md |
 | `/plan` | Break spec into tasks |
-| `/do` | Execute tasks from task.md |
-| `/test` | Run TDD workflow |
-| `/code-review` | Five-axis code review |
+| `/do` | Execute tasks from task.md (includes TDD) |
+| `/code-review` | Five-axis code review (includes simplification) |
 | `/ship` | Pre-launch fan-out + GO/NO-GO |
-| `/simplify` | Reduce code complexity |
-| `/triage` | Auto-detect workflow level |
 | `/continue` | Resume from breakpoint |
 | `/status` | Show task progress |
 | `/archive` | Archive completed features |
@@ -140,7 +137,8 @@ The `references/` directory contains supplementary checklists:
 | `performance-checklist.md` | performance |
 | `security-checklist.md` | security |
 | `accessibility-checklist.md` | frontend |
-| `orchestration-patterns.md` | subagent, parallel-dispatch |
+| `orchestration-patterns.md` | subagent |
+| `api-design.md` | code-review, planning |
 
 ## Spec and Task Artifacts
 
@@ -148,8 +146,8 @@ The `/spec` and `/plan` commands create working artifacts under `docs/rein/chang
 
 ```
 docs/rein/changes/<name>/
-  spec.md    — DEFINE phase (requirements, decisions, risks)
-  plan.md    — PLAN phase (task details, dependencies)
+  spec.md    — DEFINE phase (Why, Goals, Non-Goals, Requirements, Decisions, Risks)
+  plan.md    — PLAN phase (Architecture, Dependency Graph, Task Details)
   task.md    — PLAN phase (checkbox progress tracking)
   review.md  — REVIEW phase
 ```
@@ -175,9 +173,9 @@ All commands support `--json` for machine-readable output.
 
 ## Tips
 
-1. **Start with spec-driven** for any non-trivial work
+1. **Start with define** for any non-trivial work — explore requirements before coding
 2. **Always load tdd** when writing code
 3. **Don't skip verification steps** — they're the whole point
 4. **Load skills selectively** — more context isn't always better
 5. **Use the agents for review** — different perspectives catch different issues
-6. **Use `/triage`** when unsure which workflow level to use
+6. **Use `/feature`** for any feature — it auto-detects whether to run at L1, L2, or L3

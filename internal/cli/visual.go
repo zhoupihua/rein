@@ -64,8 +64,8 @@ func runVisualStart(cmd *cobra.Command, args []string) {
 	stateDir := filepath.Join(sessionDir, "state")
 
 	// Load template files from the skills directory
-	framePath := findSkillFile("skills/refine/frame-template.html")
-	helperPath := findSkillFile("skills/refine/helper.js")
+	framePath := findSkillFile("skills/define/frame-template.html")
+	helperPath := findSkillFile("skills/define/helper.js")
 
 	frameHTML := visual.ReadFileToString(framePath)
 	if frameHTML == "" {

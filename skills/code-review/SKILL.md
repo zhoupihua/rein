@@ -1,13 +1,13 @@
 ---
 name: code-review
-description: Conducts five-axis code review. Use before merging any change. Use when reviewing code written by yourself, another agent, or a human. Also governs how to receive and act on code review feedback.
+description: Conducts five-axis code review including simplification. Use before merging any change. Use when reviewing code written by yourself, another agent, or a human. Also governs how to receive and act on code review feedback.
 ---
 
 # Code Review and Quality
 
 ## Overview
 
-Multi-dimensional code review with quality gates. Every change gets reviewed before merge — no exceptions. Review covers five axes: correctness, readability, architecture, security, and performance.
+Multi-dimensional code review with quality gates. Every change gets reviewed before merge — no exceptions. Review covers five axes: correctness, readability, architecture, security, and performance. Simplification is a core review output — when review reveals unnecessary complexity, the fix is to simplify.
 
 **The approval standard:** Approve when it definitely improves overall code health, even if it isn't perfect. Don't block because it isn't exactly how you would have written it.
 
@@ -25,6 +25,25 @@ Multi-dimensional code review with quality gates. Every change gets reviewed bef
 - Could this be done in fewer lines?
 - Are abstractions earning their complexity?
 - Are there dead code artifacts?
+
+**Simplification signals to look for:**
+
+| Pattern | Signal | Simplification |
+|---------|--------|----------------|
+| Deep nesting (3+ levels) | Hard to follow control flow | Extract into guard clauses or helpers |
+| Long functions (50+ lines) | Multiple responsibilities | Split into focused functions |
+| Nested ternaries | Requires mental stack to parse | Replace with if/else or lookup |
+| Boolean parameter flags | `doThing(true, false, true)` | Replace with options objects |
+| Repeated conditionals | Same check in multiple places | Extract to a named predicate |
+| Generic names | `data`, `result`, `temp`, `val` | Rename to describe content |
+| Duplicated logic | Same 5+ lines in multiple places | Extract to a shared function |
+| Over-engineered patterns | Factory-for-a-factory | Replace with direct approach |
+
+**Simplification principles:**
+- **Preserve behavior exactly** — don't change what the code does, only how it expresses it
+- **Prefer clarity over cleverness** — explicit code beats compact code when compact requires a mental pause
+- **Follow project conventions** — simplification means consistency with the codebase, not imposing external preferences
+- **Scope to what changed** — default to simplifying recently modified code, avoid drive-by refactors
 
 ### 3. Architecture
 - Does it follow existing patterns or introduce a new one? If new, is it justified?
@@ -191,8 +210,6 @@ If you pushed back and were wrong:
 ❌ Over-explaining
 ```
 
-State the correction factually and move on.
-
 ### Acknowledging Correct Feedback
 
 ```
@@ -285,7 +302,6 @@ Before adding any dependency:
 - [ ] No unbounded operations
 - [ ] Pagination on list endpoints
 - [ ] No large objects in hot paths
-- [ ] Sync operations that should be async
 
 ### Verification
 - [ ] Tests pass
@@ -306,6 +322,9 @@ Before adding any dependency:
 - Accepting "I'll fix it later" — it never happens
 - No regression tests with bug fix PRs
 - Review comments without severity labels
+- Simplification that requires modifying tests to pass (you likely changed behavior)
+- "Simplified" code that is harder to follow than the original
+- Removing error handling because "it makes the code cleaner"
 
 ## Review Report
 

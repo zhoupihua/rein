@@ -1,11 +1,11 @@
 ---
 name: subagent
-description: Use when executing implementation plans with independent tasks in the current session
+description: Use when executing implementation plans with independent tasks in the current session, or when dispatching multiple agents for parallel work on independent problems.
 ---
 
 # Subagent-Driven Development
 
-Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review.
+Execute plan by dispatching fresh subagent per task, with two-stage review after each: spec compliance review first, then code quality review. When facing multiple independent problems, dispatch agents in parallel.
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
@@ -31,13 +31,7 @@ digraph when_to_use {
 }
 ```
 
-**vs. Executing Plans (parallel session):**
-- Same session (no context switch)
-- Fresh subagent per task (no context pollution)
-- Two-stage review after each task: spec compliance first, then code quality
-- Faster iteration (no human-in-loop between tasks)
-
-## The Process
+## Sequential Execution: The Process
 
 ```dot
 digraph process {
@@ -61,7 +55,7 @@ digraph process {
     "Read docs/rein/changes/<name>/plan.md for architecture + docs/rein/changes/<name>/task.md for task list, create TodoWrite" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer subagent for entire implementation" [shape=box];
-    "Use rein:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
+    "Use rein:git-workflow" [shape=box style=filled fillcolor=lightgreen];
 
     "Read docs/rein/changes/<name>/plan.md for architecture + docs/rein/changes/<name>/task.md for task list, create TodoWrite" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer subagent asks questions?";
@@ -80,24 +74,103 @@ digraph process {
     "Mark task complete in tasks.md and TodoWrite" -> "More tasks remain?";
     "More tasks remain?" -> "Dispatch implementer subagent (./implementer-prompt.md)" [label="yes"];
     "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use rein:finishing-a-development-branch";
+    "Dispatch final code reviewer subagent for entire implementation" -> "Use rein:git-workflow";
 }
 ```
+
+## Parallel Dispatch
+
+When you have multiple unrelated failures or independent problems, dispatch one agent per independent problem domain. Let them work concurrently.
+
+### When to Use Parallel Dispatch
+
+```dot
+digraph when_to_use {
+    "Multiple failures?" [shape=diamond];
+    "Are they independent?" [shape=diamond];
+    "Single agent investigates all" [shape=box];
+    "One agent per problem domain" [shape=box];
+    "Can they work in parallel?" [shape=diamond];
+    "Sequential agents" [shape=box];
+    "Parallel dispatch" [shape=box];
+
+    "Multiple failures?" -> "Are they independent?" [label="yes"];
+    "Are they independent?" -> "Single agent investigates all" [label="no - related"];
+    "Are they independent?" -> "Can they work in parallel?" [label="yes"];
+    "Can they work in parallel?" -> "Parallel dispatch" [label="yes"];
+    "Can they work in parallel?" -> "Sequential agents" [label="no - shared state"];
+}
+```
+
+**Use when:**
+- 3+ test files failing with different root causes
+- Multiple subsystems broken independently
+- Each problem can be understood without context from others
+- No shared state between investigations
+
+**Don't use when:**
+- Failures are related (fix one might fix others)
+- Need to understand full system state
+- Agents would interfere with each other
+
+### The Pattern
+
+1. **Identify Independent Domains** — Group failures by what's broken. Each domain is independent.
+2. **Create Focused Agent Tasks** — Each agent gets specific scope, clear goal, constraints, and expected output.
+3. **Dispatch in Parallel** — All agents run concurrently.
+4. **Review and Integrate** — Read summaries, verify no conflicts, run full test suite.
+
+### Agent Prompt Structure
+
+Good agent prompts are:
+1. **Focused** - One clear problem domain
+2. **Self-contained** - All context needed to understand the problem
+3. **Specific about output** - What should the agent return?
+
+```markdown
+Fix the 3 failing tests in src/agents/agent-tool-abort.test.ts:
+
+1. "should abort tool with partial output capture" - expects 'interrupted at' in message
+2. "should handle mixed completed and aborted tools" - fast tool aborted instead of completed
+3. "should properly track pendingToolCount" - expects 3 results but gets 0
+
+These are timing/race condition issues. Your task:
+
+1. Read the test file and understand what each test verifies
+2. Identify root cause - timing issues or actual bugs?
+3. Fix by:
+   - Replacing arbitrary timeouts with event-based waiting
+   - Fixing bugs in abort implementation if found
+   - Adjusting test expectations if testing changed behavior
+
+Do NOT just increase timeouts - find the real issue.
+
+Return: Summary of what you found and what you fixed.
+```
+
+### Common Mistakes
+
+**❌ Too broad:** "Fix all the tests" - agent gets lost
+**✅ Specific:** "Fix agent-tool-abort.test.ts" - focused scope
+
+**❌ No context:** "Fix the race condition" - agent doesn't know where
+**✅ Context:** Paste the error messages and test names
+
+**❌ No constraints:** Agent might refactor everything
+**✅ Constraints:** "Do NOT change production code" or "Fix tests only"
+
+**❌ Vague output:** "Fix it" - you don't know what changed
+**✅ Specific:** "Return summary of root cause and changes"
 
 ## Model Selection
 
 Use the least powerful model that can handle each role to conserve cost and increase speed.
 
-**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model. Most implementation tasks are mechanical when the plan is well-specified.
+**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model.
 
 **Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
 
 **Architecture, design, and review tasks**: use the most capable available model.
-
-**Task complexity signals:**
-- Touches 1-2 files with a complete spec → cheap model
-- Touches multiple files with integration concerns → standard model
-- Requires design judgment or broad codebase understanding → most capable model
 
 ## Handling Implementer Status
 
@@ -105,17 +178,17 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **DONE:** Proceed to spec compliance review.
 
-**DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
+**DONE_WITH_CONCERNS:** Read the concerns before proceeding. If about correctness or scope, address them. If observations, note and proceed.
 
-**NEEDS_CONTEXT:** The implementer needs information that wasn't provided. Provide the missing context and re-dispatch.
+**NEEDS_CONTEXT:** Provide the missing context and re-dispatch.
 
-**BLOCKED:** The implementer cannot complete the task. Assess the blocker:
-1. If it's a context problem, provide more context and re-dispatch with the same model
-2. If the task requires more reasoning, re-dispatch with a more capable model
-3. If the task is too large, break it into smaller pieces
-4. If the plan itself is wrong, escalate to the human
+**BLOCKED:** Assess the blocker:
+1. Context problem → provide more context and re-dispatch with same model
+2. Task needs more reasoning → re-dispatch with more capable model
+3. Task too large → break into smaller pieces
+4. Plan is wrong → escalate to the human
 
-**Never** ignore an escalation or force the same model to retry without changes. If the implementer said it's stuck, something needs to change.
+**Never** ignore an escalation or force the same model to retry without changes.
 
 ## Task Status Tracking (MANDATORY)
 
@@ -123,10 +196,10 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
 
-- **plan.md** → HOW: Include full task details (acceptance criteria, verification, files, notes) when dispatching implementer subagents
+- **plan.md** → HOW: Include full task details when dispatching implementer subagents
 - **tasks.md** → STATUS: After each task is verified complete, the controller MUST update the checkbox
 
-**After each task is verified complete** (whether through full review or justified skip), the controller executes this two-step sequence — **both steps are required**:
+**After each task is verified complete**, the controller executes this two-step sequence — **both steps are required**:
 
 1. **Edit** `docs/rein/changes/<name>/task.md` — change the task's `- [ ]` to `- [x]`
 2. **Read** the same file back — confirm the checkbox now shows `- [x]`. If not, fix it immediately.
@@ -136,7 +209,7 @@ Only after both steps are done may you proceed to the next task.
 **This applies even when:**
 - Skipping reviews for XS tasks (still must update tasks.md)
 - The task was trivial (still must update tasks.md)
-- You plan to batch multiple tasks (update each one as it completes, not after the batch)
+- You plan to batch multiple tasks (update each one as it completes)
 - A subagent reports completion (the controller updates tasks.md, not the subagent)
 
 The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
@@ -146,84 +219,6 @@ The tasks.md checkbox state is the **single source of truth** for progress — `
 - `./implementer-prompt.md` - Dispatch implementer subagent
 - `./spec-reviewer-prompt.md` - Dispatch spec compliance reviewer subagent
 - `./code-quality-reviewer-prompt.md` - Dispatch code quality reviewer subagent
-
-## Example Workflow
-
-```
-You: I'm using Subagent-Driven Development to execute this plan.
-
-[Read docs/rein/changes/<name>/plan.md for architecture context]
-[Read docs/rein/changes/<name>/task.md for task list]
-[Create TodoWrite with all tasks]
-
-Task 1: Hook installation script
-
-[Get Task 1 text and context (already extracted)]
-[Dispatch implementation subagent with full task text + context]
-
-Implementer: "Before I begin - should the hook be installed at user or system level?"
-
-You: "User level (~/.config/rein/hooks/)"
-
-Implementer: "Got it. Implementing now..."
-[Later] Implementer:
-  - Implemented install-hook command
-  - Added tests, 5/5 passing
-  - Self-review: Found I missed --force flag, added it
-  - Committed
-
-[Dispatch spec compliance reviewer]
-Spec reviewer: ✅ Spec compliant - all requirements met, nothing extra
-
-[Get git SHAs, dispatch code quality reviewer]
-Code reviewer: Strengths: Good test coverage, clean. Issues: None. Approved.
-
-[Edit docs/rein/changes/<name>/task.md: change "- [ ] 1.1 ..." to "- [x] 1.1 ..."]
-[Read docs/rein/changes/<name>/task.md — confirm 1.1 shows "- [x]"]
-
-Task 2: Recovery modes
-
-[Get Task 2 text and context (already extracted)]
-[Dispatch implementation subagent with full task text + context]
-
-Implementer: [No questions, proceeds]
-Implementer:
-  - Added verify/repair modes
-  - 8/8 tests passing
-  - Self-review: All good
-  - Committed
-
-[Dispatch spec compliance reviewer]
-Spec reviewer: ❌ Issues:
-  - Missing: Progress reporting (spec says "report every 100 items")
-  - Extra: Added --json flag (not requested)
-
-[Implementer fixes issues]
-Implementer: Removed --json flag, added progress reporting
-
-[Spec reviewer reviews again]
-Spec reviewer: ✅ Spec compliant now
-
-[Dispatch code quality reviewer]
-Code reviewer: Strengths: Solid. Issues (Important): Magic number (100)
-
-[Implementer fixes]
-Implementer: Extracted PROGRESS_INTERVAL constant
-
-[Code reviewer reviews again]
-Code reviewer: ✅ Approved
-
-[Edit docs/rein/changes/<name>/task.md: change "- [ ] 2.1 ..." to "- [x] 2.1 ..."]
-[Read docs/rein/changes/<name>/task.md — confirm 2.1 shows "- [x]"]
-
-...
-
-[After all tasks]
-[Dispatch final code-reviewer]
-Final reviewer: All requirements met, ready to merge
-
-Done!
-```
 
 ## Advantages
 
@@ -238,24 +233,12 @@ Done!
 - Continuous progress (no waiting)
 - Review checkpoints automatic
 
-**Efficiency gains:**
-- No file reading overhead (controller provides full text)
-- Controller curates exactly what context is needed
-- Subagent gets complete information upfront
-- Questions surfaced before work begins (not after)
-
 **Quality gates:**
 - Self-review catches issues before handoff
 - Two-stage review: spec compliance, then code quality
 - Review loops ensure fixes actually work
 - Spec compliance prevents over/under-building
 - Code quality ensures implementation is well-built
-
-**Cost:**
-- More subagent invocations (implementer + 2 reviewers per task)
-- Controller does more prep work (extracting all tasks upfront)
-- Review loops add iterations
-- But catches issues early (cheaper than debugging later)
 
 ## Red Flags
 
@@ -274,31 +257,12 @@ Done!
 - **Start code quality review before spec compliance is ✅** (wrong order)
 - Move to next task while either review has open issues
 
-**If subagent asks questions:**
-- Answer clearly and completely
-- Provide additional context if needed
-- Don't rush them into implementation
-
-**If reviewer finds issues:**
-- Implementer (same subagent) fixes them
-- Reviewer reviews again
-- Repeat until approved
-- Don't skip the re-review
-
-**If subagent fails task:**
-- Dispatch fix subagent with specific instructions
-- Don't try to fix manually (context pollution)
-
 ## Integration
 
 **Required workflow skills:**
-- **rein:git-worktrees** - REQUIRED: Set up isolated workspace before starting
-- **rein:writing-plans** - Creates the plan this skill executes
-- **rein:requesting-code-review** - Code review template for reviewer subagents
-- **rein:finishing-a-development-branch** - Complete development after all tasks
-
-**Subagents should use:**
-- **rein:tdd** - Subagents follow TDD for each task
+- **git-workflow** - Set up isolated workspace before starting; complete development after all tasks
+- **planning** - Creates the plan this skill executes
+- **tdd** - Subagents follow TDD for each task
 
 **Alternative workflow:**
-- **rein:executing-plans** - Use for parallel session instead of same-session execution
+- **executing-plans** - Use for inline execution without subagent dispatch

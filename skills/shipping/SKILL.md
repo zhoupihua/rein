@@ -1,21 +1,159 @@
 ---
 name: shipping
-description: Prepares production launches. Use when preparing to deploy to production. Use when you need a pre-launch checklist, when setting up monitoring, when planning a staged rollout, or when you need a rollback strategy.
+description: Prepares production launches and automates CI/CD pipelines. Use when preparing to deploy to production, setting up build/deployment pipelines, configuring quality gates, or planning staged rollouts.
 ---
 
-# Shipping and Launch
+# Shipping, Launch, and CI/CD
 
 ## Overview
 
-Ship with confidence. The goal is not just to deploy — it's to deploy safely, with monitoring in place, a rollback plan ready, and a clear understanding of what success looks like. Every launch should be reversible, observable, and incremental.
+Ship with confidence. The goal is not just to deploy — it's to deploy safely, with monitoring in place, a rollback plan ready, automated quality gates, and a clear understanding of what success looks like. Every launch should be reversible, observable, and incremental.
+
+**Shift Left:** Catch problems as early in the pipeline as possible. A bug caught in linting costs minutes; the same bug caught in production costs hours.
+
+**Faster is Safer:** Smaller batches and more frequent releases reduce risk, not increase it. Frequent releases build confidence in the release process itself.
 
 ## When to Use
 
 - Deploying a feature to production for the first time
+- Setting up a new project's CI pipeline
+- Adding or modifying automated checks
+- Configuring deployment pipelines
 - Releasing a significant change to users
 - Migrating data or infrastructure
-- Opening a beta or early access program
 - Any deployment that carries risk (all of them)
+
+## The Quality Gate Pipeline
+
+Every change goes through these gates before merge:
+
+```
+Pull Request Opened
+    │
+    ▼
+┌─────────────────┐
+│   LINT CHECK     │  eslint, prettier
+│   ↓ pass         │
+│   TYPE CHECK     │  tsc --noEmit
+│   ↓ pass         │
+│   UNIT TESTS     │  jest/vitest
+│   ↓ pass         │
+│   BUILD          │  npm run build
+│   ↓ pass         │
+│   INTEGRATION    │  API/DB tests
+│   ↓ pass         │
+│   E2E (optional) │  Playwright/Cypress
+│   ↓ pass         │
+│   SECURITY AUDIT │  npm audit
+│   ↓ pass         │
+│   BUNDLE SIZE    │  bundlesize check
+└─────────────────┘
+    │
+    ▼
+  Ready for review
+```
+
+**No gate can be skipped.** If lint fails, fix lint — don't disable the rule.
+
+## GitHub Actions Configuration
+
+### Basic CI Pipeline
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm test -- --coverage
+      - run: npm run build
+      - run: npm audit --audit-level=high
+```
+
+### With Database Integration Tests
+
+```yaml
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ${{ secrets.CI_DB_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: 'npm' }
+      - run: npm ci
+      - name: Run migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://ci_user:${{ secrets.CI_DB_PASSWORD }}@localhost:5432/testdb
+      - name: Integration tests
+        run: npm run test:integration
+        env:
+          DATABASE_URL: postgresql://ci_user:${{ secrets.CI_DB_PASSWORD }}@localhost:5432/testdb
+```
+
+### E2E Tests
+
+```yaml
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22', cache: 'npm' }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+```
+
+## Feeding CI Failures Back to Agents
+
+The power of CI with AI agents is the feedback loop:
+
+```
+CI fails → Copy failure output → Feed to agent → Agent fixes → Push → CI runs again
+```
+
+**Key patterns:**
+- Lint failure → Agent runs `npm run lint --fix` and commits
+- Type error → Agent reads the error location and fixes the type
+- Test failure → Agent follows debugging skill
+- Build error → Agent checks config and dependencies
 
 ## The Pre-Launch Checklist
 
@@ -55,7 +193,6 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 - [ ] Color contrast meets WCAG 2.1 AA (4.5:1 for text)
 - [ ] Focus management correct for modals and dynamic content
 - [ ] Error messages are descriptive and associated with form fields
-- [ ] No accessibility warnings in axe-core or Lighthouse
 
 ### Infrastructure
 
@@ -72,22 +209,16 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 - [ ] API documentation current
 - [ ] ADRs written for any architectural decisions
 - [ ] Changelog updated
-- [ ] User-facing documentation updated (if applicable)
 
 ## Feature Flag Strategy
 
 Ship behind feature flags to decouple deployment from release:
 
 ```typescript
-// Feature flag check
 const flags = await getFeatureFlags(userId);
-
 if (flags.taskSharing) {
-  // New feature: task sharing
   return <TaskSharingPanel task={task} />;
 }
-
-// Default: existing behavior
 return null;
 ```
 
@@ -112,43 +243,22 @@ return null;
 ### The Rollout Sequence
 
 ```
-1. DEPLOY to staging
-   └── Full test suite in staging environment
-   └── Manual smoke test of critical flows
-
-2. DEPLOY to production (feature flag OFF)
-   └── Verify deployment succeeded (health check)
-   └── Check error monitoring (no new errors)
-
-3. ENABLE for team (flag ON for internal users)
-   └── Team uses the feature in production
-   └── 24-hour monitoring window
-
-4. CANARY rollout (flag ON for 5% of users)
-   └── Monitor error rates, latency, user behavior
-   └── Compare metrics: canary vs. baseline
-   └── 24-48 hour monitoring window
-   └── Advance only if all thresholds pass (see table below)
-
-5. GRADUAL increase (25% -> 50% -> 100%)
-   └── Same monitoring at each step
-   └── Ability to roll back to previous percentage at any point
-
-6. FULL rollout (flag ON for all users)
-   └── Monitor for 1 week
-   └── Clean up feature flag
+1. DEPLOY to staging → Full test suite + manual smoke test
+2. DEPLOY to production (flag OFF) → Verify deployment + error monitoring
+3. ENABLE for team → 24-hour monitoring window
+4. CANARY rollout (5%) → Monitor error rates, latency, user behavior; 24-48h window
+5. GRADUAL increase (25% → 50% → 100%) → Same monitoring at each step
+6. FULL rollout → Monitor for 1 week → Clean up feature flag
 ```
 
 ### Rollout Decision Thresholds
 
-Use these thresholds to decide whether to advance, hold, or roll back at each stage:
-
-| Metric | Advance (green) | Hold and investigate (yellow) | Roll back (red) |
-|--------|-----------------|-------------------------------|-----------------|
+| Metric | Advance (green) | Hold (yellow) | Roll back (red) |
+|--------|-----------------|---------------|-----------------|
 | Error rate | Within 10% of baseline | 10-100% above baseline | >2x baseline |
 | P95 latency | Within 20% of baseline | 20-50% above baseline | >50% above baseline |
-| Client JS errors | No new error types | New errors at <0.1% of sessions | New errors at >0.1% of sessions |
-| Business metrics | Neutral or positive | Decline <5% (may be noise) | Decline >5% |
+| Client JS errors | No new error types | New errors at <0.1% | New errors at >0.1% |
+| Business metrics | Neutral or positive | Decline <5% | Decline >5% |
 
 ### When to Roll Back
 
@@ -164,62 +274,9 @@ Roll back immediately if:
 ### What to Monitor
 
 ```
-Application metrics:
-├── Error rate (total and by endpoint)
-├── Response time (p50, p95, p99)
-├── Request volume
-├── Active users
-└── Key business metrics (conversion, engagement)
-
-Infrastructure metrics:
-├── CPU and memory utilization
-├── Database connection pool usage
-├── Disk space
-├── Network latency
-└── Queue depth (if applicable)
-
-Client metrics:
-├── Core Web Vitals (LCP, INP, CLS)
-├── JavaScript errors
-├── API error rates from client perspective
-└── Page load time
-```
-
-### Error Reporting
-
-```typescript
-// Set up error boundary with reporting
-class ErrorBoundary extends React.Component {
-  componentDidCatch(error: Error, info: React.ErrorInfo) {
-    // Report to error tracking service
-    reportError(error, {
-      componentStack: info.componentStack,
-      userId: getCurrentUser()?.id,
-      page: window.location.pathname,
-    });
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <ErrorFallback onRetry={() => this.setState({ hasError: false })} />;
-    }
-    return this.props.children;
-  }
-}
-
-// Server-side error reporting
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  reportError(err, {
-    method: req.method,
-    url: req.url,
-    userId: req.user?.id,
-  });
-
-  // Don't expose internals to users
-  res.status(500).json({
-    error: { code: 'INTERNAL_ERROR', message: 'Something went wrong' },
-  });
-});
+Application: Error rate, Response time (p50/p95/p99), Request volume, Active users, Business metrics
+Infrastructure: CPU/memory, DB connection pool, Disk space, Network latency, Queue depth
+Client: Core Web Vitals (LCP, INP, CLS), JS errors, API error rates, Page load time
 ```
 
 ### Post-Launch Verification
@@ -245,24 +302,60 @@ Every deployment needs a rollback plan before it happens:
 ### Trigger Conditions
 - Error rate > 2x baseline
 - P95 latency > [X]ms
-- User reports of [specific issue]
 
 ### Rollback Steps
-1. Disable feature flag (if applicable)
-   OR
-1. Deploy previous version: `git revert <commit> && git push`
+1. Disable feature flag OR deploy previous version
 2. Verify rollback: health check, error monitoring
-3. Communicate: notify team of rollback
+3. Communicate: notify team
 
 ### Database Considerations
-- Migration [X] has a rollback: `npx prisma migrate rollback`
+- Migration [X] has a rollback
 - Data inserted by new feature: [preserved / cleaned up]
 
 ### Time to Rollback
 - Feature flag: < 1 minute
-- Redeploy previous version: < 5 minutes
+- Redeploy: < 5 minutes
 - Database rollback: < 15 minutes
 ```
+
+## Environment Management
+
+```
+.env.example       → Committed (template for developers)
+.env                → NOT committed (local development)
+.env.test           → Committed (test environment, no real secrets)
+CI secrets          → Stored in GitHub Secrets / vault
+Production secrets  → Stored in deployment platform / vault
+```
+
+CI should never have production secrets.
+
+## Deployment Strategies
+
+### Preview Deployments
+
+Every PR gets a preview deployment for manual testing.
+
+### Automation Beyond CI
+
+- **Dependabot / Renovate** for automated dependency updates
+- **Build Cop** role — designated person keeps CI green
+- **PR Checks:** Required reviews, required status checks, branch protection, auto-merge
+
+## CI Optimization
+
+When the pipeline exceeds 10 minutes, apply in order of impact:
+
+```
+Slow CI pipeline?
+├── Cache dependencies
+├── Run jobs in parallel (split lint, typecheck, test, build)
+├── Only run what changed (path filters)
+├── Use matrix builds (shard test suites)
+├── Optimize the test suite (move slow tests to scheduled runs)
+└── Use larger runners
+```
+
 ## See Also
 
 - For security pre-launch checks, see `references/security-checklist.md`
@@ -273,20 +366,27 @@ Every deployment needs a rollback plan before it happens:
 
 | Rationalization | Reality |
 |---|---|
-| "It works in staging, it'll work in production" | Production has different data, traffic patterns, and edge cases. Monitor after deploy. |
-| "We don't need feature flags for this" | Every feature benefits from a kill switch. Even "simple" changes can break things. |
-| "Monitoring is overhead" | Not having monitoring means you discover problems from user complaints instead of dashboards. |
-| "We'll add monitoring later" | Add it before launch. You can't debug what you can't see. |
-| "Rolling back is admitting failure" | Rolling back is responsible engineering. Shipping a broken feature is the failure. |
+| "CI is too slow" | Optimize the pipeline, don't skip it. A 5-minute pipeline prevents hours of debugging. |
+| "This change is trivial, skip CI" | Trivial changes break builds. CI is fast for trivial changes. |
+| "It works in staging, it'll work in production" | Production has different data, traffic patterns, and edge cases. |
+| "We don't need feature flags for this" | Every feature benefits from a kill switch. |
+| "Monitoring is overhead" | Not having monitoring means you discover problems from user complaints. |
+| "Rolling back is admitting failure" | Rolling back is responsible engineering. Shipping broken is the failure. |
+| "The test is flaky, just re-run" | Flaky tests mask real bugs. Fix the flakiness. |
+| "We'll add CI later" | Projects without CI accumulate broken states. Set it up on day one. |
 
 ## Red Flags
 
+- No CI pipeline in the project
+- CI failures ignored or silenced
+- Tests disabled in CI to make the pipeline pass
 - Deploying without a rollback plan
 - No monitoring or error reporting in production
 - Big-bang releases (everything at once, no staging)
 - Feature flags with no expiration or owner
 - No one monitoring the deploy for the first hour
-- Production environment configuration done by memory, not code
+- Production secrets stored in code or CI config
+- Long CI times with no optimization effort
 - "It's Friday afternoon, let's ship it"
 
 ## Verification
@@ -298,6 +398,9 @@ Before deploying:
 - [ ] Rollback plan documented
 - [ ] Monitoring dashboards set up
 - [ ] Team notified of deployment
+- [ ] All quality gates present (lint, types, tests, build, audit)
+- [ ] Pipeline runs on every PR and push to main
+- [ ] Failures block merge (branch protection configured)
 
 After deploying:
 

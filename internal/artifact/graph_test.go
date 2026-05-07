@@ -8,11 +8,11 @@ import (
 
 func TestDefaultArtifactGraph(t *testing.T) {
 	g := DefaultArtifactGraph()
-	if g.Name != "spec-driven" {
-		t.Errorf("expected name 'spec-driven', got %q", g.Name)
+	if g.Name != "define" {
+		t.Errorf("expected name 'define', got %q", g.Name)
 	}
-	if len(g.Artifacts) != 5 {
-		t.Errorf("expected 5 artifacts, got %d", len(g.Artifacts))
+	if len(g.Artifacts) != 4 {
+		t.Errorf("expected 4 artifacts, got %d", len(g.Artifacts))
 	}
 }
 
@@ -22,28 +22,25 @@ func TestBuildOrder(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BuildOrder failed: %v", err)
 	}
-	if len(order) != 5 {
-		t.Fatalf("expected 5 artifacts in order, got %d", len(order))
+	if len(order) != 4 {
+		t.Fatalf("expected 4 artifacts in order, got %d", len(order))
 	}
 
-	// proposal and spec must come first (no dependencies, alphabetical)
-	if order[0].ID != "proposal" {
-		t.Errorf("expected first artifact 'proposal', got %q", order[0].ID)
-	}
-	if order[1].ID != "spec" {
-		t.Errorf("expected second artifact 'spec', got %q", order[1].ID)
+	// spec comes first (no dependencies)
+	if order[0].ID != "spec" {
+		t.Errorf("expected first artifact 'spec', got %q", order[0].ID)
 	}
 	// plan depends on spec
-	if order[2].ID != "plan" {
-		t.Errorf("expected third artifact 'plan', got %q", order[2].ID)
+	if order[1].ID != "plan" {
+		t.Errorf("expected second artifact 'plan', got %q", order[1].ID)
 	}
 	// task depends on plan
-	if order[3].ID != "task" {
-		t.Errorf("expected fourth artifact 'task', got %q", order[3].ID)
+	if order[2].ID != "task" {
+		t.Errorf("expected third artifact 'task', got %q", order[2].ID)
 	}
 	// review depends on task
-	if order[4].ID != "review" {
-		t.Errorf("expected fifth artifact 'review', got %q", order[4].ID)
+	if order[3].ID != "review" {
+		t.Errorf("expected fourth artifact 'review', got %q", order[3].ID)
 	}
 }
 
@@ -103,24 +100,14 @@ func TestNextArtifacts(t *testing.T) {
 	g := DefaultArtifactGraph()
 	dir := t.TempDir()
 
-	// Nothing exists yet — proposal and spec should be available (both have no requirements)
+	// Nothing exists yet — spec should be available (no requirements)
 	next := g.NextArtifacts(dir)
-	if len(next) != 2 {
-		t.Errorf("expected [proposal, spec], got %v", artifactIDs(next))
-	}
-	if next[0].ID != "proposal" || next[1].ID != "spec" {
-		t.Errorf("expected [proposal, spec], got %v", artifactIDs(next))
+	if len(next) != 1 || next[0].ID != "spec" {
+		t.Errorf("expected [spec], got %v", artifactIDs(next))
 	}
 
-	// Create spec.md — plan should be available (proposal is still available too)
+	// Create spec.md — plan should be available
 	os.WriteFile(filepath.Join(dir, "spec.md"), []byte("# Spec"), 0644)
-	next = g.NextArtifacts(dir)
-	if len(next) != 2 {
-		t.Errorf("expected [proposal, plan], got %v", artifactIDs(next))
-	}
-
-	// Create proposal.md — only plan remains as next
-	os.WriteFile(filepath.Join(dir, "proposal.md"), []byte("# Proposal"), 0644)
 	next = g.NextArtifacts(dir)
 	if len(next) != 1 || next[0].ID != "plan" {
 		t.Errorf("expected [plan], got %v", artifactIDs(next))
@@ -173,13 +160,7 @@ func TestCurrentPhase(t *testing.T) {
 		t.Errorf("expected DEFINE, got %q", phase)
 	}
 
-	// Only proposal.md — still DEFINE (spec not done yet)
-	os.WriteFile(filepath.Join(dir, "proposal.md"), []byte("# Proposal"), 0644)
-	if phase := g.CurrentPhase(dir); phase != "DEFINE" {
-		t.Errorf("expected DEFINE, got %q", phase)
-	}
-
-	// spec.md exists — PLAN (proposal is optional, doesn't gate)
+	// spec.md exists — PLAN
 	os.WriteFile(filepath.Join(dir, "spec.md"), []byte("# Spec"), 0644)
 	if phase := g.CurrentPhase(dir); phase != "PLAN" {
 		t.Errorf("expected PLAN, got %q", phase)

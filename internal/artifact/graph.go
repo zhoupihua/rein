@@ -37,10 +37,9 @@ func LoadArtifactGraph(path string) (*ArtifactGraph, error) {
 // DefaultArtifactGraph returns the built-in artifact graph used when no schema.json exists.
 func DefaultArtifactGraph() *ArtifactGraph {
 	return &ArtifactGraph{
-		Name: "spec-driven",
+		Name: "define",
 		Artifacts: []Artifact{
-			{ID: "proposal", Generates: "proposal.md", Requires: []string{}, Description: "Change Proposal"},
-			{ID: "spec", Generates: "spec.md", Requires: []string{}, Description: "Product Requirements Document"},
+			{ID: "spec", Generates: "spec.md", Requires: []string{}, Description: "Feature Specification with Requirements, Decisions, and Risks"},
 			{ID: "plan", Generates: "plan.md", Requires: []string{"spec"}, Description: "Implementation Plan"},
 			{ID: "task", Generates: "task.md", Requires: []string{"plan"}, Description: "Task Checklist"},
 			{ID: "review", Generates: "review.md", Requires: []string{"task"}, Description: "Code Review Report"},
@@ -194,7 +193,7 @@ func (g *ArtifactGraph) existingArtifacts(featureDir string) map[string]bool {
 // phaseForArtifact maps artifact IDs to phase names.
 func phaseForArtifact(id string) string {
 	switch id {
-	case "proposal", "spec":
+	case "spec":
 		return "DEFINE"
 	case "plan", "task":
 		return "PLAN"
