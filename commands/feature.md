@@ -39,6 +39,16 @@ If issues found:
 - Security concerns → invoke `security`
 - Performance concerns → invoke `performance`
 
+### Step 5.5: Integrate
+Invoke `integration-testing` skill. This gate ensures testing sufficiency beyond per-task TDD:
+
+1. **Spec traceability** — verify every spec scenario has a corresponding test
+2. **Integration tests** — verify cross-component interfaces work together
+3. **Coverage analysis** — new/changed code >= 80%, core paths 100%
+4. **Regression check** — full test suite passes, no unexplained skips
+
+If gaps are found at any gate, go back to Step 4 to add missing tests before proceeding.
+
 ### Step 6: Verify and Ship
 Invoke `verify` skill. Verify with fresh evidence.
 

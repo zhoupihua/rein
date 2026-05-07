@@ -7,7 +7,7 @@ You MUST follow this exact loop. Each iteration starts by reading task.md fresh 
 ```
 LOOP:
   1. Read task.md — find the FIRST line matching `- [ ]`
-  2. If no `- [ ]` found → all tasks complete → suggest `/code-review` or `/ship`
+  2. If no `- [ ]` found → all tasks complete → invoke `integration-testing` skill → then suggest `/code-review` or `/ship`
   3. Found task X.Y → read plan.md for X.Y details
   4. Implement task X.Y
   5. Verify tests pass

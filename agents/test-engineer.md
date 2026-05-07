@@ -56,16 +56,70 @@ For every function or component:
 | Error paths | Invalid input, network failure, timeout |
 | Concurrency | Rapid repeated calls, out-of-order responses |
 
+## Scenario Coverage Table
+
+For every function, component, or API endpoint, check these five scenarios:
+
+| Scenario | What to Test | Example |
+|----------|-------------|---------|
+| **Happy path** | Valid input produces expected output | Valid form submission creates record |
+| **Empty input** | Handles null, empty, zero values | Empty string, empty array, null, undefined |
+| **Boundary values** | Handles min, max, edge of range | Min/max integer, zero, negative, max length string |
+| **Error paths** | Handles invalid input, failures, timeouts | Invalid format, network failure, timeout |
+| **Concurrency** | Handles rapid/repeated/out-of-order calls | Double-submit, race conditions, out-of-order responses |
+
+A function is not adequately tested until all applicable scenarios have coverage.
+
+## Post-Implementation Testing
+
+After all TDD tasks are complete, perform systematic testing beyond unit level:
+
+### Step 1: Spec Traceability
+
+Read `spec.md` and extract every `WHEN/THEN` scenario. For each:
+
+1. Search codebase for a test that verifies the scenario
+2. Mark: `Covered` (test exists and asserts the THEN clause), `GAP` (no test), or `PARTIAL` (test exists but doesn't assert the full scenario)
+3. Any `GAP` is a blocker for shipping
+
+### Step 2: Integration Gap Analysis
+
+1. Identify which packages/modules were changed (`git diff --stat`)
+2. Map cross-boundary interfaces: Package A → Package B
+3. For each interface, check if an integration test exists
+4. Missing integration tests for changed interfaces = blocker
+
+### Step 3: Coverage Analysis
+
+1. Run coverage: `go test -cover ./...` / `nyc --reporter=text` / `pytest --cov`
+2. Check thresholds: new/changed code >= 80%, core paths 100%
+3. For uncovered code, determine: core path (must test), error handler (must test), dead code (delete), simple accessor (low priority)
+4. Report specific files and functions that need tests
+
+### Step 4: Regression Strategy
+
+1. Run the full test suite (not just affected packages)
+2. Check for skipped/disabled tests — each must have a comment with reason
+3. Verify smoke test checklist: app starts, main flow works, auth works, CRUD works, error responses correct
+4. Any regression = investigate root cause before proceeding
+
 ## Output Format
 
-When analyzing test coverage:
+### For Coverage Analysis
 
 ```markdown
 ## Test Coverage Analysis
 
 ### Current Coverage
 - [X] tests covering [Y] functions/components
-- Coverage gaps identified: [list]
+- Overall coverage: [Z]%
+- New/changed code coverage: [Z]%
+
+### Coverage Gaps
+| File | Function | Line Coverage | Priority | Reason |
+|------|----------|---------------|----------|--------|
+| auth.go | ValidateToken | 0% | Critical | Auth path must be 100% |
+| handler.go | CreateTask | 60% | High | Error paths untested |
 
 ### Recommended Tests
 1. **[Test name]** — [What it verifies, why it matters]
@@ -78,6 +132,39 @@ When analyzing test coverage:
 - Low: [Tests for utility functions and formatting]
 ```
 
+### For Ship Fan-out Report
+
+Used by `/ship` Phase B to merge findings from parallel agents:
+
+```markdown
+## Test Engineer Report
+
+### Spec Traceability
+- Total scenarios: [N]
+- Covered: [N] | GAP: [N] | PARTIAL: [N] | DEFERRED: [N]
+- [If gaps exist, list them with spec scenario and missing assertion]
+
+### Integration Coverage
+- Cross-boundary interfaces changed: [N]
+- Integration tests present: [N] | Missing: [N]
+- [List missing integration tests with interface description]
+
+### Coverage Summary
+- New/changed code: [X]% (threshold: 80%)
+- Core paths: [X]% (threshold: 100%)
+- Meets threshold: YES/NO
+
+### Regression Status
+- Full suite: PASS/FAIL ([N] tests, [N] failures)
+- Skipped tests: [N] (all have tracking issues: YES/NO)
+- Smoke tests: ALL PASS / [list failures]
+
+### Verdict
+- [ ] PASS — All gates met, ready to ship
+- [ ] CONDITIONAL — [List items that must be addressed]
+- [ ] FAIL — [List blocking issues]
+```
+
 ## Rules
 
 1. Test behavior, not implementation details
@@ -87,9 +174,11 @@ When analyzing test coverage:
 5. Mock at system boundaries (database, network), not between internal functions
 6. Every test name should read like a specification
 7. A test that never fails is as useless as a test that always fails
+8. A test suite with gaps is not a passing test suite — coverage matters
 
 ## Composition
 
 - **Invoke directly when:** the user asks for test design, coverage analysis, or a Prove-It test for a specific bug.
 - **Invoke via:** `/test` (TDD workflow) or `/ship` (parallel fan-out for coverage gap analysis alongside `code-reviewer` and `security-auditor`).
+- **Invoke after TDD:** when all implementation tasks are done and integration testing is needed.
 - **Do not invoke from another persona.** Recommendations to add tests belong in your report; the user or a slash command decides when to act on them. See [agents/README.md](README.md).

@@ -130,10 +130,50 @@ From 24 failure memories:
 - Implications of success
 - ANY communication suggesting completion/correctness
 
+## Testing Sufficiency Check
+
+The Gate Function ensures you ran the tests. This section ensures the tests are adequate.
+
+Running a test suite that passes proves nothing if the suite is incomplete. A test that never fails is as useless as no test at all.
+
+### Coverage Gate
+
+After running the test command, check that coverage is sufficient:
+
+1. Run coverage report:
+   - Go: `go test -cover ./...`
+   - Node: `nyc --reporter=text npm test`
+   - Python: `pytest --cov`
+2. Check: New/changed code coverage >= 80%
+3. Check: Core paths (auth, data handling, error paths) = 100%
+4. If below threshold: write additional tests BEFORE claiming completion
+
+### Spec Traceability Gate
+
+Before claiming "requirements met":
+
+1. Read `spec.md` — extract every `WHEN/THEN` scenario
+2. For each scenario, find a test that verifies it
+3. Uncovered scenarios = incomplete work — do NOT claim completion
+4. If a scenario is intentionally deferred, mark it `DEFERRED` with a reason
+
+### Integration Gate
+
+After all per-task TDD is done:
+
+1. Run the FULL test suite (not just affected packages)
+2. Check for test failures in unrelated modules (integration regression)
+3. If multi-package change: verify cross-package interfaces work together
+4. For systematic coverage, invoke `integration-testing` skill
+
+### Why This Matters
+
+The Iron Law prevents dishonesty ("tests pass" when you didn't run them). The Sufficiency Check prevents complacency ("tests pass" when you didn't test enough). Both are required.
+
 ## The Bottom Line
 
-**No shortcuts for verification.**
+**No shortcuts for verification. No claims without evidence. No evidence without sufficiency.**
 
-Run the command. Read the output. THEN claim the result.
+Run the command. Read the output. Check the coverage. Trace the spec. THEN claim the result.
 
 This is non-negotiable.
