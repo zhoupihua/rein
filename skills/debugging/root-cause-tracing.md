@@ -67,8 +67,24 @@ Project.create('name', context.tempDir); // Accessed before beforeEach!
 
 When you can't trace manually, add instrumentation:
 
+**Go:**
+
+```go
+func gitInit(directory string) error {
+    log.Printf("DEBUG git init: dir=%q cwd=%q\n%s",
+        directory,
+        func() string { cwd, _ := os.Getwd(); return cwd }(),
+        debug.Stack(),
+    )
+    cmd := exec.Command("git", "init")
+    cmd.Dir = directory
+    return cmd.Run()
+}
+```
+
+**TypeScript:**
+
 ```typescript
-// Before the problematic operation
 async function gitInit(directory: string) {
   const stack = new Error().stack;
   console.error('DEBUG git init:', {
@@ -77,34 +93,39 @@ async function gitInit(directory: string) {
     nodeEnv: process.env.NODE_ENV,
     stack,
   });
-
   await execFileAsync('git', ['init'], { cwd: directory });
 }
 ```
 
-**Critical:** Use `console.error()` in tests (not logger - may not show)
+**Critical:** Use `log.Printf` / `console.error()` in tests (not logger — may be suppressed).
 
 **Run and capture:**
 ```bash
+# Go
+go test -v ./... 2>&1 | grep 'DEBUG git init'
+# TypeScript
 npm test 2>&1 | grep 'DEBUG git init'
 ```
-
-**Analyze stack traces:**
-- Look for test file names
-- Find the line number triggering the call
-- Identify the pattern (same test? same parameter?)
 
 ## Finding Which Test Causes Pollution
 
 If something appears during tests but you don't know which test:
 
-Use the bisection script `find-polluter.sh` in this directory:
+Use `git bisect` to find the commit that introduced the issue:
 
 ```bash
-./find-polluter.sh '.git' 'src/**/*.test.ts'
+git bisect start
+git bisect bad HEAD
+git bisect good <known-good-commit>
+git bisect run go test ./...
 ```
 
-Runs tests one-by-one, stops at first polluter. See script for usage.
+Or run tests individually to find the polluter:
+
+```bash
+# Go: run one test at a time
+go test -run TestName ./...
+```
 
 ## Real Example: Empty projectDir
 

@@ -212,3 +212,11 @@ After completing an ideation session:
 - [ ] The output is a concrete artifact (markdown one-pager), not just conversation
 - [ ] The user confirmed the final direction before any implementation work
 - [ ] The spec has no placeholders, contradictions, or ambiguity
+
+## Supporting Files
+
+- **`frameworks.md`** — 7 ideation frameworks (SCAMPER, HMW, First Principles, JTBD, Constraint-Based, Pre-mortem, Analogous Inspiration)
+- **`refinement-criteria.md`** — Phase 2 evaluation rubric (User Value, Feasibility, Differentiation) + assumption audit + MVP scoping
+- **`examples.md`** — 3 complete ideation session examples (startup concept, feature within product, process improvement)
+- **`visual-thinking.md`** — Browser-based visual brainstorming companion guide (when to use, HTML fragment writing, CSS classes)
+- **`spec-reviewer-prompt.md`** — Spec document reviewer subagent prompt template

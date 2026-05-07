@@ -22,6 +22,26 @@ Different layers catch different cases:
 ### Layer 1: Entry Point Validation
 **Purpose:** Reject obviously invalid input at API boundary
 
+**Go:**
+
+```go
+func CreateProject(name, workingDir string) error {
+    if workingDir == "" || strings.TrimSpace(workingDir) == "" {
+        return fmt.Errorf("workingDir cannot be empty")
+    }
+    info, err := os.Stat(workingDir)
+    if err != nil {
+        return fmt.Errorf("workingDir does not exist: %s", workingDir)
+    }
+    if !info.IsDir() {
+        return fmt.Errorf("workingDir is not a directory: %s", workingDir)
+    }
+    // ... proceed
+}
+```
+
+**TypeScript:**
+
 ```typescript
 function createProject(name: string, workingDirectory: string) {
   if (!workingDirectory || workingDirectory.trim() === '') {
@@ -40,6 +60,19 @@ function createProject(name: string, workingDirectory: string) {
 ### Layer 2: Business Logic Validation
 **Purpose:** Ensure data makes sense for this operation
 
+**Go:**
+
+```go
+func InitializeWorkspace(projectDir, sessionID string) error {
+    if projectDir == "" {
+        return fmt.Errorf("projectDir required for workspace initialization")
+    }
+    // ... proceed
+}
+```
+
+**TypeScript:**
+
 ```typescript
 function initializeWorkspace(projectDir: string, sessionId: string) {
   if (!projectDir) {
@@ -52,17 +85,30 @@ function initializeWorkspace(projectDir: string, sessionId: string) {
 ### Layer 3: Environment Guards
 **Purpose:** Prevent dangerous operations in specific contexts
 
+**Go:**
+
+```go
+func gitInit(directory string) error {
+    if os.Getenv("GO_TEST") != "" {
+        absDir, _ := filepath.Abs(directory)
+        tmpDir := os.TempDir()
+        if !strings.HasPrefix(absDir, tmpDir) {
+            return fmt.Errorf("refusing git init outside temp dir during tests: %s", directory)
+        }
+    }
+    // ... proceed
+}
+```
+
+**TypeScript:**
+
 ```typescript
 async function gitInit(directory: string) {
-  // In tests, refuse git init outside temp directories
   if (process.env.NODE_ENV === 'test') {
     const normalized = normalize(resolve(directory));
     const tmpDir = normalize(resolve(tmpdir()));
-
     if (!normalized.startsWith(tmpDir)) {
-      throw new Error(
-        `Refusing git init outside temp dir during tests: ${directory}`
-      );
+      throw new Error(`Refusing git init outside temp dir during tests: ${directory}`);
     }
   }
   // ... proceed
@@ -72,14 +118,23 @@ async function gitInit(directory: string) {
 ### Layer 4: Debug Instrumentation
 **Purpose:** Capture context for forensics
 
+**Go:**
+
+```go
+func gitInit(directory string) error {
+    log.Printf("about to git init: dir=%q cwd=%q", directory, func() string {
+        cwd, _ := os.Getwd(); return cwd
+    }())
+    // ... proceed
+}
+```
+
+**TypeScript:**
+
 ```typescript
 async function gitInit(directory: string) {
   const stack = new Error().stack;
-  logger.debug('About to git init', {
-    directory,
-    cwd: process.cwd(),
-    stack,
-  });
+  logger.debug('About to git init', { directory, cwd: process.cwd(), stack });
   // ... proceed
 }
 ```

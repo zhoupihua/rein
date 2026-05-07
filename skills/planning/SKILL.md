@@ -288,3 +288,7 @@ Before starting implementation, confirm:
 - [ ] Task numbers match between plan.md and tasks.md
 - [ ] No task touches more than ~5 files
 - [ ] The human has reviewed and approved both documents
+
+## Supporting Files
+
+- **`plan-reviewer-prompt.md`** — Plan document reviewer subagent prompt template (verify completeness, spec alignment, task decomposition, buildability)

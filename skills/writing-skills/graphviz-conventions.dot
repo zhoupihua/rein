@@ -1,0 +1,78 @@
+digraph graphviz_conventions {
+    /*
+     * GRAPHVIZ DOT STYLE GUIDE FOR REIN SKILLS
+     *
+     * Use Graphviz DOT only for non-obvious decision points and process loops.
+     * Never for reference material or linear instructions.
+     */
+
+    /* ===== NODE TYPES AND SHAPES ===== */
+
+    // Diamond = questions/decisions
+    "Is this a decision?" [shape=diamond];
+
+    // Box (default) = actions
+    "Do the thing" [shape=box];
+
+    // Plaintext = commands or literal text
+    "/command" [shape=plaintext];
+
+    // Ellipse = states
+    "Tests passing" [shape=ellipse];
+
+    // Octagon (red, filled) = warnings/STOP
+    "NEVER skip tests" [shape=octagon, style=filled, fillcolor=red, fontcolor=white];
+
+    // Doublecircle = entry/exit points
+    "Start" [shape=doublecircle];
+    "Done" [shape=doublecircle];
+
+    /* ===== EDGE LABELS ===== */
+
+    // Binary decisions: yes/no
+    "Is this a decision?" -> "Do the thing" [label="yes"];
+    "Is this a decision?" -> "NEVER skip tests" [label="no"];
+
+    // Condition labels for multiple choice
+    "Which type?" [shape=diamond];
+    "Which type?" -> "Option A" [label="type=A"];
+    "Which type?" -> "Option B" [label="type=B"];
+
+    // "triggers" with dotted style for process transitions
+    "Do the thing" -> "Tests passing" [label="triggers", style=dotted];
+
+    /* ===== NAMING PATTERNS ===== */
+
+    // Questions end with ?
+    "Ready to ship?" [shape=diamond];
+
+    // Actions start with verb
+    "Run tests" [shape=box];
+
+    // Commands are literal
+    "/ship" [shape=plaintext];
+
+    // States describe situation
+    "All tests pass" [shape=ellipse];
+
+    /* ===== DECISION TREE FOR SHAPE SELECTION ===== */
+
+    /*
+     * Is it a question with 2+ outcomes?  -> Diamond
+     * Is it a command the user types?      -> Plaintext
+     * Is it a warning or stop condition?   -> Octagon (red)
+     * Is it an entry or exit point?        -> Doublecircle
+     * Is it a current situation/state?     -> Ellipse
+     * Is it an action to perform?          -> Box
+     */
+
+    /* ===== GOOD VS BAD EXAMPLES ===== */
+
+    // GOOD: Specific and correctly shaped
+    "Tests pass?" [shape=diamond];
+    "Commit changes" [shape=box];
+
+    // BAD: Vague and wrong shape
+    // "Process" [shape=diamond];  // Not a question
+    // "Check stuff" [shape=box];  // Vague action
+}

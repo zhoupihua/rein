@@ -206,3 +206,4 @@ See files in this skill directory:
 - **`root-cause-tracing.md`** — Trace bugs backward through call stack
 - **`defense-in-depth.md`** — Add validation at multiple layers after finding root cause
 - **`condition-based-waiting.md`** — Replace arbitrary timeouts with condition polling
+- **`testing-anti-patterns.md`** — 5 testing anti-patterns: mock testing, test-only methods, mocking without understanding, incomplete mocks, tests as afterthought
