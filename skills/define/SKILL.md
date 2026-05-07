@@ -47,10 +47,11 @@ You MUST create a task for each of these items and complete them in order:
 4. **Generate idea variations** — 5-8 variations using divergent thinking lenses
 5. **Propose 2-3 approaches** — with trade-offs and your recommendation
 6. **Present design** — in sections scaled to complexity, get user approval after each section
-7. **Write spec** — save to `docs/rein/changes/<name>/spec.md` and commit
-8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope
-9. **User reviews written spec** — ask user to review the spec file before proceeding
-10. **Transition to implementation** — prompt user to run `/plan`
+7. **Write proposal** — save to `docs/rein/changes/<name>/proposal.md` (L3 required, L2 optional)
+8. **Write spec** — save to `docs/rein/changes/<name>/spec.md` and commit
+9. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope
+10. **User reviews written spec** — ask user to review the spec file before proceeding
+11. **Transition to implementation** — prompt user to run `/plan`
 
 ## Phase 1: Explore & Expand (Divergent → Convergent)
 
@@ -109,9 +110,9 @@ After the user reacts to the variations, shift to convergent mode:
 
 ## Phase 2: Specify
 
-With the validated direction, produce a concrete specification document.
+With the validated direction, produce two artifacts: **proposal.md** (why & scope) then **spec.md** (requirements, decisions, risks).
 
-**Surface assumptions immediately.** Before writing any spec content, list what you're assuming:
+**Surface assumptions immediately.** Before writing any content, list what you're assuming:
 
 ```
 ASSUMPTIONS I'M MAKING:
@@ -124,21 +125,14 @@ ASSUMPTIONS I'M MAKING:
 
 Don't silently fill in ambiguous requirements. The spec's entire purpose is to surface misunderstandings *before* code gets written — assumptions are the most dangerous form of misunderstanding.
 
-**Write a spec document covering these areas:**
+### Step 2a: Write proposal.md
 
-1. **Why** — One-sentence "How Might We" framing. The problem this solves and why now.
-2. **What Changes** — The chosen direction and what will be different (2-3 paragraphs max).
-3. **Goals** — What success looks like.
-4. **Non-Goals** — What is explicitly out of scope, with reasons. Focus is about saying no to good ideas.
-5. **Requirements** — Success criteria (WHEN/THEN), commands, project structure, code style, testing strategy, and boundaries.
-6. **Key Assumptions** — With validation strategies.
-7. **Decisions** — Key technical and architectural decisions with rationale. Each uses the `**Decision:** ... — **Rationale:** ...` format.
-8. **Risks** — Known risks with impact level and mitigation strategy.
+The proposal captures **why** and **scope**. Required for L3 (`/feature`), optional for L2 (`/fix`).
 
-**Spec template:**
+Save to `docs/rein/changes/<name>/proposal.md`:
 
 ```markdown
-# Spec: [Project/Feature Name]
+# Proposal: [Project/Feature Name]
 
 ## Why
 [One-sentence "How Might We" framing — the problem this solves and why now]
@@ -160,6 +154,22 @@ Don't silently fill in ambiguous requirements. The spec's entire purpose is to s
 - [ ] [Assumption 1 — how to test it]
 - [ ] [Assumption 2 — how to test it]
 - [ ] [Assumption 3 — how to test it]
+
+## Open Questions
+- [Question 1]
+- [Question 2]
+```
+
+**The "Non-Goals" list is arguably the most valuable part.** Focus is about saying no to good ideas. Make the trade-offs explicit.
+
+### Step 2b: Write spec.md
+
+The spec captures **what and how** — requirements, decisions, and risks. If proposal.md exists, read it for Goals/Non-Goals context first.
+
+Save to `docs/rein/changes/<name>/spec.md`:
+
+```markdown
+# Spec: [Project/Feature Name]
 
 ## Requirements
 
@@ -194,7 +204,7 @@ WHEN <condition> THEN <expected behavior>
 | [Risk description] | [High/Med/Low] | [Strategy] |
 ```
 
-**Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions:
+**Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions. This applies to spec.md content only — proposal.md captures intent and scope, not testable criteria.
 
 ```
 REQUIREMENT: "Make the dashboard faster"
@@ -335,12 +345,12 @@ After completing the define phase:
 - [ ] Multiple directions were explored, not just the first idea
 - [ ] Hidden assumptions are explicitly listed with validation strategies
 - [ ] A "Non-Goals" list makes trade-offs explicit
-- [ ] The spec covers Requirements, Decisions, and Risks
+- [ ] proposal.md is saved (L3 required, L2 optional)
+- [ ] spec.md covers Requirements, Decisions, and Risks
 - [ ] The human has reviewed and approved the spec
 - [ ] Success criteria are specific and testable
 - [ ] Boundaries (Always/Ask First/Never) are defined
 - [ ] The spec is saved to `docs/rein/changes/<name>/spec.md`
-- [ ] The output is a concrete artifact (spec.md), not just conversation
 - [ ] The spec has no placeholders, contradictions, or ambiguity
 
 ## Supporting Files

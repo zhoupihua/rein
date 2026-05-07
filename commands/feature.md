@@ -7,9 +7,12 @@ L3 full change — the 6-step workflow.
 ## The Full Workflow
 
 ### Step 1: Define
-Invoke `define` skill for divergent/convergent thinking and spec writing, output `spec.md`.
+Invoke `define` skill for divergent/convergent thinking. Outputs two artifacts:
 
-The spec includes Context, Goals, Non-Goals, Requirements, Decisions, and Risks. Save spec to `docs/rein/changes/<name>/spec.md`, then commit.
+1. `proposal.md` — Why, What Changes, Goals, Non-Goals, Assumptions, Open Questions
+2. `spec.md` — Requirements (WHEN/THEN/TEST), Decisions, Risks
+
+Save both to `docs/rein/changes/<name>/`, then commit.
 
 ### Step 2: Branch Setup
 Create a feature branch from current branch. Ask the user whether to use worktree isolation:

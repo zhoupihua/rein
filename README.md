@@ -242,7 +242,7 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 ### 生成流程
 
 ```
-/spec   → changes/<name>/spec.md      (发散/收敛思考 + 生成 PRD)
+/spec   → changes/<name>/proposal.md + spec.md  (发散/收敛思考 → 动机/范围 → 需求/决策/风险)
 /plan   → changes/<name>/plan.md + task.md
 /do     → 读 task.md 逐项执行，勾选 [x]
 ```

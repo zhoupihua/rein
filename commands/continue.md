@@ -15,7 +15,8 @@ Resume work from a breakpoint.
 
 | Condition | Phase | Skill to invoke |
 |-----------|-------|----------------|
-| No spec.md | DEFINE | define |
+| No proposal.md and no spec.md | DEFINE | define |
+| Has proposal.md, no spec.md | DEFINE | define (resume from Step 2b) |
 | No plan.md in feature dir | PLAN | planning |
 | No task.md in feature dir | PLAN | planning |
 | Tasks unchecked in task.md | BUILD | executing-plans + tdd |
