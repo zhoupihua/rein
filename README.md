@@ -15,12 +15,12 @@ Projects like Superpowers, Agent Skills, and OpenSpec each explored AI coding wo
 
 | Component | Count | Description |
 |-----------|-------|-------------|
-| Skills | 25 | Unified skills organized by SDLC phase |
+| Skills | 28 | Unified skills organized by SDLC phase |
 | Agents | 3 | Expert personas (code-reviewer, test-engineer, security-auditor) |
-| Commands | 13 | Slash commands from L1 quick fixes to L3 full features |
+| Commands | 14 | Slash commands from L1 quick fixes to L3 full features |
 | Hooks | 9 | session-start, guard, guard-bash, gate, format, checkbox-guard, task-progress, leak-guard, inject |
-| References | 4 | Testing, security, performance, accessibility checklists |
-| Templates | 4 | Proposal, spec, design, tasks artifact templates |
+| References | 5 | Testing, security, performance, accessibility, orchestration checklists |
+| Templates | 3 | Proposal, spec, tasks artifact templates |
 
 ## Quick Start
 
@@ -88,60 +88,43 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 ### L3: Feature (`/feature`)
 
-完整的8步铁三角工作流，每步之间都有质量门：
+完整的6步工作流，每步之间都有质量门：
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │                        L3 Full Workflow                              │
 │                                                                      │
-│  Step 1        Step 2        Step 3        Step 4                    │
-│ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐                │
-│ │  DEFINE  │ │  DEFINE  │ │  DEFINE  │ │  ISOLATE │                │
-│ │  refine  │ │spec-     │ │  /spec   │ │  git-    │                │
-│ │          │ │driven    │ │ 生成工件  │ │worktrees │                │
-│ │          │ │          │ │          │ │          │                │
-│ └────┬─────┘ └────┬─────┘ └────┬─────┘ └────┬─────┘                │
-│      │            │            │            │                        │
-│      ▼            ▼            ▼            ▼                        │
+│  Step 1              Step 2              Step 3                      │
+│ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐            │
+│ │    DEFINE      │ │    BRANCH      │ │     PLAN       │            │
+│ │ refine +       │ │  git-worktrees │ │   planning     │            │
+│ │ spec-driven    │ │  分支隔离       │ │  拆解任务       │            │
+│ │ 生成spec.md    │ │                │ │ plan.md+task.md│            │
+│ └───────┬────────┘ └───────┬────────┘ └───────┬────────┘            │
+│         │                  │                   │                      │
+│         ▼                  ▼                   ▼                      │
 │  ┌─────────────────────────────────────────────────┐                │
-│  │           Quality Gate: DEFINE                   │                │
-│  │  ✓ 问题陈述明确  ✓ 假设已列出                    │                │
-│  │  ✓ 需求可测试    ✓ MVP范围已界定                  │                │
-│  │  ✓ 人工审阅通过  ✓ 工件已提交                     │                │
+│  │        Quality Gate: DEFINE → PLAN               │                │
+│  │  ✓ 问题陈述明确  ✓ 需求可测试                    │                │
+│  │  ✓ MVP范围界定   ✓ 任务有验收标准                 │                │
+│  │  ✓ 工件已提交    ✓ 依赖顺序正确                   │                │
 │  └─────────────────────┬───────────────────────────┘                │
 │                        │                                             │
-│  Step 5        Step 6  │                                             │
-│ ┌──────────┐ ┌────────┴─┐                                           │
-│ │   PLAN   │ │   BUILD  │                                           │
-│ │ planning │ │incremen- │                                           │
-│ │          │ │tal + tdd │                                           │
-│ │          │ │          │                                           │
-│ └────┬─────┘ └────┬─────┘                                           │
-│      │            │                                                  │
-│      ▼            ▼                                                  │
+│  Step 4              Step 5           Step 6                         │
+│ ┌────────────────┐ ┌───────────────┐ ┌───────────────┐              │
+│ │    BUILD       │ │    REVIEW     │ │     SHIP      │              │
+│ │ incremental +  │ │  code-review  │ │ verify +      │              │
+│ │    tdd         │ │  5轴审查       │ │ git-workflow  │              │
+│ │ 逐任务实现      │ │               │ │ 归档           │              │
+│ └───────┬────────┘ └───────┬───────┘ └───────┬───────┘              │
+│         │                  │                  │                       │
+│         ▼                  ▼                  ▼                       │
 │  ┌─────────────────────────────────────────────────┐                │
-│  │           Quality Gate: PLAN + BUILD             │                │
-│  │  ✓ 每个任务有验收标准  ✓ 每个任务有验证步骤       │                │
-│  │  ✓ 依赖顺序正确       ✓ 无任务超过5文件           │                │
-│  │  ✓ 阶段间有检查点     ✓ TDD: RED→GREEN→REFACTOR  │                │
-│  │  ✓ 每个增量可编译     ✓ 测试全绿                  │                │
-│  └─────────────────────┬───────────────────────────┘                │
-│                        │                                             │
-│  Step 7        Step 8  │                                             │
-│ ┌──────────┐ ┌────────┴─┐                                           │
-│ │  REVIEW  │ │   SHIP   │                                           │
-│ │code-     │ │ verify + │                                           │
-│ │review    │ │git-      │                                           │
-│ │          │ │workflow  │                                           │
-│ └────┬─────┘ └────┬─────┘                                           │
-│      │            │                                                  │
-│      ▼            ▼                                                  │
-│  ┌─────────────────────────────────────────────────┐                │
-│  │           Quality Gate: REVIEW + SHIP            │                │
-│  │  ✓ 五轴审查通过 (正确性/可读性/架构/安全/性能)   │                │
-│  │  ✓ 无安全漏洞      ✓ 无性能退化                   │                │
-│  │  ✓ 用新证据验证    ✓ 测试全绿                     │                │
-│  │  ✓ 提交消息规范    ✓ 工件归档                     │                │
+│  │        Quality Gate: BUILD → SHIP                │                │
+│  │  ✓ TDD: RED→GREEN→REFACTOR  ✓ 五轴审查通过       │                │
+│  │  ✓ 每增量可编译              ✓ 无安全漏洞         │                │
+│  │  ✓ 测试全绿                  ✓ 用新证据验证       │                │
+│  │  ✓ 提交消息规范              ✓ 工件归档           │                │
 │  └─────────────────────────────────────────────────┘                │
 │                                                                      │
 └──────────────────────────────────────────────────────────────────────┘
@@ -151,9 +134,8 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 | 质量门 | 位置 | 检查项 | 不通过则 |
 |--------|------|--------|----------|
-| **DEFINE** | Step 1-3 后 | 需求明确、假设列出、MVP界定、人工审阅 | 回到 refine 重新定义 |
-| **PLAN + BUILD** | Step 5-6 后 | 任务有验收标准、TDD循环完成、每增量可编译、测试全绿 | 回到对应任务重做 |
-| **REVIEW + SHIP** | Step 7-8 后 | 五轴审查通过、安全无漏洞、性能无退化、用新证据验证 | 修复问题后重新审查 |
+| **DEFINE → PLAN** | Step 1-3 后 | 需求明确、MVP界定、任务有验收标准、依赖顺序正确 | 回到 refine 重新定义 |
+| **BUILD → SHIP** | Step 4-6 后 | TDD循环完成、每增量可编译、测试全绿、五轴审查通过 | 回到对应任务重做 |
 
 ### 恢复断点
 
@@ -161,7 +143,8 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 | 检测条件 | 阶段 | 调用技能 |
 |----------|------|----------|
-| `docs/rein/changes/<name>/` 无 refine.md | DEFINE | refine |
+| `docs/rein/changes/<name>/` 无 proposal.md 且无 spec.md | DEFINE | refine → spec-driven |
+| `docs/rein/changes/<name>/` 有 proposal.md 无 spec.md | DEFINE | spec-driven |
 | `docs/rein/changes/<name>/` 无 plan.md | PLAN | planning |
 | `docs/rein/changes/<name>/task.md` 有未勾选项 | BUILD | incremental + TDD |
 | 任务全勾选，无审查 | REVIEW | code-review |
@@ -182,7 +165,7 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 
 | Command | Purpose | Output |
 |---------|---------|--------|
-| `/spec` | Generate design spec | `docs/rein/changes/<name>/design.md` |
+| `/spec` | Generate spec (PRD + decisions) | `docs/rein/changes/<name>/spec.md` |
 | `/plan` | Break spec into tasks with dependency graph | `docs/rein/changes/<name>/plan.md` + `docs/rein/changes/<name>/task.md` |
 | `/do` | Execute tasks from tasks file | Code + commits |
 | `/test` | TDD workflow | Tests passing |
@@ -213,6 +196,7 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 
 ### Meta
 - **using-rein** — Discovery and operating behaviors for all skills
+- **writing-skills** — Skill creation as TDD, bulletproofing, persuasion
 
 ### DEFINE
 - **refine** — Structured divergent/convergent thinking
@@ -224,6 +208,7 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 
 ### BUILD
 - **incremental** — Thin vertical slices, scope discipline
+- **executing-plans** — Inline plan execution (when no subagent support)
 - **tdd** — RED-GREEN-REFACTOR iron law
 - **subagent** — Dispatch parallel implementer agents
 - **parallel-dispatch** — Independent task parallelization
@@ -235,6 +220,7 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 ### VERIFY
 - **debugging** — Systematic triage, no fix without root cause
 - **browser-testing** — Live browser data via DevTools MCP
+- **integration-testing** — Integration and contract testing patterns
 - **verify** — No claims without fresh evidence
 
 ### REVIEW
@@ -266,25 +252,29 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
     └── rein/
         ├── changes/               # Active feature work
         │   └── <name>/            # One directory per feature
-        │       ├── refine.md      # Step 1: Refined idea
-        │       ├── spec.md        # Step 2: PRD specification
-        │       ├── design.md      # Step 3: Design decisions
-        │       ├── plan.md        # Step 5: Implementation plan (decision layer)
-        │       ├── task.md        # Step 5: Task checklist (single source of truth)
-        │       └── review.md      # Step 7: Code review report
+        │       ├── proposal.md    # DEFINE phase (Why, What Changes, Goals, Non-Goals, Assumptions, Open Questions)
+        │       ├── spec.md        # DEFINE phase (Requirements, Decisions, Risks)
+        │       ├── plan.md        # PLAN phase (Architecture, Dependency Graph, Implementation plan)
+        │       ├── task.md        # PLAN phase (Checkbox task list, single source of truth)
+        │       └── review.md      # REVIEW phase (Code review report)
+        ├── specs/                 # Master specification files (optional)
+        │   └── <domain>/spec.md
+        ├── schema.json            # Artifact graph configuration (optional)
         └── archive/               # Archived artifacts
             └── <name>/
 ```
 
 - **changes/<name>/** 每个功能一个目录，所有工件集中管理
+- **proposal.md** 是 refine 阶段的产出（动机、目标、假设），L2 /fix 可选
+- **spec.md** 是 PRD 工件 — 需求（WHEN/THEN/TEST）、决策、风险
+- **plan.md** 遵循 Superpowers 规范 — 架构概览、依赖图、切片策略、风险缓解、并行化分类、自审、交接
 - **task.md** 是任务的唯一来源，由 `/plan` 生成，由 `/do` 执行并勾选
-- 同一功能的 refine/spec/design/plan/task/review 都在同一个目录下
 
 ### 生成流程
 
 ```
-/refine → changes/<name>/refine.md
-/spec   → changes/<name>/spec.md + design.md
+/refine → changes/<name>/proposal.md  (发散/收敛思考)
+/spec   → changes/<name>/spec.md      (生成 PRD + 设计决策)
 /plan   → changes/<name>/plan.md + task.md
 /do     → 读 task.md 逐项执行，勾选 [x]
 ```
@@ -294,7 +284,7 @@ rein 安装后自动配置 9 个钩子，无需手动干预：
 rein 安装的文件受 `guard` 钩子保护，AI 无法修改或删除：
 
 - 保护清单：`.claude/.rein-manifest`（安装时自动生成）
-- 保护范围：hooks、commands、skills、agents、checklists
+- 保护范围：hooks、commands、skills、agents、references
 - 用户可新增自己的文件，不受保护
 - 如需修改 rein 文件，从 `.rein-manifest` 中删除对应行即可
 
@@ -303,9 +293,9 @@ rein 安装的文件受 `guard` 钩子保护，AI 无法修改或删除：
 | Aspect | Source Projects | rein |
 |--------|----------------|------|
 | Install | 3 projects, npm + plugin + manual | 1 script, zero dependencies |
-| Skills | 14 + 20 with overlaps | 25 redesigned, no duplicates |
-| Commands | 3 deprecated + 7 separate | 12 unified |
-| Spec management | Requires OpenSpec CLI | /spec for design, /plan for tasks, single task source |
+| Skills | 14 + 20 with overlaps | 28 redesigned, no duplicates |
+| Commands | 3 deprecated + 7 separate | 14 unified |
+| Spec management | Requires OpenSpec CLI | /spec for PRD+decisions, /plan for tasks, single task source |
 | Templates | Generated by CLI | Static files, AI fills in |
 | File protection | None | Auto-protect via hooks |
 | Quality gates | Per-project, manual | Built-in at each phase boundary |

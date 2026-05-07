@@ -26,7 +26,7 @@ If the spec covers multiple independent subsystems, suggest breaking into separa
 
 Before writing any code, operate in read-only mode:
 
-- Read the spec and relevant codebase sections
+- Read the spec (and proposal.md if it exists in the feature directory) and relevant codebase sections
 - Identify existing patterns and conventions
 - Map dependencies between components
 - Note risks and unknowns
@@ -95,6 +95,17 @@ Before defining tasks, map out which files will be created or modified and what 
 - "Run the tests and make sure they pass" - step
 - "Commit" - step
 
+**TDD-Structured Sub-Tasks** — Implementation tasks should include RED/GREEN/REFACTOR sub-checkboxes so each task is test-driven. Use this format in task.md:
+
+```
+- [ ] 2.1 Add API endpoint for X
+  - [ ] RED: Write failing test for endpoint returning 404
+  - [ ] GREEN: Implement handler returning correct response
+  - [ ] REFACTOR: Extract validation into shared middleware
+```
+
+This ensures every implementation task follows the RED (write failing test) → GREEN (make it pass) → REFACTOR (clean up) cycle.
+
 ### Step 6: Order and Checkpoint
 
 Arrange tasks so that:
@@ -121,6 +132,10 @@ Arrange tasks so that:
 
 ---
 
+## Architecture Overview
+
+[2-3 paragraphs describing the high-level architecture: major components, how they interact, data flow, and key design patterns. This is the first thing an implementing agent reads — make it self-contained.]
+
 ## Architecture Decisions
 - [Key decision 1 and rationale]
 - [Key decision 2 and rationale]
@@ -129,9 +144,17 @@ Arrange tasks so that:
 
 [ASCII tree showing component dependencies]
 
-## Vertical Slicing Strategy
+```
+Database schema
+    ├── API models/types
+    │       ├── API endpoints
+    │       └── Validation logic
+    └── Seed data / migrations
+```
 
-[How work is sliced into independent, testable increments]
+## Vertical Slice Strategy
+
+[How work is sliced into independent, testable increments. Explain which slices can ship standalone and why the chosen order minimizes integration risk.]
 
 ## File Map
 
@@ -147,7 +170,9 @@ Arrange tasks so that:
 - **Dependencies:** None
 - **Files:** `src/path/to/file.ts`
 - **Scope:** S
-- **Notes:** [Implementation approach, key code snippets, edge cases]
+- **Approach:** [How to implement — key algorithm, pattern, or code structure]
+- **Edge Cases:** [Boundary conditions and how to handle them]
+- **Rollback:** [How to revert if this task fails without breaking other tasks]
 
 ### 1.2 [Short descriptive title]
 - **Acceptance:** [Specific, testable condition]
@@ -155,20 +180,40 @@ Arrange tasks so that:
 - **Dependencies:** 1.1
 - **Files:** `src/path/to/file.ts`, `tests/path/to/test.ts`
 - **Scope:** M
-- **Notes:** [Implementation approach, key code snippets, edge cases]
+- **Approach:** [How to implement — key algorithm, pattern, or code structure]
+- **Edge Cases:** [Boundary conditions and how to handle them]
+- **Rollback:** [How to revert if this task fails without breaking other tasks]
 
-## Parallelization
+## Parallelization Classification
 
 | Category | Tasks | Strategy |
 |----------|-------|----------|
 | Safe to parallelize | [Task numbers] | Dispatch concurrently |
-| Must be sequential | [Task numbers] | Execute in order |
-| Needs coordination | [Task numbers] | Define contract first |
+| Sequential | [Task numbers] | Execute in order |
+| Needs coordination | [Task numbers] | Define contract first, then parallelize |
 
-## Risks and Mitigations
+## Risk/Mitigation Table
+
 | Risk | Impact | Mitigation |
 |------|--------|------------|
 | [Risk] | [High/Med/Low] | [Strategy] |
+
+## Self-Audit Checklist
+
+- [ ] Every spec requirement maps to at least one task
+- [ ] No task depends on a later task (no circular dependencies)
+- [ ] Every task has acceptance criteria that are independently verifiable
+- [ ] No placeholders (TBD, TODO, "implement later") in any task detail
+- [ ] File paths are specific and accurate for this codebase
+- [ ] Rollback strategy exists for every task
+
+## Explicit Handoff Statement
+
+**This plan is ready for implementation by [subagent / inline execution]. The implementing agent should:**
+1. Read this plan.md first for context and approach
+2. Update task.md checkboxes as work progresses
+3. Run verification commands listed in each task after completion
+4. Flag any blocking issues immediately rather than working around them
 
 ## Open Questions
 - [Question needing human input]
@@ -199,12 +244,12 @@ tasks.md is a **lightweight checkbox list** for tracking progress. Implementatio
 - Group by phase with `##` headings
 - Number tasks for easy reference (1.1, 1.2, 2.1, ...)
 - Task titles should be specific enough to identify the work, but details go in plan.md
-- Sub-tasks use indented checkboxes:
+- Sub-tasks use indented checkboxes with TDD structure (RED/GREEN/REFACTOR):
   ```
   - [ ] 2.1 Add API endpoint for X
-    - [ ] Define route and handler
-    - [ ] Add input validation
-    - [ ] Write tests
+    - [ ] RED: Write failing test for POST /x returning 201
+    - [ ] GREEN: Implement route handler and create action
+    - [ ] REFACTOR: Extract input validation into shared middleware
   ```
 
 ## Task Sizing Guidelines

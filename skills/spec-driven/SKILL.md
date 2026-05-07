@@ -7,7 +7,9 @@ description: Creates specs before coding. Use when starting a new project, featu
 
 ## Overview
 
-Write a structured specification before writing any code. The spec is the shared source of truth between you and the human engineer — it defines what we're building, why, and how we'll know it's done. Code without a spec is guessing.
+Write a structured specification before writing any code. The spec is the shared source of truth between you and the human engineer — it defines what we're building and how we'll know it's done. Code without a spec is guessing.
+
+**If a `proposal.md` exists in the feature directory (`docs/rein/changes/<name>/`), read it first** for context: Goals, Non-Goals, Key Assumptions, and Open Questions. The proposal captures the "why"; the spec captures the "what" and "how."
 
 ## When to Use
 
@@ -48,70 +50,52 @@ ASSUMPTIONS I'M MAKING:
 
 Don't silently fill in ambiguous requirements. The spec's entire purpose is to surface misunderstandings *before* code gets written — assumptions are the most dangerous form of misunderstanding.
 
-**Write a spec document covering these six core areas:**
+**Write a spec document covering these three areas:**
 
-1. **Objective** — What are we building and why? Who is the user? What does success look like?
+1. **Requirements** — Success criteria (WHEN/THEN), commands, project structure, code style, testing strategy, and boundaries. These define what "done" looks like.
 
-2. **Commands** — Full executable commands with flags, not just tool names.
-   ```
-   Build: npm run build
-   Test: npm test -- --coverage
-   Lint: npm run lint --fix
-   Dev: npm run dev
-   ```
+2. **Decisions** — Key technical and architectural decisions with rationale. Each uses the `**Decision:** ... — **Rationale:** ...` format so they are parseable and reviewable.
 
-3. **Project Structure** — Where source code lives, where tests go, where docs belong.
-   ```
-   src/           → Application source code
-   src/components → React components
-   src/lib        → Shared utilities
-   tests/         → Unit and integration tests
-   e2e/           → End-to-end tests
-   docs/          → Documentation
-   ```
-
-4. **Code Style** — One real code snippet showing your style beats three paragraphs describing it. Include naming conventions, formatting rules, and examples of good output.
-
-5. **Testing Strategy** — What framework, where tests live, coverage expectations, which test levels for which concerns.
-
-6. **Boundaries** — Three-tier system:
-   - **Always do:** Run tests before commits, follow naming conventions, validate inputs
-   - **Ask first:** Database schema changes, adding dependencies, changing CI config
-   - **Never do:** Commit secrets, edit vendor directories, remove failing tests without approval
+3. **Risks** — Known risks with impact level and mitigation strategy. Surface what could go wrong and how you plan to handle it.
 
 **Spec template:**
+
+> **Note:** Context, Goals, and Non-Goals belong in `proposal.md` (output of the refine skill). If proposal.md exists, read it first. The spec focuses on Requirements, Decisions, and Risks.
 
 ```markdown
 # Spec: [Project/Feature Name]
 
-## Objective
-[What we're building and why. User stories or acceptance criteria.]
+## Requirements
 
-## Tech Stack
-[Framework, language, key dependencies with versions]
+### Success Criteria
+WHEN <condition> THEN <expected behavior>
+- **TEST** `TestFunctionName` (optional)
 
-## Commands
+### Commands
 [Build, test, lint, dev — full commands]
 
-## Project Structure
+### Project Structure
 [Directory layout with descriptions]
 
-## Code Style
+### Code Style
 [Example snippet + key conventions]
 
-## Testing Strategy
+### Testing Strategy
 [Framework, test locations, coverage requirements, test levels]
 
-## Boundaries
+### Boundaries
 - Always: [...]
 - Ask first: [...]
 - Never: [...]
 
-## Success Criteria
-[How we'll know this is done — specific, testable conditions]
+## Decisions
+**Decision:** [What was decided] — **Rationale:** [Why]
+- **Decision:** [e.g., "Use session-based auth over JWT"] — **Rationale:** [e.g., "Simpler revocation, no token leakage risk for this app's threat model"]
 
-## Open Questions
-[Anything unresolved that needs human input]
+## Risks
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| [Risk description] | [High/Med/Low] | [Strategy] |
 ```
 
 **Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions:
@@ -127,6 +111,21 @@ REFRAMED SUCCESS CRITERIA:
 ```
 
 This lets you loop, retry, and problem-solve toward a clear goal rather than guessing what "faster" means.
+
+**Write scenarios in WHEN/THEN format.** Each success criterion should be expressed as a scenario:
+
+```
+WHEN <condition> THEN <expected behavior>
+```
+
+Optionally, link a scenario to the test function that verifies it:
+
+```
+WHEN user submits valid credentials THEN auth token is returned
+- **TEST** `TestAuthJWT_ValidCredentials`
+```
+
+The `**TEST**` field is optional — add it when the test function name is known or planned. It creates traceability from requirement to verification.
 
 ### Phase 2: Plan
 
@@ -184,7 +183,7 @@ The spec is a living document, not a one-time artifact:
 
 Before proceeding to implementation, confirm:
 
-- [ ] The spec covers all six core areas
+- [ ] The spec covers Requirements, Decisions, and Risks
 - [ ] The human has reviewed and approved the spec
 - [ ] Success criteria are specific and testable
 - [ ] Boundaries (Always/Ask First/Never) are defined

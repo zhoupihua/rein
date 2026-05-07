@@ -1,3 +1,7 @@
+---
+description: Archive completed or abandoned rein artifacts to docs/rein/archive
+---
+
 Archive completed or abandoned rein artifacts to `docs/rein/archive/`.
 
 ## Instructions

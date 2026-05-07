@@ -95,6 +95,9 @@ Separate refactoring from feature work. A change that refactors and adds new beh
 **NEVER:**
 - "You're absolutely right!" / "Great point!" / "Excellent feedback!"
 - "Let me implement that now" (before verification)
+- ANY gratitude expression — "Thanks", "Thank you", "Appreciate it"
+
+**If you catch yourself about to write "Thanks":** DELETE IT. State the fix instead.
 
 **INSTEAD:**
 - Restate the technical requirement
@@ -102,18 +105,51 @@ Separate refactoring from feature work. A change that refactors and adds new beh
 - Push back with technical reasoning if wrong
 - Just start working (actions > words)
 
+### Handling Unclear Feedback
+
+```
+IF any item is unclear:
+  STOP - do not implement anything yet
+  ASK for clarification on ALL unclear items
+
+WHY: Items may be related. Partial understanding = wrong implementation.
+```
+
+**Example:**
+```
+Reviewer: "Fix items 1-6"
+You understand 1,2,3,6. Unclear on 4,5.
+
+❌ WRONG: Implement 1,2,3,6 now, ask about 4,5 later
+✅ RIGHT: "I understand items 1,2,3,6. Need clarification on 4 and 5 before proceeding."
+```
+
 ### Source-Specific Handling
 
 **From your human partner:**
 - Trusted — implement after understanding
 - Still ask if scope unclear
 - No performative agreement
+- Skip to action or technical acknowledgment
 
 **From External Reviewers:**
-- Check: Technically correct for THIS codebase?
-- Check: Breaks existing functionality?
-- Check: Reviewer understands full context?
-- Push back with technical reasoning if wrong
+```
+BEFORE implementing:
+  1. Check: Technically correct for THIS codebase?
+  2. Check: Breaks existing functionality?
+  3. Check: Reason for current implementation?
+  4. Check: Works on all platforms/versions?
+  5. Check: Reviewer understands full context?
+
+IF suggestion seems wrong:
+  Push back with technical reasoning
+
+IF can't easily verify:
+  Say so: "I can't verify this without [X]. Should I [investigate/ask/proceed]?"
+
+IF conflicts with prior architectural decisions:
+  Stop and discuss with your human partner first
+```
 
 ### YAGNI Check
 
@@ -139,8 +175,23 @@ Push back when:
 - Violates YAGNI (unused feature)
 - Technically incorrect for this stack
 - Conflicts with architectural decisions
+- Legacy/compatibility reasons exist
 
-**How:** Technical reasoning, not defensiveness. Reference working tests/code.
+**How:** Technical reasoning, not defensiveness. Reference working tests/code. Involve your human partner if architectural.
+
+### Gracefully Correcting Your Pushback
+
+If you pushed back and were wrong:
+```
+✅ "You were right - I checked [X] and it does [Y]. Implementing now."
+✅ "Verified this and you're correct. My initial understanding was wrong because [reason]. Fixing."
+
+❌ Long apology
+❌ Defending why you pushed back
+❌ Over-explaining
+```
+
+State the correction factually and move on.
 
 ### Acknowledging Correct Feedback
 
@@ -151,10 +202,15 @@ Push back when:
 
 ❌ "You're absolutely right!"
 ❌ "Great point!"
+❌ "Thanks for catching that!"
 ❌ "Thanks for [anything]"
 ```
 
-Actions speak. Just fix it.
+Actions speak. Just fix it. The code itself shows you heard the feedback.
+
+### GitHub Thread Replies
+
+When replying to inline review comments on GitHub, reply in the comment thread (`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as a top-level PR comment.
 
 ## Multi-Model Review Pattern
 

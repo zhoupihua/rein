@@ -1,3 +1,7 @@
+---
+description: Make a lightweight change — ≤5 lines, no logic impact, direct edit and commit
+---
+
 L1 lightweight change (≤5 lines, no logic impact).
 
 Direct edit → confirm tests pass → commit.

@@ -1,26 +1,12 @@
 # User Auth Feature — Spec
 
-## Context
-
-The application needs user authentication to protect endpoints and personalize content.
-
-## Goals
-
-- Users can register and login
-- JWT token-based session management
-- Role-based access control
-
-## Non-Goals
-
-- OAuth/Social login (future phase)
-- Passwordless auth
-
 ### Requirement: User Registration
 
 #### Scenario: Successful registration
 
 - **WHEN** a user submits valid registration data
 - **THEN** a new user account is created and a JWT token is returned
+- **TEST** `TestUserRegistration_SuccessfulRegistration`
 
 #### Scenario: Duplicate email
 
@@ -41,5 +27,8 @@ The application needs user authentication to protect endpoints and personalize c
 
 ## Decisions
 
-- JWT over session cookies for stateless design
-- bcrypt for password hashing
+- **Decision:** JWT over session cookies — **Rationale:** Stateless design
+
+## Risks / Trade-offs
+
+- Token expiry management

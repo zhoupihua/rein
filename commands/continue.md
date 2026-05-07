@@ -1,3 +1,7 @@
+---
+description: Resume work from a breakpoint — detect phase, verify consistency, continue
+---
+
 Resume work from a breakpoint.
 
 ## Instructions
@@ -11,7 +15,9 @@ Resume work from a breakpoint.
 
 | Condition | Phase | Skill to invoke |
 |-----------|-------|----------------|
-| No spec.md in feature dir | DEFINE | refine + spec-driven |
+| No spec.md and no proposal.md | DEFINE | refine (then spec-driven) |
+| No spec.md but proposal.md exists | DEFINE | spec-driven |
+| No proposal.md | — | Optional; skip for L2 /fix |
 | No plan.md in feature dir | PLAN | planning |
 | No task.md in feature dir | PLAN | planning |
 | Tasks unchecked in task.md | BUILD | incremental + tdd |

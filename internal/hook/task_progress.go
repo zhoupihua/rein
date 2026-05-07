@@ -1,6 +1,7 @@
 package hook
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,9 +53,14 @@ func TaskProgress() {
 				continue
 			}
 			task := tf.FindTask(id)
-			if task != nil && !task.Done {
-				tf.CheckTask(id)
-				OutputAdditional("PostToolUse", "Auto-checked task "+matchedID+" (file match: "+editedFile+")")
+			if task != nil && !task.IsComplete() {
+				if idx := task.FirstUncheckedSubTask(); idx >= 0 {
+					tf.CheckSubTask(id, idx)
+					OutputAdditional("PostToolUse", "Auto-checked sub-task "+matchedID+"."+fmt.Sprintf("%d", idx)+" (file match: "+editedFile+")")
+				} else {
+					tf.CheckTask(id)
+					OutputAdditional("PostToolUse", "Auto-checked task "+matchedID+" (file match: "+editedFile+")")
+				}
 			}
 			return
 		}
@@ -72,9 +78,14 @@ func TaskProgress() {
 				continue
 			}
 			task := tf.FindTask(id)
-			if task != nil && !task.Done {
-				tf.CheckTask(id)
-				OutputAdditional("PostToolUse", "Auto-checked task "+matchedID+" (file match: "+editedFile+")")
+			if task != nil && !task.IsComplete() {
+				if idx := task.FirstUncheckedSubTask(); idx >= 0 {
+					tf.CheckSubTask(id, idx)
+					OutputAdditional("PostToolUse", "Auto-checked sub-task "+matchedID+"."+fmt.Sprintf("%d", idx)+" (file match: "+editedFile+")")
+				} else {
+					tf.CheckTask(id)
+					OutputAdditional("PostToolUse", "Auto-checked task "+matchedID+" (file match: "+editedFile+")")
+				}
 			}
 			return
 		}

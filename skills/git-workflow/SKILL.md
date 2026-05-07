@@ -156,15 +156,30 @@ npm test / cargo test / pytest / go test ./...
 
 If tests fail: Stop. Don't proceed.
 
-### Step 2: Determine Base Branch
+### Step 2: Detect Environment
+
+Determine workspace state before presenting options:
+
+```bash
+GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
+GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+```
+
+| State | Menu | Cleanup |
+|-------|------|---------|
+| `GIT_DIR == GIT_COMMON` (normal repo) | Standard 4 options | No worktree to clean up |
+| `GIT_DIR != GIT_COMMON`, named branch | Standard 4 options | Provenance-based (see Step 6) |
+| `GIT_DIR != GIT_COMMON`, detached HEAD | Reduced 3 options (no merge) | No cleanup (externally managed) |
+
+### Step 3: Determine Base Branch
 
 ```bash
 git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
 ```
 
-### Step 3: Present Options
+### Step 4: Present Options
 
-Present exactly these 4 options:
+**Normal repo and named-branch worktree — present exactly these 4 options:**
 
 ```
 1. Merge back to <base-branch> locally
@@ -173,17 +188,85 @@ Present exactly these 4 options:
 4. Discard this work
 ```
 
-### Step 4: Execute Choice
+**Detached HEAD — present exactly these 3 options:**
 
-**Option 1: Merge locally** — Checkout base, pull, merge, verify tests, delete feature branch
-**Option 2: Create PR** — `git push -u origin <branch>`, then `gh pr create`
-**Option 3: Keep as-is** — Report branch and worktree location. Don't cleanup.
-**Option 4: Discard** — Require typed "discard" confirmation. Then delete branch.
+```
+1. Push as new branch and create a Pull Request
+2. Keep as-is (I'll handle it later)
+3. Discard this work
+```
 
-### Step 5: Cleanup Worktree
+Don't add explanation — keep options concise.
 
-For Options 1, 2, 4: Remove worktree if in one.
-For Option 3: Keep worktree.
+### Step 5: Execute Choice
+
+#### Option 1: Merge Locally
+
+```bash
+# Get main repo root for CWD safety
+MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
+cd "$MAIN_ROOT"
+
+# Merge first — verify success before removing anything
+git checkout <base-branch>
+git pull
+git merge <feature-branch>
+
+# Verify tests on merged result
+<test command>
+```
+
+Then: Cleanup worktree (Step 6), then delete branch: `git branch -d <feature-branch>`
+
+#### Option 2: Push and Create PR
+
+```bash
+git push -u origin <feature-branch>
+gh pr create --title "<title>" --body "<description>"
+```
+
+**Do NOT clean up worktree** — user needs it alive to iterate on PR feedback.
+
+#### Option 3: Keep As-Is
+
+Report branch and worktree location. Don't cleanup.
+
+#### Option 4: Discard
+
+**Confirm first:**
+```
+This will permanently delete:
+- Branch <name>
+- All commits: <commit-list>
+- Worktree at <path>
+
+Type 'discard' to confirm.
+```
+
+If confirmed, cleanup worktree (Step 6), then: `git branch -D <feature-branch>`
+
+### Step 6: Cleanup Workspace
+
+**Only runs for Options 1 and 4.** Options 2 and 3 always preserve the worktree.
+
+```bash
+GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
+GIT_COMMON=$(cd "$(git rev-parse --git-common-dir)" 2>/dev/null && pwd -P)
+WORKTREE_PATH=$(git rev-parse --show-toplevel)
+```
+
+**If `GIT_DIR == GIT_COMMON`:** Normal repo, no worktree to clean up. Done.
+
+**If worktree path is under `.worktrees/`, `worktrees/`, or `.claude/worktrees/`:** rein created this worktree — we own cleanup.
+
+```bash
+MAIN_ROOT=$(git -C "$(git rev-parse --git-common-dir)/.." rev-parse --show-toplevel)
+cd "$MAIN_ROOT"
+git worktree remove "$WORKTREE_PATH"
+git worktree prune  # Self-healing: clean up any stale registrations
+```
+
+**Otherwise:** The host environment owns this workspace. Do NOT remove it.
 
 ## Using Git for Debugging
 
@@ -217,6 +300,10 @@ git log --grep="keyword" --oneline  # Search commit messages
 - Force-pushing to shared branches
 - Proceeding with failing tests
 - Deleting work without confirmation
+- Merging without verifying tests on result
+- Removing a worktree you didn't create (provenance check)
+- Running `git worktree remove` from inside the worktree
+- Cleaning up worktree for PR option (user needs it for iteration)
 
 ## Verification
 

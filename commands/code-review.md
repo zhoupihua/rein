@@ -1,3 +1,7 @@
+---
+description: Run a five-axis code review — correctness, readability, architecture, security, performance
+---
+
 Five-axis code review with security and performance checks. Replaces /opsx:verify.
 
 ## Instructions

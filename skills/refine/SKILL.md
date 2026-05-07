@@ -25,9 +25,9 @@ You MUST create a task for each of these items and complete them in order:
 4. **Generate idea variations** — 5-8 variations using divergent thinking lenses
 5. **Propose 2-3 approaches** — with trade-offs and your recommendation
 6. **Present design** — in sections scaled to complexity, get user approval after each section
-7. **Write design doc** — save to `docs/rein/changes/<name>/refine.md` and commit
-8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope
-9. **User reviews written spec** — ask user to review the spec file before proceeding
+7. **Write proposal** — save to `docs/rein/changes/<name>/proposal.md` and commit
+8. **Proposal self-review** — quick inline check for placeholders, contradictions, ambiguity, scope
+9. **User reviews written proposal** — ask user to review the proposal file before proceeding
 10. **Transition to implementation** — invoke planning skill
 
 ## Process Flow
@@ -43,9 +43,9 @@ digraph idea_refine {
     "Propose 2-3 approaches" [shape=box];
     "Present design sections" [shape=box];
     "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
-    "Spec self-review" [shape=box];
-    "User reviews spec?" [shape=diamond];
+    "Write proposal" [shape=box];
+    "Proposal self-review" [shape=box];
+    "User reviews proposal?" [shape=diamond];
     "Invoke planning" [shape=doublecircle];
 
     "Explore project context" -> "Visual questions ahead?";
@@ -58,11 +58,11 @@ digraph idea_refine {
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Spec self-review";
-    "Spec self-review" -> "User reviews spec?";
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Invoke planning" [label="approved"];
+    "User approves design?" -> "Write proposal" [label="yes"];
+    "Write proposal" -> "Proposal self-review";
+    "Proposal self-review" -> "User reviews proposal?";
+    "User reviews proposal?" -> "Write proposal" [label="changes requested"];
+    "User reviews proposal?" -> "Invoke planning" [label="approved"];
 }
 ```
 
@@ -121,44 +121,46 @@ After the user reacts to Phase 1, shift to convergent mode:
 
 ## Phase 3: Sharpen & Ship
 
-Produce a concrete artifact — a markdown one-pager that moves work forward:
+Produce a concrete artifact — a `proposal.md` one-pager that moves work forward:
 
 ```markdown
 # [Idea Name]
 
-## Problem Statement
-[One-sentence "How Might We" framing]
+## Why
+[One-sentence "How Might We" framing — the problem this solves and why now]
 
-## Recommended Direction
-[The chosen direction and why — 2-3 paragraphs max]
+## What Changes
+[The chosen direction and what will be different — 2-3 paragraphs max]
 
-## Key Assumptions to Validate
-- [ ] [Assumption 1 — how to test it]
-- [ ] [Assumption 2 — how to test it]
-- [ ] [Assumption 3 — how to test it]
+## Goals
+- [Goal 1]
+- [Goal 2]
+- [Goal 3]
 
-## MVP Scope
-[The minimum version that tests the core assumption. What's in, what's out.]
-
-## Not Doing (and Why)
+## Non-Goals
 - [Thing 1] — [reason]
 - [Thing 2] — [reason]
 - [Thing 3] — [reason]
+
+## Key Assumptions
+- [ ] [Assumption 1 — how to test it]
+- [ ] [Assumption 2 — how to test it]
+- [ ] [Assumption 3 — how to test it]
 
 ## Open Questions
 - [Question that needs answering before building]
 ```
 
-**The "Not Doing" list is arguably the most valuable part.** Focus is about saying no to good ideas. Make the trade-offs explicit.
+**The "Non-Goals" list is arguably the most valuable part.** Focus is about saying no to good ideas. Make the trade-offs explicit.
 
 ## After the Design
 
 **Documentation:**
-- Write the validated design (spec) to `docs/rein/changes/<name>/refine.md`
-- Commit the design document to git
+- Write the validated proposal to `docs/rein/changes/<name>/proposal.md`
+- Commit the proposal document to git
 
-**Spec Self-Review:**
-After writing the spec document, look at it with fresh eyes:
+**Proposal Self-Review:**
+After writing the proposal document, look at it with fresh eyes:
 
 1. **Placeholder scan:** Any "TBD", "TODO", incomplete sections, or vague requirements? Fix them.
 2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
@@ -168,11 +170,11 @@ After writing the spec document, look at it with fresh eyes:
 Fix any issues inline.
 
 **User Review Gate:**
-After the spec review loop passes, ask the user to review the written spec before proceeding:
+After the proposal review loop passes, ask the user to review the written proposal before proceeding:
 
-> "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
+> "Proposal written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+Wait for the user's response. If they request changes, make them and re-run the proposal review loop. Only proceed once the user approves.
 
 **Implementation:**
 - Invoke the planning skill to create a detailed implementation plan
@@ -186,8 +188,31 @@ Wait for the user's response. If they request changes, make them and re-run the 
 - **Explore alternatives** — Always propose 2-3 approaches before settling
 - **Incremental validation** — Present design, get approval before moving on
 - **Surface assumptions** — Untested assumptions are the #1 killer of good ideas
-- **Not Doing list is mandatory** — Focus is about saying no to good ideas
-- **Design for isolation and clarity** — Break systems into smaller units with one clear purpose
+- **Non-Goals list is mandatory** — Focus is about saying no to good ideas
+- **Design for isolation and clarity** — Break systems into smaller units with one clear purpose, well-defined interfaces, and independent testability. This pays dividends in context-window efficiency and parallel implementation.
+- **Be flexible** — Go back and clarify when something doesn't make sense
+
+## Visual Companion
+
+Decide per-question, not per-session. The test: **would the user understand this better by seeing it than reading it?**
+
+**Use the browser** when the content itself is visual: UI mockups, architecture diagrams, side-by-side visual comparisons, design polish, spatial relationships.
+
+**Use the terminal** when the content is text or tabular: requirements, conceptual choices, tradeoff lists, technical decisions, clarifying questions.
+
+A question *about* a UI topic is not automatically a visual question. "What kind of wizard do you want?" is conceptual — use the terminal. "Which of these wizard layouts feels right?" is visual — use the browser.
+
+**When visual questions will come up:** Offer the visual companion as its own message early in the session. Start with `rein visual start`, tell the user the URL, and use it for questions that benefit from visual presentation.
+
+See `visual-thinking.md` in this skill directory for the full companion guide.
+
+## Working in Existing Codebases
+
+When ideating inside an existing project:
+
+1. **Explore structure before proposing changes** — Use `Glob`, `Grep`, and `Read` to understand the current architecture, patterns, and constraints. Ground your variations in what actually exists.
+2. **Include targeted improvements** — Where existing code directly affects the work being done, include fixes that make the change fit better (e.g., updating a shared utility that the new feature calls).
+3. **Don't propose unrelated refactoring** — Stay focused on what serves the current goal. A "while we're here" refactor is scope creep, not efficiency.
 
 ## Anti-patterns
 
@@ -195,7 +220,7 @@ Wait for the user's response. If they request changes, make them and re-run the 
 - Skipping the "who is this for" question
 - No assumptions surfaced before committing to a direction
 - Yes-machining weak ideas instead of pushing back with specificity
-- Producing a plan without a "Not Doing" list
+- Producing a plan without a "Non-Goals" list
 - Ignoring existing codebase constraints when ideating inside a project
 - Jumping to output without running the full process
 - Unrelated refactoring proposals — stay focused on what serves the current goal
@@ -208,10 +233,10 @@ After completing an ideation session:
 - [ ] The target user and success criteria are defined
 - [ ] Multiple directions were explored, not just the first idea
 - [ ] Hidden assumptions are explicitly listed with validation strategies
-- [ ] A "Not Doing" list makes trade-offs explicit
-- [ ] The output is a concrete artifact (markdown one-pager), not just conversation
+- [ ] A "Non-Goals" list makes trade-offs explicit
+- [ ] The output is a concrete artifact (proposal.md), not just conversation
 - [ ] The user confirmed the final direction before any implementation work
-- [ ] The spec has no placeholders, contradictions, or ambiguity
+- [ ] The proposal has no placeholders, contradictions, or ambiguity
 
 ## Supporting Files
 
@@ -219,4 +244,4 @@ After completing an ideation session:
 - **`refinement-criteria.md`** — Phase 2 evaluation rubric (User Value, Feasibility, Differentiation) + assumption audit + MVP scoping
 - **`examples.md`** — 3 complete ideation session examples (startup concept, feature within product, process improvement)
 - **`visual-thinking.md`** — Browser-based visual brainstorming companion guide (when to use, HTML fragment writing, CSS classes)
-- **`spec-reviewer-prompt.md`** — Spec document reviewer subagent prompt template
+- **`spec-reviewer-prompt.md`** — Proposal/spec document reviewer subagent prompt template

@@ -1,3 +1,7 @@
+---
+description: Run TDD workflow — write failing tests first, implement to pass, refactor while green
+---
+
 Run TDD workflow with browser testing support.
 
 ## Instructions

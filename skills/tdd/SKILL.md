@@ -188,6 +188,13 @@ Tests written after code pass immediately. Passing immediately proves nothing:
 
 Test-first forces you to see the test fail, proving it actually tests something.
 
+## Traceability
+
+Spec scenarios and task.md sub-tasks provide two levels of traceability between requirements and tests:
+
+- **Spec-to-test:** Scenarios in `spec.md` can include a `**TEST**` field that links them to the specific test function verifying that behavior (e.g., `- **TEST** \`TestAuthJWT_ValidCredentials\``). This makes it straightforward to trace any test back to the requirement it validates.
+- **Task-level TDD tracking:** Sub-tasks in `task.md` can be decomposed into RED/GREEN/REFACTOR steps, giving granular visibility into TDD progress within each implementation task.
+
 ## Common Rationalizations
 
 | Excuse | Reality |

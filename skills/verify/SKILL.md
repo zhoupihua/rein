@@ -153,7 +153,9 @@ After running the test command, check that coverage is sufficient:
 Before claiming "requirements met":
 
 1. Read `spec.md` — extract every `WHEN/THEN` scenario
-2. For each scenario, find a test that verifies it
+2. For each scenario:
+   - If it has a `**TEST**` field (e.g., `- **TEST** \`TestAuthJWT_ValidCredentials\``): locate that test function directly and verify it exists and passes
+   - Otherwise: search by scenario name to find a covering test
 3. Uncovered scenarios = incomplete work — do NOT claim completion
 4. If a scenario is intentionally deferred, mark it `DEFERRED` with a reason
 

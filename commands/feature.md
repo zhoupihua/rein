@@ -1,11 +1,15 @@
+---
+description: Full feature workflow — 6 steps from define through ship for multi-file changes
+---
+
 L3 full change — the 6-step workflow.
 
 ## The Full Workflow
 
 ### Step 1: Define
-Invoke `refine` skill for divergent/convergent thinking, then `spec-driven` skill to write the PRD. The spec includes Context, Goals, Non-Goals, Requirements, Decisions, and Risks — all in one document. Save to `docs/rein/changes/<name>/spec.md` and commit.
+Invoke `refine` skill for divergent/convergent thinking, output `proposal.md`. Then invoke `spec-driven` skill to write the PRD (`spec.md`), using proposal.md as input context.
 
-No separate refine.md or design.md files. The refine thinking is internal; the design decisions are a section within spec.md.
+The proposal includes Context, Goals, Non-Goals. The spec includes Requirements, Decisions, and Risks. Save proposal to `docs/rein/changes/<name>/proposal.md` and spec to `docs/rein/changes/<name>/spec.md`, then commit.
 
 ### Step 2: Branch Setup
 Create a feature branch from current branch. Ask the user whether to use worktree isolation:

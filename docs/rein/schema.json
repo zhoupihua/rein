@@ -1,0 +1,35 @@
+{
+  "name": "spec-driven",
+  "artifacts": [
+    {
+      "id": "proposal",
+      "generates": "proposal.md",
+      "requires": [],
+      "description": "Change proposal with motivation, goals, and assumptions"
+    },
+    {
+      "id": "spec",
+      "generates": "spec.md",
+      "requires": [],
+      "description": "Feature specification with requirements, scenarios, and decisions"
+    },
+    {
+      "id": "plan",
+      "generates": "plan.md",
+      "requires": ["spec"],
+      "description": "Implementation plan with architecture, dependencies, and task details"
+    },
+    {
+      "id": "task",
+      "generates": "task.md",
+      "requires": ["plan"],
+      "description": "Checkbox task file for build progress tracking"
+    },
+    {
+      "id": "review",
+      "generates": "review.md",
+      "requires": ["task"],
+      "description": "Review checklist and findings"
+    }
+  ]
+}

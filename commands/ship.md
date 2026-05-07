@@ -1,3 +1,7 @@
+---
+description: Run the pre-launch checklist via parallel fan-out to specialist personas, then synthesize a go/no-go decision
+---
+
 Pre-launch fan-out orchestrator with GO/NO-GO decision. Replaces /opsx:archive.
 
 ## Instructions

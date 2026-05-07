@@ -1,23 +1,23 @@
 ## Why
 
-<!-- Explain the motivation for this change. What problem does this solve? Why now? -->
+<!-- Motivation for the change — what problem does this solve? Why now? -->
 
 ## What Changes
 
-<!-- Describe what will change. Be specific about new capabilities, modifications, or removals. -->
+<!-- Description of what will change — new capabilities, modifications, removals -->
 
-## Capabilities
+## Goals
 
-### New Capabilities
-<!-- Capabilities being introduced. Replace <name> with kebab-case identifier (e.g., user-auth, data-export, api-rate-limiting). Each creates docs/rein/changes/<name>/spec.md -->
-- `<name>`: <brief description of what this capability covers>
+- <!-- What we want to achieve -->
 
-### Modified Capabilities
-<!-- Existing capabilities whose REQUIREMENTS are changing (not just implementation).
-     Only list here if spec-level behavior changes. Each needs a delta spec file.
-     Use existing feature names from docs/rein/changes/. Leave empty if no requirement changes. -->
-- `<existing-name>`: <what requirement is changing>
+## Non-Goals
 
-## Impact
+- <!-- Explicitly out of scope -->
 
-<!-- Affected code, APIs, dependencies, systems -->
+## Key Assumptions
+
+- <!-- Assumptions being made -->
+
+## Open Questions
+
+- <!-- Questions needing resolution before implementation -->

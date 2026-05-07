@@ -1,3 +1,7 @@
+---
+description: Fix a bug or add a small feature — 1-3 files, clear requirements, TDD flow
+---
+
 L2 standard change (1-3 files, clear requirements).
 
 ## Bug Fix Flow

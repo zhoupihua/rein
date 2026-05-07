@@ -52,6 +52,16 @@ For each slice:
 5. **Update task status** — mark the completed task in tasks.md: change `- [ ]` to `- [x]`
 6. **Move to the next slice** — carry forward, don't restart
 
+### RED/GREEN/REFACTOR Sub-Tasks
+
+When a task contains sub-tasks (e.g., nested items under a parent checkbox), follow them in strict TDD order:
+
+1. **RED** — Write a failing test that defines the expected behavior.
+2. **GREEN** — Write the minimum code to make the test pass.
+3. **REFACTOR** — Clean up the code while keeping tests green.
+
+Complete each sub-task and check it off before moving to the next. When all sub-tasks are checked, the parent task auto-completes — mark its checkbox as well.
+
 ## Slicing Strategies
 
 ### Vertical Slices (Preferred)

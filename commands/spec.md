@@ -1,4 +1,8 @@
-Generate spec.md — the single DEFINE phase artifact that includes requirements, decisions, and risks.
+---
+description: Generate a spec.md with requirements, decisions, and risks for a new change
+---
+
+Generate spec.md — the DEFINE phase artifact for requirements, decisions, and risks. Goals and Non-Goals live in proposal.md (optional).
 
 **This command generates spec ONLY. It does NOT generate tasks.** Use `/plan` to break specs into tasks, then `/do` to execute.
 
@@ -12,19 +16,19 @@ Generate spec.md — the single DEFINE phase artifact that includes requirements
 
 ### /spec <name>: Direct generation
 1. Generate spec:
-   - `docs/rein/changes/<name>/spec.md` — Spec with Context, Goals, Requirements, Decisions, Risks
+   - `docs/rein/changes/<name>/spec.md` — Spec with Requirements, Decisions, Risks
 
 ### /spec --validate: Validate artifacts
-Check that the current spec is complete (has Context, Goals, Requirements, Decisions, Risks).
+Check that the current spec is complete (has Requirements, Decisions, Risks).
 
 ## Spec Content Rules
 
 The spec must contain:
-- **Context**: Why this change is needed, current state
-- **Goals / Non-Goals**: What this achieves and what is explicitly out of scope
-- **Requirements**: Capabilities with WHEN/THEN scenarios
+- **Requirements**: Capabilities with WHEN/THEN scenarios (optionally with `**TEST**` field linking to test function names)
 - **Decisions**: Key technical choices and rationale (`- **Decision:** ... — **Rationale:** ...`)
 - **Risks / Trade-offs**: Known risks and mitigations
+
+If `proposal.md` exists in the feature directory, read it for Goals/Non-Goals context before generating spec.md.
 
 The spec must NOT contain:
 - Task lists or checklists

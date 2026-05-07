@@ -16,6 +16,9 @@
 ## 3. Build
 
 - [ ] 3.1 Implement user model `internal/models/user.go`
+  - [ ] RED: Test user model fields
+  - [x] GREEN: Implement user struct
+  - [ ] REFACTOR: Extract validation helpers
 - [ ] 3.2 Implement auth handler `internal/handlers/auth.go`
 - [ ] 3.3 Write tests `internal/handlers/auth_test.go`
 - [ ] 3.4 Add middleware `internal/middleware/auth.go`

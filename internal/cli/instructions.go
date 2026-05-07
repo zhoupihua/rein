@@ -121,17 +121,34 @@ func runInstructionsApply(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	// Find matching spec context
+	// Find matching proposal and spec context
+	var ctx strings.Builder
+	if fa.Proposal {
+		prop, err := artifact.ParseProposalFile(filepath.Join(p.Dir, project.ChangesDir, name, "proposal.md"))
+		if err == nil {
+			if prop.Goals != "" {
+				ctx.WriteString("Goal: " + prop.Goals + "\n")
+			}
+			if prop.Why != "" {
+				ctx.WriteString("Why: " + prop.Why + "\n")
+			}
+			if prop.NonGoals != "" {
+				ctx.WriteString("Non-Goals: " + prop.NonGoals + "\n")
+			}
+		}
+	}
 	if fa.Spec {
 		spec, err := artifact.ParseSpecFile(filepath.Join(p.Dir, project.ChangesDir, name, "spec.md"))
 		if err == nil {
-			var ctx strings.Builder
-			ctx.WriteString("Goal: " + spec.Goals + "\n")
 			ctx.WriteString("Requirements:\n")
 			for _, r := range spec.Requirements {
 				ctx.WriteString(fmt.Sprintf("- %s\n", r.Name))
 				for _, s := range r.Scenarios {
-					ctx.WriteString(fmt.Sprintf("  - %s: WHEN %s THEN %s\n", s.Name, s.When, s.Then))
+					line := fmt.Sprintf("  - %s: WHEN %s THEN %s", s.Name, s.When, s.Then)
+					if s.Test != "" {
+						line += " TEST " + s.Test
+					}
+					ctx.WriteString(line + "\n")
 				}
 			}
 			if len(spec.Decisions) > 0 {
@@ -143,9 +160,9 @@ func runInstructionsApply(cmd *cobra.Command, args []string) error {
 			if spec.Risks != "" {
 				ctx.WriteString("Risks: " + spec.Risks + "\n")
 			}
-			result.SpecContext = ctx.String()
 		}
 	}
+	result.SpecContext = ctx.String()
 
 	output.Print(result, isJSON())
 	return nil
@@ -160,22 +177,12 @@ func runInstructionsSpecs(cmd *cobra.Command, args []string) error {
 
 	instruction := map[string]string{
 		"phase": "DEFINE",
-		"task":  "Write spec.md (includes refine thinking and design decisions)",
-		"template": `# Feature Name — Spec
-
-## Context
-Describe the current state and why this change is needed.
-
-## Goals
-- What this feature achieves
-
-## Non-Goals
-- What this feature explicitly does NOT cover
-
-### Requirement: <name>
+		"task":  "Write spec.md — requirements, decisions, and risks",
+		"template": `### Requirement: <name>
 #### Scenario: <name>
 - **WHEN** <condition>
 - **THEN** <expected result>
+- **TEST** ` + "`" + `<test function name>` + "`" + ` (optional)
 
 ## Decisions
 - **Decision:** <key technical choice> — **Rationale:** <why this choice>
@@ -227,15 +234,47 @@ func runInstructionsTasks(cmd *cobra.Command, args []string) error {
 
 **Goal:** <one-line goal>
 
+## Architecture Overview
+<describe the high-level architecture>
+
+## Dependency Graph
+<ASCII tree showing task dependencies>
+
+## Vertical Slice Strategy
+<how work is sliced into vertical features>
+
+## Risk/Mitigation Table
+| Risk | Mitigation |
+|------|------------|
+| <risk> | <mitigation> |
+
+## Parallelization
+| Task | Classification | Notes |
+|------|---------------|-------|
+| <task> | safe/sequential/needs-coordination | <notes> |
+
+## Self-Audit Checklist
+- [ ] All tasks have acceptance criteria
+- [ ] No placeholder values
+- [ ] Dependencies are satisfied in order
+- [ ] Each task leaves system working
+
+## Handoff
+Ready to execute. All tasks are specific with real file paths and function names.
+
+## Task Details
 ### 1.1 <task title>
 - **Acceptance:** <how to verify>
 - **Verification:** <test method>
 - **Dependencies:** <prerequisite task IDs>
 - **Files:** <files to modify>
 - **Scope:** <what's in/out>
-- **Notes:** <implementation tips>`
+- **Notes:** <implementation tips>
+- **Approach:** <implementation strategy>
+- **Edge Cases:** <edge cases to handle>
+- **Rollback:** <how to revert if needed>`
 
-	instruction["taskTemplate"] = "# Feature Name\n\n## 1. Define\n- [ ] 1.1 <task description> `" + "file.go" + "`\n- [ ] 1.2 <task description>\n\n## 2. Build\n- [ ] 2.1 <task description> `" + "file.go" + "`"
+	instruction["taskTemplate"] = "# Feature Name\n\n## 1. Define\n- [ ] 1.1 <task description> `" + "file.go" + "`\n  - [ ] RED: <test description>\n  - [ ] GREEN: <implementation description>\n  - [ ] REFACTOR: <refactoring description>\n- [ ] 1.2 <task description>\n\n## 2. Build\n- [ ] 2.1 <task description> `" + "file.go" + "`"
 
 	output.Print(instruction, isJSON())
 	return nil

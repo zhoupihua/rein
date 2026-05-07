@@ -1,3 +1,7 @@
+---
+description: Simplify code while preserving behavior — reduce complexity incrementally
+---
+
 Simplify code while preserving behavior.
 
 ## Instructions

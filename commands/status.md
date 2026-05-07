@@ -1,3 +1,7 @@
+---
+description: Show task progress, detect stale checkboxes, and optionally fix drift
+---
+
 Show task progress and detect stale checkboxes.
 
 ## Instructions

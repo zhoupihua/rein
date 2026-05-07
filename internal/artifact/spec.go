@@ -12,6 +12,7 @@ var (
 	scenarioRe    = regexp.MustCompile(`^####\s+Scenario:\s*(.+)$`)
 	whenRe        = regexp.MustCompile(`^-\s+\*\*WHEN\*\*\s*(.+)$`)
 	thenRe        = regexp.MustCompile(`^-\s+\*\*THEN\*\*\s*(.+)$`)
+	testRe        = regexp.MustCompile(`^-\s+\*\*TEST\*\*\s+(.+)$`)
 	decisionRe    = regexp.MustCompile(`^-\s+\*\*Decision:\*\*\s*(.+?)\s*—\s*\*\*Rationale:\*\*\s*(.+)$`)
 )
 
@@ -19,9 +20,6 @@ type Spec struct {
 	Sections     []string
 	Requirements []Requirement
 	Decisions    []Decision
-	Goals        string
-	NonGoals     string
-	Context      string
 	Risks        string
 }
 
@@ -34,11 +32,12 @@ type Scenario struct {
 	Name string
 	When string
 	Then string
+	Test string
 }
 
 type Decision struct {
-	Choice     string
-	Rationale  string
+	Choice    string
+	Rationale string
 }
 
 func ParseSpecFile(path string) (*Spec, error) {
@@ -73,12 +72,6 @@ func ParseSpecContent(content string) *Spec {
 		}
 		text := strings.TrimSpace(sectionBuf.String())
 		switch currentSection {
-		case "Context":
-			spec.Context = text
-		case "Goals":
-			spec.Goals = text
-		case "Non-Goals":
-			spec.NonGoals = text
 		case "Risks", "Risks / Trade-offs":
 			spec.Risks = text
 		}
@@ -117,6 +110,8 @@ func ParseSpecContent(content string) *Spec {
 				currentScenario.When = m[1]
 			} else if m := thenRe.FindStringSubmatch(line); m != nil {
 				currentScenario.Then = m[1]
+			} else if m := testRe.FindStringSubmatch(line); m != nil {
+				currentScenario.Test = strings.Trim(m[1], "`")
 			}
 			continue
 		}

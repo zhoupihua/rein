@@ -63,11 +63,12 @@ func HasArtifacts(p *Project) bool {
 
 // FeatureArtifacts tracks which artifact files exist for a feature.
 type FeatureArtifacts struct {
-	Name   string
-	Spec   bool
-	Plan   bool
-	Task   bool
-	Review bool
+	Name     string
+	Proposal bool
+	Spec     bool
+	Plan     bool
+	Task     bool
+	Review   bool
 }
 
 func ResolveFeature(p *Project, name string) FeatureArtifacts {
@@ -79,6 +80,7 @@ func resolveFeatureFromDir(base, name string) FeatureArtifacts {
 	if _, err := os.Stat(base); err != nil {
 		return fa
 	}
+	fa.Proposal = fileExists(filepath.Join(base, "proposal.md"))
 	fa.Spec = fileExists(filepath.Join(base, "spec.md"))
 	fa.Plan = fileExists(filepath.Join(base, "plan.md"))
 	fa.Task = fileExists(filepath.Join(base, "task.md"))
@@ -119,10 +121,11 @@ func validateFromArtifacts(fa FeatureArtifacts, artifactDir string) ValidateResu
 	result := ValidateResult{Feature: fa.Name}
 
 	artifactMap := map[string]bool{
-		"spec.md":   fa.Spec,
-		"plan.md":   fa.Plan,
-		"task.md":   fa.Task,
-		"review.md": fa.Review,
+		"proposal.md": fa.Proposal,
+		"spec.md":     fa.Spec,
+		"plan.md":     fa.Plan,
+		"task.md":     fa.Task,
+		"review.md":   fa.Review,
 	}
 
 	currentPhase := DeterminePhase(fa)
@@ -206,17 +209,9 @@ func statusFromValidateResult(vr ValidateResult, taskPath string) FeatureStatus 
 
 	if fileExists(taskPath) {
 		fs.Build = &BuildProgress{}
-		content, err := os.ReadFile(taskPath)
+		tf, err := artifact.ParseTaskFile(taskPath)
 		if err == nil {
-			for _, line := range strings.Split(string(content), "\n") {
-				trimmed := strings.TrimSpace(line)
-				if strings.HasPrefix(trimmed, "- [x]") {
-					fs.Build.Done++
-					fs.Build.Total++
-				} else if strings.HasPrefix(trimmed, "- [ ]") {
-					fs.Build.Total++
-				}
-			}
+			fs.Build.Done, fs.Build.Total = tf.CountDone()
 		}
 		if fs.Build.Done == fs.Build.Total && fs.Build.Total > 0 && vr.Current == "REVIEW" {
 			// Already correct
@@ -312,7 +307,7 @@ func findFeatures(root, subdir string) []string {
 
 // hasFeatureArtifacts checks if a directory contains at least one standard feature artifact.
 func hasFeatureArtifacts(dir string) bool {
-	for _, f := range []string{"spec.md", "plan.md", "task.md", "review.md"} {
+	for _, f := range []string{"proposal.md", "spec.md", "plan.md", "task.md", "review.md"} {
 		if fileExists(filepath.Join(dir, f)) {
 			return true
 		}

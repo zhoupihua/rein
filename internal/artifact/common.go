@@ -29,6 +29,32 @@ func (id TaskID) MarshalJSON() ([]byte, error) {
 	return json.Marshal(id.String())
 }
 
+type SubTaskID struct {
+	Parent TaskID
+	Index  int
+}
+
+func ParseSubTaskID(s string) (SubTaskID, bool) {
+	parts := strings.Split(s, ".")
+	if len(parts) != 3 {
+		return SubTaskID{}, false
+	}
+	parent, ok := ParseTaskID(parts[0] + "." + parts[1])
+	if !ok {
+		return SubTaskID{}, false
+	}
+	var idx int
+	n, err := fmt.Sscanf(parts[2], "%d", &idx)
+	if err != nil || n != 1 || idx < 0 {
+		return SubTaskID{}, false
+	}
+	return SubTaskID{Parent: parent, Index: idx}, true
+}
+
+func (id SubTaskID) String() string {
+	return fmt.Sprintf("%s.%d", id.Parent.String(), id.Index)
+}
+
 func ReadFile(path string) (string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {

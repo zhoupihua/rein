@@ -1,3 +1,7 @@
+---
+description: Execute tasks from task.md incrementally — one at a time, test, commit, update checkbox
+---
+
 Execute tasks from task.md incrementally. Replaces /opsx:apply.
 
 ## Execution Loop
@@ -9,15 +13,19 @@ LOOP:
   1. Read task.md — find the FIRST line matching `- [ ]`
   2. If no `- [ ]` found → all tasks complete → invoke `integration-testing` skill → then suggest `/code-review` or `/ship`
   3. Found task X.Y → read plan.md for X.Y details
-  4. Implement task X.Y
-  5. Verify tests pass
-  6. Commit with descriptive message
-  7. Edit task.md: change `- [ ] X.Y` to `- [x] X.Y`
-  8. Read task.md: confirm the checkbox now shows `- [x]`
-  9. GO TO STEP 1 (re-read the file — do NOT proceed from memory)
+  4. If task has RED/GREEN/REFACTOR sub-tasks, execute them in order:
+     a. RED: write failing test → check off sub-task
+     b. GREEN: implement to pass → check off sub-task
+     c. REFACTOR: clean up → check off sub-task (parent auto-checks when all done)
+  5. If task has no sub-tasks, implement task X.Y directly
+  6. Verify tests pass
+  7. Commit with descriptive message
+  8. Edit task.md: change `- [ ] X.Y` to `- [x] X.Y` (if not auto-checked by sub-tasks)
+  9. Read task.md: confirm the checkbox now shows `- [x]`
+  10. GO TO STEP 1 (re-read the file — do NOT proceed from memory)
 ```
 
-**Why this loop enforces checkbox updates:** Step 1 finds the next task by scanning for `- [ ]`. If step 7-8 was skipped, step 1 will find the same task again on the next iteration. The ONLY way to advance is to update the checkbox.
+**Why this loop enforces checkbox updates:** Step 1 finds the next task by scanning for `- [ ]`. If step 8-9 was skipped, step 1 will find the same task again on the next iteration. The ONLY way to advance is to update the checkbox.
 
 ## Plan-Task Consistency Check
 
