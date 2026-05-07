@@ -118,7 +118,7 @@ The `commands/` directory contains slash commands for Claude Code:
 | `/quick` | L1 lightweight change (≤5 lines) |
 | `/fix` | L2 bug fix or small feature (1-3 files) |
 | `/feature` | L3 full feature (6-step workflow, auto-detects scope) |
-| `/spec` | Generate spec.md |
+| `/spec` | Generate proposal.md + spec.md |
 | `/plan` | Break spec into tasks |
 | `/do` | Execute tasks from task.md (includes TDD) |
 | `/code-review` | Five-axis code review (includes simplification) |
@@ -146,7 +146,8 @@ The `/spec` and `/plan` commands create working artifacts under `docs/rein/chang
 
 ```
 docs/rein/changes/<name>/
-  spec.md    — DEFINE phase (Why, Goals, Non-Goals, Requirements, Decisions, Risks)
+  proposal.md — DEFINE phase (Why, What Changes, Goals, Non-Goals, Assumptions, Open Questions) — optional for L2
+  spec.md    — DEFINE phase (Requirements, Decisions, Risks)
   plan.md    — PLAN phase (Architecture, Dependency Graph, Task Details)
   task.md    — PLAN phase (checkbox progress tracking)
   review.md  — REVIEW phase

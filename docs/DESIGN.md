@@ -146,7 +146,8 @@ rein/
     └── rein/
         ├── changes/               # 活跃的功能变更
         │   └── <name>/            # 每个功能一个目录
-        │       ├── spec.md        # DEFINE 阶段（Why, Goals, Non-Goals, Requirements, Decisions, Risks）
+        │       ├── proposal.md    # DEFINE 阶段（Why, What Changes, Goals, Non-Goals, Assumptions, Open Questions）— L2 可选
+        │       ├── spec.md        # DEFINE 阶段（Requirements, Decisions, Risks）
         │       ├── plan.md        # PLAN 阶段（Architecture, Dependency Graph, 实现计划）
         │       ├── task.md        # PLAN 阶段（任务清单，执行层，唯一任务源）
         │       └── review.md      # REVIEW 阶段（代码审查报告）
@@ -157,12 +158,12 @@ rein/
             └── <name>/
 ```
 
-> 每个功能一个目录，所有工件集中管理。spec.md 是 PRD 工件（Why、Goals、Non-Goals、需求、决策、风险）。plan.md 遵循 Superpowers 规范（架构、依赖图、切片策略、风险缓解、并行化、自审、交接）。task.md 是执行层唯一任务源。
+> 每个功能一个目录，所有工件集中管理。proposal.md 是 refine 阶段的产出（Why、Goals、NonGoals、Assumptions），L3 必需，L2 可选。spec.md 是 PRD 工件（需求、决策、风险）。plan.md 遵循 Superpowers 规范（架构、依赖图、切片策略、风险缓解、并行化、自审、交接）。task.md 是执行层唯一任务源。
 
 ### 生成流程
 
 ```
-/spec   → changes/<name>/spec.md      (发散/收敛思考 + 生成 PRD)
+/spec   → changes/<name>/proposal.md + spec.md  (发散/收敛思考 → 动机/范围 → 需求/决策/风险)
 /plan   → changes/<name>/plan.md + task.md
 /do     → 读 task.md 逐项执行，勾选 [x]
 ```
@@ -178,8 +179,9 @@ rein/
 **define/SKILL.md 结构：**
 - Phase 1: Explore & Expand（原 refine Phase 1-2 的发散/收敛思维）
 - Phase 2: Specify（原 spec-driven 的规格文档输出）
+  - Step 2a: 写 proposal.md（Why/Goals/NonGoals/Assumptions/OpenQuestions）— L3 必需，L2 可选
+  - Step 2b: 写 spec.md（Requirements/Decisions/Risks）
 - Hard gate: 两个阶段都需人类审批后才继续
-- 输出：`docs/rein/changes/<name>/spec.md`
 
 ### 2. planning ← SP:writing-plans + AS:planning
 
@@ -218,7 +220,7 @@ rein/
 **`/feature`** — L3 完整变更（6 步流程）
 
 ```
-1. define → define（发散/收敛 → 生成 spec.md）
+1. define → define（发散/收敛 → 生成 proposal.md + spec.md）
 2. branch → git-workflow 分支隔离（worktree 或直接分支）
 3. plan → planning 细化任务（plan.md + task.md）
 4. implement → executing-plans + tdd 逐任务实现
@@ -230,7 +232,7 @@ rein/
 
 | 命令 | 用途 |
 |------|------|
-| `/spec` | 生成 spec.md |
+| `/spec` | 生成 proposal.md + spec.md |
 | `/plan` | 拆解 spec 为任务 |
 | `/do` | 逐项执行 task.md |
 | `/code-review` | 5 轴审查 |
@@ -269,7 +271,7 @@ powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 
 1. 运行 install 脚本，确认目录和文件全部创建
 2. 启动 Claude Code 新会话，确认 session-start hook 注入了 using-rein 元技能
-3. 测试 `/spec test-feature`：确认生成 `docs/rein/changes/test-feature/spec.md`
+3. 测试 `/spec test-feature`：确认生成 `docs/rein/changes/test-feature/proposal.md` + `spec.md`
 4. 测试 `/do`：确认读取 tasks.md 并执行
 5. 测试 `/ship`：确认 fan-out 3 专家代理
 6. 测试 `/continue`：中断后确认能恢复

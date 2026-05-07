@@ -47,7 +47,7 @@ rein is a zero-dependency AI coding workflow toolkit. It ships as static markdow
 |-------|---------|-------|------|
 | L1 | `/quick` | ≤5 lines, no logic | Edit → test → commit |
 | L2 | `/fix` | 1-3 files | DEFINE → BUILD → VERIFY → SHIP |
-| L3 | `/feature` | Multi-file feature | 6-step: define(spec) → branch → plan → implement → review → ship |
+| L3 | `/feature` | Multi-file feature | 6-step: define(proposal+spec) → branch → plan → implement → review → ship |
 
 Each level has quality gates. Phase transitions are detected by checking which artifacts exist under `docs/rein/changes/<name>/`.
 
@@ -55,7 +55,8 @@ Each level has quality gates. Phase transitions are detected by checking which a
 
 ```
 docs/rein/changes/<name>/
-  spec.md        # DEFINE phase (Why, What Changes, Goals, Non-Goals, Requirements, Decisions, Risks)
+  proposal.md    # DEFINE phase (Why, What Changes, Goals, Non-Goals, Assumptions, Open Questions) — optional for L2
+  spec.md        # DEFINE phase (Requirements, Decisions, Risks)
   plan.md        # PLAN phase (Architecture, Dependency Graph, ### N.N tasks with details)
   task.md        # PLAN phase (checkbox format: - [ ] 1.1 description, with optional RED/GREEN/REFACTOR sub-tasks)
   review.md      # REVIEW phase
@@ -64,7 +65,9 @@ docs/rein/archive/<name>/   # shipped features
 
 `task.md` is the single source of truth for build progress. The `artifact.ParseTaskFile` parser recognizes `## N. PhaseName` headings, `- [ ] N.N description` checkboxes, and RED/GREEN/REFACTOR sub-task checkboxes (`  - [ ] RED: ...`, `  - [x] GREEN: ...`). Sub-tasks are first-class: each has an index, done state, and auto-checks the parent task when all are complete.
 
-`spec.md` is the PRD artifact — it includes Why, Goals, Non-Goals, Requirements (with WHEN/THEN/TEST scenarios), Decisions (`**Decision:** ... — **Rationale:** ...`), and Risks. For L2 `/fix` workflows, spec.md can be generated directly.
+`proposal.md` is the refine output — Why, Goals, Non-Goals, Assumptions, Open Questions. L3 `/feature` requires it; L2 `/fix` can skip it and generate spec.md directly.
+
+`spec.md` is the PRD artifact — Requirements (with WHEN/THEN/TEST scenarios), Decisions (`**Decision:** ... — **Rationale:** ...`), and Risks.
 
 `plan.md` follows Superpowers conventions: Architecture Overview, Dependency Graph (ASCII), Vertical Slice Strategy, Risk/Mitigation Table, Parallelization Classification, Self-Audit Checklist, Handoff Statement, plus Task Details with Approach/Edge Cases/Rollback fields.
 
