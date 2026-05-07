@@ -6,15 +6,19 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/zhoupihua/rein/internal/artifact"
 )
 
 const (
 	ArtifactDir = "docs/rein"
 	ChangesDir  = "docs/rein/changes"
 	ArchiveDir  = "docs/rein/archive"
+	SchemaFile  = "docs/rein/schema.json"
 )
 
 // PhaseArtifact defines which artifacts each phase must produce.
+// Deprecated: Use ArtifactGraph instead. Kept for backward compatibility.
 var PhaseArtifact = map[string][]string{
 	"DEFINE": {"spec.md"},
 	"PLAN":   {"plan.md", "task.md"},
@@ -27,6 +31,7 @@ var PhaseOrder = []string{"DEFINE", "PLAN", "BUILD", "REVIEW", "SHIP"}
 type Project struct {
 	Dir     string
 	Changes []string
+	Graph   *artifact.ArtifactGraph
 }
 
 func Resolve() (*Project, error) {
@@ -40,6 +45,15 @@ func Resolve() (*Project, error) {
 	}
 	p := &Project{Dir: dir}
 	p.Changes = findFeatures(dir, ChangesDir)
+
+	// Load artifact graph from schema.json if available, otherwise use default
+	schemaPath := filepath.Join(dir, SchemaFile)
+	if g, err := artifact.LoadArtifactGraph(schemaPath); err == nil {
+		p.Graph = g
+	} else {
+		p.Graph = artifact.DefaultArtifactGraph()
+	}
+
 	return p, nil
 }
 
@@ -154,6 +168,11 @@ func DeterminePhase(fa FeatureArtifacts) string {
 	default:
 		return "SHIP"
 	}
+}
+
+// DeterminePhaseFromGraph returns the current phase using the ArtifactGraph.
+func DeterminePhaseFromGraph(g *artifact.ArtifactGraph, featureDir string) string {
+	return g.CurrentPhase(featureDir)
 }
 
 // BuildProgress returns task completion info if task.md exists.
