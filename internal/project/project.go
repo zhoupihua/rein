@@ -12,7 +12,6 @@ const (
 	ArtifactDir = "docs/rein"
 	ChangesDir  = "docs/rein/changes"
 	ArchiveDir  = "docs/rein/archive"
-	EpicFile    = "epic.md"
 )
 
 // PhaseArtifact defines which artifacts each phase must produce.
@@ -27,14 +26,7 @@ var PhaseOrder = []string{"DEFINE", "PLAN", "BUILD", "REVIEW", "SHIP"}
 
 type Project struct {
 	Dir     string
-	Changes []string // standalone feature names
-	Epics   []Epic   // epics with their increments
-}
-
-// Epic represents an epic directory containing multiple increments.
-type Epic struct {
-	Name       string
-	Increments []string // increment names (subdirectories)
+	Changes []string
 }
 
 func Resolve() (*Project, error) {
@@ -47,32 +39,12 @@ func Resolve() (*Project, error) {
 		}
 	}
 	p := &Project{Dir: dir}
-	p.Changes, p.Epics = findFeaturesAndEpics(dir, ChangesDir)
+	p.Changes = findFeatures(dir, ChangesDir)
 	return p, nil
 }
 
 func HasArtifacts(p *Project) bool {
-	return len(p.Changes) > 0 || len(p.Epics) > 0
-}
-
-// IsEpic checks whether a name refers to an epic in the project.
-func IsEpic(p *Project, name string) bool {
-	for _, e := range p.Epics {
-		if e.Name == name {
-			return true
-		}
-	}
-	return false
-}
-
-// FindEpic returns the epic by name, or nil.
-func FindEpic(p *Project, name string) *Epic {
-	for i := range p.Epics {
-		if p.Epics[i].Name == name {
-			return &p.Epics[i]
-		}
-	}
-	return nil
+	return len(p.Changes) > 0
 }
 
 // FeatureArtifacts tracks which artifact files exist for a feature.
@@ -86,14 +58,6 @@ type FeatureArtifacts struct {
 
 func ResolveFeature(p *Project, name string) FeatureArtifacts {
 	return resolveFeatureFromDir(filepath.Join(p.Dir, ChangesDir, name), name)
-}
-
-// ResolveIncrement resolves artifacts for an increment within an epic.
-func ResolveIncrement(p *Project, epicName, incrementName string) FeatureArtifacts {
-	return resolveFeatureFromDir(
-		filepath.Join(p.Dir, ChangesDir, epicName, incrementName),
-		epicName+"/"+incrementName,
-	)
 }
 
 func resolveFeatureFromDir(base, name string) FeatureArtifacts {
@@ -135,12 +99,6 @@ type ValidateResult struct {
 func Validate(p *Project, name string) ValidateResult {
 	fa := ResolveFeature(p, name)
 	return validateFromArtifacts(fa, filepath.Join(ChangesDir, name))
-}
-
-// ValidateIncrement checks all phase artifacts for an increment within an epic.
-func ValidateIncrement(p *Project, epicName, incrementName string) ValidateResult {
-	fa := ResolveIncrement(p, epicName, incrementName)
-	return validateFromArtifacts(fa, filepath.Join(ChangesDir, epicName, incrementName))
 }
 
 func validateFromArtifacts(fa FeatureArtifacts, artifactDir string) ValidateResult {
@@ -219,12 +177,6 @@ func StatusOf(p *Project, name string) FeatureStatus {
 	return statusFromValidateResult(vr, filepath.Join(p.Dir, ChangesDir, name, "task.md"))
 }
 
-// StatusOfIncrement returns full status for an increment within an epic.
-func StatusOfIncrement(p *Project, epicName, incrementName string) FeatureStatus {
-	vr := ValidateIncrement(p, epicName, incrementName)
-	return statusFromValidateResult(vr, filepath.Join(p.Dir, ChangesDir, epicName, incrementName, "task.md"))
-}
-
 func statusFromValidateResult(vr ValidateResult, taskPath string) FeatureStatus {
 	fs := FeatureStatus{
 		Name:   vr.Feature,
@@ -259,54 +211,9 @@ func statusFromValidateResult(vr ValidateResult, taskPath string) FeatureStatus 
 	return fs
 }
 
-// EpicStatusResult reports the overall status of an epic.
-type EpicStatusResult struct {
-	Name       string          `json:"name"`
-	Increments []FeatureStatus `json:"increments"`
-	Overall    string          `json:"overall"` // "not started", "in progress", "all shipped"
-}
-
-// EpicStatus returns status for all increments in an epic.
-func EpicStatus(p *Project, epicName string) EpicStatusResult {
-	epic := FindEpic(p, epicName)
-	if epic == nil {
-		return EpicStatusResult{Name: epicName, Overall: "not found"}
-	}
-
-	result := EpicStatusResult{Name: epicName}
-	allShipped := true
-	anyStarted := false
-	for _, inc := range epic.Increments {
-		fs := StatusOfIncrement(p, epicName, inc)
-		result.Increments = append(result.Increments, fs)
-		if fs.Phase != "SHIP" {
-			allShipped = false
-		}
-		if fs.Phase != "DEFINE" || fs.Ready {
-			anyStarted = true
-		}
-	}
-
-	switch {
-	case allShipped && len(result.Increments) > 0:
-		result.Overall = "all shipped"
-	case anyStarted:
-		result.Overall = "in progress"
-	default:
-		result.Overall = "not started"
-	}
-
-	return result
-}
-
 // FeaturePath returns the full path to a feature directory.
 func FeaturePath(projectDir, name string) string {
 	return filepath.Join(projectDir, ChangesDir, name)
-}
-
-// IncrementPath returns the full path to an increment directory within an epic.
-func IncrementPath(projectDir, epicName, incrementName string) string {
-	return filepath.Join(projectDir, ChangesDir, epicName, incrementName)
 }
 
 // ArchivePath returns the full path to an archive directory.
@@ -317,16 +224,6 @@ func ArchivePath(projectDir, name string) string {
 // TaskFilePath returns the path to a feature's task.md.
 func TaskFilePath(projectDir, name string) string {
 	return filepath.Join(projectDir, ChangesDir, name, "task.md")
-}
-
-// IncrementTaskFilePath returns the path to an increment's task.md.
-func IncrementTaskFilePath(projectDir, epicName, incrementName string) string {
-	return filepath.Join(projectDir, ChangesDir, epicName, incrementName, "task.md")
-}
-
-// EpicFilePath returns the path to an epic's epic.md.
-func EpicFilePath(projectDir, epicName string) string {
-	return filepath.Join(projectDir, ChangesDir, epicName, EpicFile)
 }
 
 // ContainsReinPath checks if a path references rein-managed files.
@@ -345,12 +242,6 @@ func FirstFeature(p *Project) string {
 	if len(p.Changes) > 0 {
 		return p.Changes[0]
 	}
-	// Fall back to first increment of first epic
-	for _, e := range p.Epics {
-		if len(e.Increments) > 0 {
-			return e.Name + "/" + e.Increments[0]
-		}
-	}
 	return ""
 }
 
@@ -361,26 +252,7 @@ func FindFeatureWithTask(p *Project) string {
 			return name
 		}
 	}
-	// Also check epic increments
-	for _, e := range p.Epics {
-		for _, inc := range e.Increments {
-			if fileExists(filepath.Join(p.Dir, ChangesDir, e.Name, inc, "task.md")) {
-				return e.Name + "/" + inc
-			}
-		}
-	}
 	return ""
-}
-
-// ParseFeatureRef splits a feature reference like "epic/increment" into parts.
-// Returns (epicName, incrementName, true) for epic increments,
-// or (name, "", false) for standalone features.
-func ParseFeatureRef(ref string) (epicName, incrementName string, isIncrement bool) {
-	parts := strings.SplitN(ref, "/", 2)
-	if len(parts) == 2 {
-		return parts[0], parts[1], true
-	}
-	return ref, "", false
 }
 
 // isReadyForPhase checks that all phases before and including the target have no missing artifacts.
@@ -397,52 +269,26 @@ func isReadyForPhase(vr ValidateResult, target string) bool {
 	return true
 }
 
-func findFeaturesAndEpics(root, subdir string) ([]string, []Epic) {
+func findFeatures(root, subdir string) []string {
 	dir := filepath.Join(root, subdir)
 	entries, err := os.ReadDir(dir)
 	if err != nil {
-		return nil, nil
+		return nil
 	}
 
 	var features []string
-	var epics []Epic
-
 	for _, e := range entries {
 		if !e.IsDir() {
 			continue
 		}
 		entryPath := filepath.Join(dir, e.Name())
-
-		// Check if this is an epic (has epic.md)
-		if fileExists(filepath.Join(entryPath, EpicFile)) {
-			epic := Epic{Name: e.Name()}
-			// Scan for increment subdirectories
-			subEntries, err := os.ReadDir(entryPath)
-			if err == nil {
-				for _, se := range subEntries {
-					if !se.IsDir() {
-						continue
-					}
-					// An increment is a subdirectory that has at least one standard artifact
-					subPath := filepath.Join(entryPath, se.Name())
-					if hasFeatureArtifacts(subPath) {
-						epic.Increments = append(epic.Increments, se.Name())
-					}
-				}
-			}
-			sort.Strings(epic.Increments)
-			epics = append(epics, epic)
-		} else if hasFeatureArtifacts(entryPath) {
+		if hasFeatureArtifacts(entryPath) {
 			features = append(features, e.Name())
 		}
 	}
 
 	sort.Strings(features)
-	sort.Slice(epics, func(i, j int) bool {
-		return epics[i].Name < epics[j].Name
-	})
-
-	return features, epics
+	return features
 }
 
 // hasFeatureArtifacts checks if a directory contains at least one standard feature artifact.
