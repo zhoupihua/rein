@@ -25,7 +25,8 @@ Resume work from a breakpoint.
 
 7. Invoke the appropriate skill and continue from that point
 8. During BUILD phase: after each completed task, MUST update task.md checkbox (IRON RULE)
-9. If no active changes found, suggest starting with `/quick` or `/feature`
+9. During BUILD phase: start the task progress watchdog (same as `/do` Setup section) if not already running
+10. If no active changes found, suggest starting with `/quick` or `/feature`
 
 ## Plan-Task Consistency Check
 

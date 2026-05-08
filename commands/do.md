@@ -4,6 +4,22 @@ description: Execute tasks from task.md incrementally — one at a time, test, c
 
 Execute tasks from task.md incrementally. Replaces /opsx:apply.
 
+## Setup: Task Progress Watchdog
+
+Before starting the execution loop, start a periodic watchdog that checks task.md sync:
+
+1. Determine the feature name from `docs/rein/changes/<name>/task.md`
+2. Start a CronCreate recurring job (every 5 minutes) with this prompt:
+
+```
+Task progress watchdog for <name>. Read docs/rein/changes/<name>/task.md. Count [ ] (unchecked) and [x] (checked) checkboxes. Then:
+- If all tasks are checked ([x]): delete this cron job (it's done), then remind the user that all tasks are complete.
+- If unchecked tasks exist but code changes suggest they should be done (e.g., files mentioned in task descriptions have been modified, tests for the task exist and pass): warn the user that task.md may be out of sync — list the suspect tasks and suggest checking them off.
+- If no sync issues detected: no output needed, just wait for next check.
+```
+
+3. Store the cron job ID so you can delete it when all tasks complete (or when the user stops /do)
+
 ## Execution Loop
 
 You MUST follow this exact loop. Each iteration starts by reading task.md fresh — you cannot work from memory or cached state.
@@ -11,7 +27,7 @@ You MUST follow this exact loop. Each iteration starts by reading task.md fresh 
 ```
 LOOP:
   1. Read task.md — find the FIRST line matching `- [ ]`
-  2. If no `- [ ]` found → all tasks complete → invoke `integration-testing` skill → then invoke `git-workflow` skill to complete
+  2. If no `- [ ]` found → all tasks complete → see "When All Tasks Complete" section
   3. Found task X.Y → read plan.md for X.Y details
   4. If task has RED/GREEN/REFACTOR sub-tasks, execute them in order:
      a. RED: write failing test → check off sub-task
@@ -40,6 +56,12 @@ Before the first iteration, verify plan.md and task.md are aligned:
 - Suggest using `debugging` if it's a bug
 - Ask the user for direction
 - Do NOT mark the task as complete
+
+## When All Tasks Complete
+
+- Delete the watchdog cron job (CronDelete with the stored job ID)
+- Invoke `integration-testing` skill
+- Then invoke `git-workflow` skill to complete
 
 ## Task Execution Rules
 

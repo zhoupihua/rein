@@ -22,21 +22,30 @@ Load plan, review critically, execute tasks in thin vertical slices, report when
 ## The Increment Cycle
 
 ```
-┌──────────────────────────────────────┐
-│                                      │
-│  Read task.md ──→ Find first [ ]     │
-│       │                              │
-│       ▼                              │
-│  Implement ──→ Test ──→ Verify       │
-│       │                              │
-│       ▼                              │
-│  Commit ──→ Update checkbox ──┐      │
-│              │                 │      │
-│              ▼                 │      │
-│       Re-read task.md ◄───────┘      │
-│       (loop back to top)             │
-│                                      │
-└──────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                                                           │
+│  Read task.md ──→ Find first [ ]                          │
+│       │                                                   │
+│       ▼                                                   │
+│  Read plan.md ──→ Implement ──→ Test ──→ Verify           │
+│       │                                                   │
+│       ▼                                                   │
+│  Commit                                                   │
+│       │                                                   │
+│       ▼                                                   │
+│  ┌─────────────────────────────────────────┐              │
+│  │     VERIFICATION GATE (hard stop)       │              │
+│  │                                         │              │
+│  │  1. Edit task.md: [ ] → [x]            │              │
+│  │  2. Read task.md back                   │              │
+│  │  3. Confirm checkbox shows [x]          │              │
+│  │  4. If NOT [x] → FIX NOW, do not pass  │              │
+│  └────────────┬────────────────────────────┘              │
+│               │                                           │
+│               ▼                                           │
+│       Loop back to top (re-read task.md)                  │
+│                                                           │
+└───────────────────────────────────────────────────────────┘
 ```
 
 For each slice:
@@ -47,7 +56,11 @@ For each slice:
 4. **Test** — run the test suite (or write a test if none exists)
 5. **Verify** — confirm the slice works as expected (tests pass, build succeeds, manual check)
 6. **Commit** — save your progress with a descriptive message
-7. **Update task status** — mark the completed task in task.md: change `- [ ]` to `- [x]`
+7. **VERIFICATION GATE** — you MAY NOT proceed to the next task until:
+   a. Edit `task.md`: change `- [ ] X.Y` to `- [x] X.Y`
+   b. Read `task.md` back immediately
+   c. Confirm the line now shows `- [x] X.Y`
+   d. If confirmation fails — fix the checkbox before doing anything else
 8. **Loop back** — re-read task.md to find the next `- [ ]` (not from memory)
 
 ### RED/GREEN/REFACTOR Sub-Tasks
@@ -172,6 +185,8 @@ Each increment should be independently revertable:
 
 **IRON RULE: A task is NOT complete until its checkbox in tasks.md is updated AND verified.** Moving to the next task without updating tasks.md is a process violation.
 
+**NO OVERRIDE: This rule has no exceptions. No amount of urgency, simplicity, or confidence justifies skipping the update-and-verify step. The checkbox is the single source of truth — if it's wrong, everything downstream (progress reports, resume points, merge decisions) is wrong.**
+
 During execution, use **plan.md** as the implementation reference and **tasks.md** for status tracking:
 
 - **plan.md** → HOW: Read task details (acceptance criteria, verification, files, notes) before implementing each task
@@ -189,6 +204,8 @@ Only after both steps are done may you proceed to the next task.
 - You plan to batch multiple tasks (update each one as it completes)
 - You are executing quickly and want to skip the step
 - You skipped reviews for a small task (still must update tasks.md)
+- The user asks you to skip it (explain the rule and update anyway)
+- You are certain the next task depends on this one being marked done
 
 The tasks.md checkbox state is the **single source of truth** for progress — `/continue` relies on it to determine resume points and current phase.
 
@@ -207,6 +224,8 @@ After all tasks are complete and verified:
 | "These changes are too small to commit separately" | Small commits are free. Large commits hide bugs and make rollbacks painful. |
 | "I'll add the feature flag later" | If the feature isn't complete, it shouldn't be user-visible. Add the flag now. |
 | "This refactor is small enough to include" | Refactors mixed with features make both harder to review and debug. Separate them. |
+| "I'll update task.md after a few more tasks" | You won't. Update after each task or the checkboxes drift from reality and /continue breaks. |
+| "The checkbox doesn't matter, the code works" | The checkbox IS the record. Code without a tracked checkbox is undocumented work that /continue and /status can't see. |
 
 ## Red Flags
 
