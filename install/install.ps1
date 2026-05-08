@@ -22,8 +22,12 @@ function Install-Binary([string]$BinDir) {
 
     # Check existing binary
     if (Test-Path "$BinDir\rein.exe") {
-        $existingVersion = & "$BinDir\rein.exe" --version 2>$null
-        Write-Host "  INFO Existing rein found: $existingVersion — upgrading" -ForegroundColor Gray
+        try {
+            $existingVersion = & "$BinDir\rein.exe" --version 2>$null
+            Write-Host "  INFO Existing rein found: $existingVersion — upgrading" -ForegroundColor Gray
+        } catch {
+            Write-Host "  INFO Existing rein found — upgrading (version check blocked by policy)" -ForegroundColor Gray
+        }
     }
 
     if (Test-Path "$WorkflowDir\cmd\rein\main.go") {
@@ -291,8 +295,12 @@ if ($Global) {
     # [6/6] Verification
     Write-Host "[6/6] Verifying installation..." -ForegroundColor Yellow
     if (Test-Path "$GlobalBinDir\rein.exe") {
-        $ver = & "$GlobalBinDir\rein.exe" --version 2>$null
-        Write-Host "  OK rein $ver available at $GlobalBinDir\" -ForegroundColor Green
+        try {
+            $ver = & "$GlobalBinDir\rein.exe" --version 2>$null
+            Write-Host "  OK rein $ver available at $GlobalBinDir\" -ForegroundColor Green
+        } catch {
+            Write-Host "  OK rein CLI installed at $GlobalBinDir\ (version check blocked by policy)" -ForegroundColor Green
+        }
     } else {
         Write-Host "  WARN rein CLI not found — installation may have failed" -ForegroundColor Yellow
     }
