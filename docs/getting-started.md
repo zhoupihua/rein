@@ -117,7 +117,7 @@ The `commands/` directory contains slash commands for Claude Code:
 |---------|---------|
 | `/quick` | L1 lightweight change (≤5 lines) |
 | `/fix` | L2 bug fix or small feature (1-3 files) |
-| `/feature` | L3 full feature (6-step workflow, auto-detects scope) |
+| `/feature` | L3 full feature (6-step workflow) |
 | `/spec` | Generate proposal.md + spec.md |
 | `/plan` | Break spec into tasks |
 | `/do` | Execute tasks from task.md (includes TDD) |
@@ -167,6 +167,8 @@ rein task list <feature>           # List all tasks with status
 rein visual start                  # Start visual brainstorming server
 rein visual stop                   # Stop visual brainstorming server
 rein instructions apply            # Apply rein instructions to project
+rein instructions specs            # Generate agent instructions from specs
+rein instructions tasks            # Generate agent instructions from tasks
 rein hook <name>                   # Run a hook handler
 ```
 
@@ -179,4 +181,4 @@ All commands support `--json` for machine-readable output.
 3. **Don't skip verification steps** — they're the whole point
 4. **Load skills selectively** — more context isn't always better
 5. **Use the agents for review** — different perspectives catch different issues
-6. **Use `/feature`** for any feature — it auto-detects whether to run at L1, L2, or L3
+6. **Use `/feature`** for multi-file features — it runs the full L3 6-step workflow

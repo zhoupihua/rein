@@ -33,7 +33,7 @@ rein is a zero-dependency AI coding workflow toolkit. It ships as static markdow
 - **`skills/`** — 20 SKILL.md files organized by SDLC phase (DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP)
 - **`commands/`** — Slash command definitions consumed by Claude Code
 - **`agents/`** — Expert persona prompts (code-reviewer, test-engineer, security-auditor)
-- **`hooks/`** — Shell/PowerShell scripts + `hooks.json` wiring; each has `.sh` and `.ps1` variants
+- **`hooks/`** — Shell/PowerShell scripts + `hooks.json` wiring; most have `.sh` and `.ps1` variants (Go-only hooks like `artifact-validate` have no shell scripts)
 - **`references/`** — Checklists (testing, security, performance, accessibility, orchestration, api-design)
 - **`templates/`** — Artifact markdown templates (proposal, spec, tasks)
 
@@ -77,5 +77,5 @@ docs/rein/archive/<name>/   # shipped features
 - Spec scenarios use `WHEN`/`THEN`/`TEST` format parsed by regex in `spec.go`; decisions use `**Decision:** ... — **Rationale:** ...` format
 - Plan has section-level fields (Architecture Overview, Dependency Graph, etc.) parsed by `## ` heading accumulation in `plan.go`; task details use bold-labeled fields (`**Acceptance:**`, `**Approach:**`, etc.) parsed by regex
 - Hook communication: read `CLAUDE_TOOL_INPUT` (JSON), output `{"decision":"block","reason":"..."}` or `{"hookSpecificOutput":{"additionalContext":"..."}}`
-- All hooks have both `.sh` and `.ps1` implementations
+- Most hooks have both `.sh` and `.ps1` implementations; Go-only hooks (artifact-validate) are invoked via `rein hook <name>` only
 - No external dependencies beyond cobra; stdlib-only for all internal packages
