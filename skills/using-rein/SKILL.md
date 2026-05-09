@@ -14,10 +14,11 @@ If you were dispatched as a subagent to execute a specific task, skip this skill
 
 - 所有面向用户的文字输出（解释、建议、状态更新、提问、确认）必须使用中文
 - 所有生成的文档（spec、plan、task、design 等）必须使用中文撰写，除非用户要求使用其他语言
+- 文档模板中的标题（如 Requirements、Decisions）保持英文，但填入标题下的所有内容必须使用中文
 - 不要中英文混用，不要用英文回复
 - 代码、代码注释、commit message、技术术语（如 API 名、变量名）可以保留英文
 
-You MUST communicate with the user in Chinese and write all generated documents in Chinese, unless the user requests another language. Do not mix Chinese and English.
+You MUST communicate with the user in Chinese and write all generated documents in Chinese, unless the user requests another language. Do not mix Chinese and English. Template headings stay in English but all content under those headings must be in Chinese.
 
 ---
 

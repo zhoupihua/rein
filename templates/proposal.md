@@ -1,23 +1,23 @@
 ## Why
 
-<!-- Motivation for the change — what problem does this solve? Why now? -->
+<!-- 变更动机——解决什么问题？为什么是现在？ -->
 
 ## What Changes
 
-<!-- Description of what will change — new capabilities, modifications, removals -->
+<!-- 将要发生的变化——新增能力、修改、移除 -->
 
 ## Goals
 
-- <!-- What we want to achieve -->
+- <!-- 我们要达成的目标 -->
 
 ## Non-Goals
 
-- <!-- Explicitly out of scope -->
+- <!-- 明确不在范围内的事项 -->
 
 ## Key Assumptions
 
-- <!-- Assumptions being made -->
+- <!-- 当前所做的假设 -->
 
 ## Open Questions
 
-- <!-- Questions needing resolution before implementation -->
+- <!-- 实施前需要解决的问题 -->

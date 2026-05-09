@@ -177,18 +177,18 @@ func runInstructionsSpecs(cmd *cobra.Command, args []string) error {
 
 	instruction := map[string]string{
 		"phase": "DEFINE",
-		"task":  "Write spec.md — requirements, decisions, and risks",
-		"template": `### Requirement: <name>
-#### Scenario: <name>
-- **WHEN** <condition>
-- **THEN** <expected result>
-- **TEST** ` + "`" + `<test function name>` + "`" + ` (optional)
+		"task":  "编写 spec.md — 需求、决策和风险",
+		"template": `### Requirement: <名称>
+#### Scenario: <场景名称>
+- **WHEN** <条件>
+- **THEN** <期望结果>
+- **TEST** ` + "`" + `<测试函数名>` + "`" + ` (可选)
 
 ## Decisions
-- **Decision:** <key technical choice> — **Rationale:** <why this choice>
+- **Decision:** <关键技术选择> — **Rationale:** <选择理由>
 
 ## Risks / Trade-offs
-- Potential issues and mitigations`,
+- 潜在问题及应对措施`,
 	}
 
 	name := resolveFeatureName(p, args)
@@ -212,7 +212,7 @@ func runInstructionsTasks(cmd *cobra.Command, args []string) error {
 
 	instruction := map[string]string{
 		"phase": "PLAN",
-		"task":  "Break spec into plan.md + task.md",
+		"task":  "将规格拆分为 plan.md + task.md",
 	}
 
 	name := resolveFeatureName(p, args)
@@ -232,49 +232,49 @@ func runInstructionsTasks(cmd *cobra.Command, args []string) error {
 
 	instruction["planTemplate"] = `# Feature Name — Plan
 
-**Goal:** <one-line goal>
+**Goal:** <一句话目标>
 
 ## Architecture Overview
-<describe the high-level architecture>
+<描述高层架构>
 
 ## Dependency Graph
-<ASCII tree showing task dependencies>
+<ASCII树形图展示任务依赖>
 
 ## Vertical Slice Strategy
-<how work is sliced into vertical features>
+<如何将工作切分为垂直功能切片>
 
 ## Risk/Mitigation Table
 | Risk | Mitigation |
 |------|------------|
-| <risk> | <mitigation> |
+| <风险> | <应对策略> |
 
 ## Parallelization
 | Task | Classification | Notes |
 |------|---------------|-------|
-| <task> | safe/sequential/needs-coordination | <notes> |
+| <任务> | safe/sequential/needs-coordination | <备注> |
 
 ## Self-Audit Checklist
-- [ ] All tasks have acceptance criteria
-- [ ] No placeholder values
-- [ ] Dependencies are satisfied in order
-- [ ] Each task leaves system working
+- [ ] 所有任务都有验收条件
+- [ ] 没有占位符值
+- [ ] 依赖按顺序满足
+- [ ] 每个任务完成后系统可工作
 
 ## Handoff
-Ready to execute. All tasks are specific with real file paths and function names.
+准备执行。所有任务都包含具体的文件路径和函数名。
 
 ## Task Details
-### 1.1 <task title>
-- **Acceptance:** <how to verify>
-- **Verification:** <test method>
-- **Dependencies:** <prerequisite task IDs>
-- **Files:** <files to modify>
-- **Scope:** <what's in/out>
-- **Notes:** <implementation tips>
-- **Approach:** <implementation strategy>
-- **Edge Cases:** <edge cases to handle>
-- **Rollback:** <how to revert if needed>`
+### 1.1 <任务标题>
+- **Acceptance:** <如何验证>
+- **Verification:** <测试方法>
+- **Dependencies:** <前置任务ID>
+- **Files:** <需修改的文件>
+- **Scope:** <范围说明>
+- **Notes:** <实现提示>
+- **Approach:** <实现策略>
+- **Edge Cases:** <需处理的边界情况>
+- **Rollback:** <回滚方式>`
 
-	instruction["taskTemplate"] = "# Feature Name\n\n## 1. Define\n- [ ] 1.1 <task description> `" + "file.go" + "`\n  - [ ] RED: <test description>\n  - [ ] GREEN: <implementation description>\n  - [ ] REFACTOR: <refactoring description>\n- [ ] 1.2 <task description>\n\n## 2. Build\n- [ ] 2.1 <task description> `" + "file.go" + "`"
+	instruction["taskTemplate"] = "# Feature Name\n\n## 1. Define\n- [ ] 1.1 <任务描述> `" + "file.go" + "`\n  - [ ] RED: <测试描述>\n  - [ ] GREEN: <实现描述>\n  - [ ] REFACTOR: <重构描述>\n- [ ] 1.2 <任务描述>\n\n## 2. Build\n- [ ] 2.1 <任务描述> `" + "file.go" + "`"
 
 	output.Print(instruction, isJSON())
 	return nil

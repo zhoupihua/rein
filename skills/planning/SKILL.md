@@ -98,10 +98,10 @@ Before defining tasks, map out which files will be created or modified and what 
 **TDD-Structured Sub-Tasks** — Implementation tasks should include RED/GREEN/REFACTOR sub-checkboxes so each task is test-driven. Use this format in task.md:
 
 ```
-- [ ] 2.1 Add API endpoint for X
-  - [ ] RED: Write failing test for endpoint returning 404
-  - [ ] GREEN: Implement handler returning correct response
-  - [ ] REFACTOR: Extract validation into shared middleware
+- [ ] 2.1 为X添加API端点
+  - [ ] RED: 编写端点返回404的失败测试
+  - [ ] GREEN: 实现返回正确响应的处理函数
+  - [ ] REFACTOR: 提取验证逻辑为共享中间件
 ```
 
 This ensures every implementation task follows the RED (write failing test) → GREEN (make it pass) → REFACTOR (clean up) cycle.
@@ -121,28 +121,28 @@ Arrange tasks so that:
 ```markdown
 # [Feature Name] Plan
 
-> **For agentic workers:** This is your primary reference during implementation.
-> Read tasks.md only for status tracking (which tasks are done).
+> **给执行代理的说明：** 这是实施过程中的主要参考文档。
+> 仅在需要了解任务完成状态时读取 tasks.md。
 
-**Goal:** [One sentence describing what this builds]
+**Goal:** [一句话描述本计划要构建什么]
 
-**Architecture:** [2-3 sentences about approach]
+**Architecture:** [2-3句话描述技术方案]
 
-**Tech Stack:** [Key technologies/libraries]
+**Tech Stack:** [关键技术/库]
 
 ---
 
 ## Architecture Overview
 
-[2-3 paragraphs describing the high-level architecture: major components, how they interact, data flow, and key design patterns. This is the first thing an implementing agent reads — make it self-contained.]
+[2-3段描述高层架构：主要组件、交互方式、数据流、关键设计模式。这是执行代理首先阅读的内容——确保自洽完整。]
 
 ## Architecture Decisions
-- [Key decision 1 and rationale]
-- [Key decision 2 and rationale]
+- [关键决策1及理由]
+- [关键决策2及理由]
 
 ## Dependency Graph
 
-[ASCII tree showing component dependencies]
+[ASCII树形图展示组件依赖关系]
 
 ```
 Database schema
@@ -154,69 +154,69 @@ Database schema
 
 ## Vertical Slice Strategy
 
-[How work is sliced into independent, testable increments. Explain which slices can ship standalone and why the chosen order minimizes integration risk.]
+[如何将工作切分为独立、可测试的增量。说明哪些切片可独立交付，以及为何所选顺序能将集成风险降到最低。]
 
 ## File Map
 
 | File | Purpose | New/Modified |
 |------|---------|-------------|
-| `src/path/to/file.ts` | [Purpose] | New/Modified |
+| `src/path/to/file.ts` | [用途] | 新建/修改 |
 
 ## Task Details
 
-### 1.1 [Short descriptive title]
-- **Acceptance:** [Specific, testable condition]
+### 1.1 [简短描述性标题]
+- **Acceptance:** [具体、可验证的验收条件]
 - **Verification:** `npm test -- --grep "feature-name"`
-- **Dependencies:** None
+- **Dependencies:** 无
 - **Files:** `src/path/to/file.ts`
 - **Scope:** S
-- **Approach:** [How to implement — key algorithm, pattern, or code structure]
-- **Edge Cases:** [Boundary conditions and how to handle them]
-- **Rollback:** [How to revert if this task fails without breaking other tasks]
+- **Approach:** [实现方式——关键算法、模式或代码结构]
+- **Edge Cases:** [边界条件及处理方式]
+- **Rollback:** [如何回滚而不影响其他任务]
 
-### 1.2 [Short descriptive title]
-- **Acceptance:** [Specific, testable condition]
+### 1.2 [简短描述性标题]
+- **Acceptance:** [具体、可验证的验收条件]
 - **Verification:** `npm run build`
 - **Dependencies:** 1.1
 - **Files:** `src/path/to/file.ts`, `tests/path/to/test.ts`
 - **Scope:** M
-- **Approach:** [How to implement — key algorithm, pattern, or code structure]
-- **Edge Cases:** [Boundary conditions and how to handle them]
-- **Rollback:** [How to revert if this task fails without breaking other tasks]
+- **Approach:** [实现方式——关键算法、模式或代码结构]
+- **Edge Cases:** [边界条件及处理方式]
+- **Rollback:** [如何回滚而不影响其他任务]
 
 ## Parallelization Classification
 
 | Category | Tasks | Strategy |
 |----------|-------|----------|
-| Safe to parallelize | [Task numbers] | Dispatch concurrently |
-| Sequential | [Task numbers] | Execute in order |
-| Needs coordination | [Task numbers] | Define contract first, then parallelize |
+| Safe to parallelize | [任务编号] | 并行执行 |
+| Sequential | [任务编号] | 按序执行 |
+| Needs coordination | [任务编号] | 先定义接口，再并行 |
 
 ## Risk/Mitigation Table
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| [Risk] | [High/Med/Low] | [Strategy] |
+| [风险] | [高/中/低] | [应对策略] |
 
 ## Self-Audit Checklist
 
-- [ ] Every spec requirement maps to at least one task
-- [ ] No task depends on a later task (no circular dependencies)
-- [ ] Every task has acceptance criteria that are independently verifiable
-- [ ] No placeholders (TBD, TODO, "implement later") in any task detail
-- [ ] File paths are specific and accurate for this codebase
-- [ ] Rollback strategy exists for every task
+- [ ] 每个规格需求都映射到至少一个任务
+- [ ] 没有任务依赖后续任务（无循环依赖）
+- [ ] 每个任务都有可独立验证的验收条件
+- [ ] 没有占位符（TBD、TODO、"后续实现"）
+- [ ] 文件路径具体且准确
+- [ ] 每个任务都有回滚策略
 
 ## Explicit Handoff Statement
 
-**This plan is ready for implementation by [subagent / inline execution]. The implementing agent should:**
-1. Read this plan.md first for context and approach
-2. Update task.md checkboxes as work progresses
-3. Run verification commands listed in each task after completion
-4. Flag any blocking issues immediately rather than working around them
+**此计划已准备好由 [子代理 / 内联执行] 实施。执行代理应：**
+1. 首先阅读 plan.md 了解上下文和方案
+2. 随着工作进展更新 task.md 复选框
+3. 完成每个任务后运行验证命令
+4. 遇到阻塞立即上报，不要绕过
 
 ## Open Questions
-- [Question needing human input]
+- [需要用户输入的问题]
 ```
 
 ### tasks.md Template (Execution Layer — Status Tracking Only)
@@ -227,16 +227,16 @@ tasks.md is a **lightweight checkbox list** for tracking progress. Implementatio
 # Tasks: [Feature Name]
 
 ## 1. Foundation
-- [ ] 1.1 Create database migration for X
-- [ ] 1.2 Implement repository layer for X
+- [ ] 1.1 为X创建数据库迁移
+- [ ] 1.2 实现X的数据仓库层
 
 ## 2. Core Feature
-- [ ] 2.1 Add API endpoint for X
-- [ ] 2.2 Build UI for X
+- [ ] 2.1 添加X的API端点
+- [ ] 2.2 构建X的UI
 
 ## 3. Polish
-- [ ] 3.1 Add error handling
-- [ ] 3.2 Update documentation
+- [ ] 3.1 添加错误处理
+- [ ] 3.2 更新文档
 ```
 
 **Rules:**
@@ -246,21 +246,21 @@ tasks.md is a **lightweight checkbox list** for tracking progress. Implementatio
 - Task titles should be specific enough to identify the work, but details go in plan.md
 - Sub-tasks use indented checkboxes with TDD structure (RED/GREEN/REFACTOR):
   ```
-  - [ ] 2.1 Add API endpoint for X
-    - [ ] RED: Write failing test for POST /x returning 201
-    - [ ] GREEN: Implement route handler and create action
-    - [ ] REFACTOR: Extract input validation into shared middleware
+  - [ ] 2.1 为X添加API端点
+    - [ ] RED: 编写POST /x返回201的失败测试
+    - [ ] GREEN: 实现路由处理和创建操作
+    - [ ] REFACTOR: 提取输入验证为共享中间件
   ```
 
 ## Task Sizing Guidelines
 
 | Size | Files | Scope | Example |
 |------|-------|-------|---------|
-| **XS** | 1 | Single function or config change | Add a validation rule |
-| **S** | 1-2 | One component or endpoint | Add a new API endpoint |
-| **M** | 3-5 | One feature slice | User registration flow |
-| **L** | 5-8 | Multi-component feature | Search with filtering and pagination |
-| **XL** | 8+ | **Too large — break it down further** | — |
+| **XS** | 1 | 单个函数或配置变更 | 添加一条验证规则 |
+| **S** | 1-2 | 一个组件或端点 | 添加新的API端点 |
+| **M** | 3-5 | 一个功能切片 | 用户注册流程 |
+| **L** | 5-8 | 多组件功能 | 带筛选和分页的搜索 |
+| **XL** | 8+ | **过大——需要进一步拆分** | — |
 
 If a task is L or larger, it should be broken into smaller tasks. An agent performs best on S and M tasks.
 

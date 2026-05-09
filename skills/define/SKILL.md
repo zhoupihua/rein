@@ -135,29 +135,29 @@ Save to `docs/rein/changes/<name>/proposal.md`:
 # Proposal: [Project/Feature Name]
 
 ## Why
-[One-sentence "How Might We" framing — the problem this solves and why now]
+[用一句话描述"我们如何可能"——解决什么问题，为什么是现在]
 
 ## What Changes
-[The chosen direction and what will be different — 2-3 paragraphs max]
+[选择的方向和将要发生的变化——最多2-3段]
 
 ## Goals
-- [Goal 1]
-- [Goal 2]
-- [Goal 3]
+- [目标1]
+- [目标2]
+- [目标3]
 
 ## Non-Goals
-- [Thing 1] — [reason]
-- [Thing 2] — [reason]
-- [Thing 3] — [reason]
+- [不做什么1] — [原因]
+- [不做什么2] — [原因]
+- [不做什么3] — [原因]
 
 ## Key Assumptions
-- [ ] [Assumption 1 — how to test it]
-- [ ] [Assumption 2 — how to test it]
-- [ ] [Assumption 3 — how to test it]
+- [ ] [假设1 — 如何验证]
+- [ ] [假设2 — 如何验证]
+- [ ] [假设3 — 如何验证]
 
 ## Open Questions
-- [Question 1]
-- [Question 2]
+- [待解决问题1]
+- [待解决问题2]
 ```
 
 **The "Non-Goals" list is arguably the most valuable part.** Focus is about saying no to good ideas. Make the trade-offs explicit.
@@ -174,34 +174,34 @@ Save to `docs/rein/changes/<name>/spec.md`:
 ## Requirements
 
 ### Success Criteria
-WHEN <condition> THEN <expected behavior>
-- **TEST** `TestFunctionName` (optional)
+WHEN <条件> THEN <期望行为>
+- **TEST** `TestFunctionName` (可选)
 
 ### Commands
-[Build, test, lint, dev — full commands]
+[构建、测试、lint、开发——完整命令]
 
 ### Project Structure
-[Directory layout with descriptions]
+[目录结构及说明]
 
 ### Code Style
-[Example snippet + key conventions]
+[示例代码片段 + 关键约定]
 
 ### Testing Strategy
-[Framework, test locations, coverage requirements, test levels]
+[框架、测试位置、覆盖率要求、测试层级]
 
 ### Boundaries
-- Always: [...]
-- Ask first: [...]
-- Never: [...]
+- Always: [始终遵守的规则]
+- Ask first: [需先确认的事项]
+- Never: [绝不触碰的底线]
 
 ## Decisions
-**Decision:** [What was decided] — **Rationale:** [Why]
-- **Decision:** [e.g., "Use session-based auth over JWT"] — **Rationale:** [e.g., "Simpler revocation, no token leakage risk for this app's threat model"]
+**Decision:** [决策内容] — **Rationale:** [决策理由]
+- **Decision:** [例如"使用 session 认证而非 JWT"] — **Rationale:** [例如"撤销更简单，在此威胁模型下无 token 泄露风险"]
 
 ## Risks
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| [Risk description] | [High/Med/Low] | [Strategy] |
+| [风险描述] | [高/中/低] | [应对策略] |
 ```
 
 **Reframe instructions as success criteria.** When receiving vague requirements, translate them into concrete conditions. This applies to spec.md content only — proposal.md captures intent and scope, not testable criteria.
