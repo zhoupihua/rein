@@ -17,7 +17,7 @@ Projects like Superpowers, Agent Skills, and OpenSpec each explored AI coding wo
 |-----------|-------|-------------|
 | Skills | 21 | Unified skills organized by SDLC phase |
 | Agents | 3 | Expert personas (code-reviewer, test-engineer, security-auditor) |
-| Commands | 11 | Slash commands from L1 quick fixes to L3 full features |
+| Commands | 12 | Slash commands from L1 quick fixes to L3 full features |
 | Hooks | 10 | session-start, guard, guard-bash, gate, format, checkbox-guard, task-progress, leak-guard, inject, artifact-validate |
 | References | 6 | Testing, security, performance, accessibility, orchestration, api-design checklists |
 | Templates | 4 | Proposal, spec, tasks, review-checklist artifact templates |
@@ -158,6 +158,7 @@ rein 的工作流按变更复杂度分为三级，每级有对应的流程和质
 | `/continue` | Resume from breakpoint | Continue workflow |
 | `/status` | Task progress & drift detection | Fix stale checkboxes |
 | `/archive` | Archive spec/plan/task to archive/ | Clean up completed artifacts |
+| `/refactor` | Ralph loop structured refactoring | Smell elimination + commits |
 
 ## Hooks
 

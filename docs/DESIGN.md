@@ -95,7 +95,7 @@ rein/
 │   ├── test-engineer.md             # QA Specialist
 │   └── security-auditor.md         # Security Engineer
 │
-├── commands/                        # 11 个统一斜杠命令
+├── commands/                        # 12 个统一斜杠命令
 │   ├── quick.md                     # L1 轻量变更
 │   ├── fix.md                       # L2 标准变更
 │   ├── feature.md                   # L3 完整变更（6 步流程）
@@ -107,6 +107,7 @@ rein/
 │   ├── ship.md                      # 并行专家审查 + GO/NO-GO
 │   ├── status.md                    # 任务进度 & 漂移检测
 │   └── archive.md                   # 归档已完成工件
+│   └── refactor.md                  # Ralph loop 结构化重构
 │
 ├── hooks/                           # 会话钩子
 │   ├── session-start.sh/ps1         # 注入 using-rein 元技能
