@@ -118,4 +118,26 @@ if ($MatchedTask -and $MatchedTaskfile) {
     $Msg = "Auto-checked task $MatchedTask (file match: $EditedFile)"
     $MsgEscaped = $Msg -replace '\\', '\\' -replace '"', '\"'
     Write-Output "{`"hookSpecificOutput`": {`"hookEventName`": `"PostToolUse`", `"additionalContext`": `"$MsgEscaped`"}}"
+} else {
+    # No auto-match found — inject open task reminder
+    foreach ($featureDir in Get-ChildItem $ChangesDir -Directory) {
+        $taskfile = Join-Path $featureDir.FullName "task.md"
+        if (-not (Test-Path $taskfile)) { continue }
+        $featureName = $featureDir.Name
+        $openTasks = @()
+        $content = Get-Content $taskfile
+        foreach ($line in $content) {
+            if ($line -match '^\s*- \[ \]') {
+                $taskDesc = $line -replace '^\s*- \[ \] ', ''
+                $openTasks += $taskDesc
+            }
+        }
+        if ($openTasks.Count -gt 0) {
+            $taskList = $openTasks -join '; '
+            $Msg = "[task-reminder] ${featureName}: unchecked tasks remain — ${taskList}. If you just completed one, update task.md now."
+            $MsgEscaped = $Msg -replace '\\', '\\' -replace '"', '\"'
+            Write-Output "{`"hookSpecificOutput`": {`"hookEventName`": `"PostToolUse`", `"additionalContext`": `"$MsgEscaped`"}}"
+            break
+        }
+    }
 }

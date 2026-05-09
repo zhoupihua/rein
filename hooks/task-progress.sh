@@ -107,4 +107,29 @@ if [ -n "$MATCHED_TASK" ] && [ -n "$MATCHED_TASKFILE" ]; then
     MSG="Auto-checked task ${MATCHED_TASK} (file match: ${EDITED_FILE})"
     MSG_ESCAPED=$(echo "$MSG" | sed 's/\\/\\\\/g; s/"/\\"/g')
     echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUse\", \"additionalContext\": \"$MSG_ESCAPED\"}}"
+else
+    # No auto-match found — inject open task reminder
+    for feature_dir in "$CHANGES_DIR"/*/; do
+        [ -d "$feature_dir" ] || continue
+        taskfile="$feature_dir/task.md"
+        [ -f "$taskfile" ] || continue
+        FEATURE_NAME=$(basename "$feature_dir")
+        OPEN_TASKS=""
+        while IFS= read -r line; do
+            if echo "$line" | grep -qE '^\s*- \[ \]'; then
+                TASK_DESC=$(echo "$line" | sed 's/^\s*- \[ \] //')
+                if [ -n "$OPEN_TASKS" ]; then
+                    OPEN_TASKS="${OPEN_TASKS}; ${TASK_DESC}"
+                else
+                    OPEN_TASKS="${TASK_DESC}"
+                fi
+            fi
+        done < "$taskfile"
+        if [ -n "$OPEN_TASKS" ]; then
+            MSG="[task-reminder] ${FEATURE_NAME}: unchecked tasks remain — ${OPEN_TASKS}. If you just completed one, update task.md now."
+            MSG_ESCAPED=$(echo "$MSG" | sed 's/\\/\\\\/g; s/"/\\"/g')
+            echo "{\"hookSpecificOutput\": {\"hookEventName\": \"PostToolUse\", \"additionalContext\": \"$MSG_ESCAPED\"}}"
+            break
+        fi
+    done
 fi
