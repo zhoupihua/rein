@@ -116,7 +116,6 @@ rein/
 │   ├── gate.sh/ps1                  # 测试网关
 │   ├── format.sh/ps1                # 自动 Prettier 格式化
 │   ├── checkbox-guard.sh/ps1        # checkbox 警告
-│   ├── task-progress.sh/ps1         # 自动勾选 task
 │   ├── leak-guard.sh/ps1            # 密钥泄露拦截
 │   ├── inject.sh/ps1                # 注入审查清单
 │   └── artifact-validate            # Go-only，验证制品阶段完整性

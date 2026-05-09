@@ -56,7 +56,7 @@ function Configure-Settings([string]$SettingsFile, [string]$HookCmd) {
             [PSCustomObject]@{matcher = "Bash"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd guard-bash"}, [PSCustomObject]@{type = "command"; command = "$HookCmd gate"})}
         )
         $reinHooks["PostToolUse"] = @(
-            [PSCustomObject]@{matcher = "Write|Edit|MultiEdit"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd format"}, [PSCustomObject]@{type = "command"; command = "$HookCmd checkbox-guard"}, [PSCustomObject]@{type = "command"; command = "$HookCmd task-progress"}, [PSCustomObject]@{type = "command"; command = "$HookCmd artifact-validate"})},
+            [PSCustomObject]@{matcher = "Write|Edit|MultiEdit"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd format"}, [PSCustomObject]@{type = "command"; command = "$HookCmd checkbox-guard"}, [PSCustomObject]@{type = "command"; command = "$HookCmd artifact-validate"})},
             [PSCustomObject]@{matcher = "Read|Bash"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd leak-guard"})}
         )
         $reinHooks["UserPromptExpansion"] = @([PSCustomObject]@{matcher = "code-review"; hooks = @([PSCustomObject]@{type = "command"; command = "$HookCmd inject"})})
@@ -99,7 +99,6 @@ function Configure-Settings([string]$SettingsFile, [string]$HookCmd) {
       {"matcher": "Write|Edit|MultiEdit", "hooks": [
         {"type": "command", "command": "$HookCmd format"},
         {"type": "command", "command": "$HookCmd checkbox-guard"},
-        {"type": "command", "command": "$HookCmd task-progress"},
         {"type": "command", "command": "$HookCmd artifact-validate"}
       ]},
       {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": "$HookCmd leak-guard"}]}
@@ -177,6 +176,38 @@ function Copy-Resources([string]$TargetDir) {
     }
 }
 
+# --- Shared helper: inject task progress rule into CLAUDE.md ---
+function Inject-ClaudeMd([string]$ProjectDir) {
+    $ClaudeMd = "$ProjectDir\CLAUDE.md"
+    $Marker = "<!-- rein:task-progress -->"
+    $Block = @"
+$Marker
+## Task Progress
+
+When working on a feature with ``docs/rein/changes/<name>/task.md``, after completing
+any task or sub-task, you MUST immediately mark it as done:
+
+  rein task done <id>          # e.g., rein task done 1.2
+  rein task done <subtask-id>  # e.g., rein task done 1.2.0
+
+Do NOT skip this step. Marking progress is mandatory, not optional.
+$Marker
+"@
+
+    if (Test-Path $ClaudeMd) {
+        $content = Get-Content $ClaudeMd -Raw
+        if ($content -match [regex]::Escape($Marker)) {
+            Write-Host "  OK CLAUDE.md task-progress rule already present"
+        } else {
+            Add-Content -Path $ClaudeMd -Value "`n$Block"
+            Write-Host "  OK CLAUDE.md injected task-progress rule"
+        }
+    } else {
+        Set-Content -Path $ClaudeMd -Value $Block
+        Write-Host "  OK CLAUDE.md created with task-progress rule"
+    }
+}
+
 # ============================================================
 # Global Install
 # ============================================================
@@ -233,6 +264,10 @@ if ($Global) {
     New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\changes" -Force | Out-Null
     New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
     Write-Host "  OK docs/rein/{changes,archive}"
+
+    # [7/8] Inject task progress rule into CLAUDE.md
+    Write-Host "[7/8] Injecting task-progress rule into CLAUDE.md..." -ForegroundColor Yellow
+    Inject-ClaudeMd $ProjectDir
 
     Write-Host ""
     Write-Host "=== Global Installation Complete ===" -ForegroundColor Green
@@ -291,6 +326,9 @@ if ($Global) {
     New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\changes" -Force | Out-Null
     New-Item -ItemType Directory -Path "$ProjectDir\docs\rein\archive" -Force | Out-Null
     Write-Host "  OK docs/rein/{changes,archive}"
+
+    # Inject task progress rule into CLAUDE.md
+    Inject-ClaudeMd $ProjectDir
 
     # [6/6] Verification
     Write-Host "[6/6] Verifying installation..." -ForegroundColor Yellow

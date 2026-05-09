@@ -31,8 +31,6 @@ func runHook(cmd *cobra.Command, args []string) error {
 		hook.Format()
 	case "checkbox-guard":
 		hook.CheckboxGuard()
-	case "task-progress":
-		hook.TaskProgress()
 	case "leak-guard":
 		hook.LeakGuard()
 	case "artifact-validate":

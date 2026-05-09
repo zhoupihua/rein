@@ -49,10 +49,6 @@
           },
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/task-progress.sh\""
-          },
-          {
-            "type": "command",
             "command": "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein hook artifact-validate"
           }
         ]

@@ -134,7 +134,6 @@ rein_hooks = {
         {"matcher": "Write|Edit|MultiEdit", "hooks": [
             {"type": "command", "command": f"{hook_cmd} format"},
             {"type": "command", "command": f"{hook_cmd} checkbox-guard"},
-            {"type": "command", "command": f"{hook_cmd} task-progress"},
             {"type": "command", "command": f"{hook_cmd} artifact-validate"}
         ]},
         {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": f"{hook_cmd} leak-guard"}]}
@@ -182,7 +181,6 @@ PYEOF
       {"matcher": "Write|Edit|MultiEdit", "hooks": [
         {"type": "command", "command": "$hook_cmd format"},
         {"type": "command", "command": "$hook_cmd checkbox-guard"},
-        {"type": "command", "command": "$hook_cmd task-progress"},
         {"type": "command", "command": "$hook_cmd artifact-validate"}
       ]},
       {"matcher": "Read|Bash", "hooks": [{"type": "command", "command": "$hook_cmd leak-guard"}]}
@@ -195,6 +193,38 @@ PYEOF
 }
 SETTINGSJSON
         echo "  ✓ settings.json created with hooks + permissions"
+    fi
+}
+
+# --- Shared helper: inject task progress rule into CLAUDE.md ---
+inject_claude_md() {
+    local project_dir="$1"
+    local claude_md="$project_dir/CLAUDE.md"
+
+    local marker="<!-- rein:task-progress -->"
+    local block="$marker
+## Task Progress
+
+When working on a feature with \`docs/rein/changes/<name>/task.md\`, after completing
+any task or sub-task, you MUST immediately mark it as done:
+
+  rein task done <id>          # e.g., rein task done 1.2
+  rein task done <subtask-id>  # e.g., rein task done 1.2.0
+
+Do NOT skip this step. Marking progress is mandatory, not optional.
+$marker"
+
+    if [ -f "$claude_md" ]; then
+        if grep -qF "$marker" "$claude_md" 2>/dev/null; then
+            echo "  ✓ CLAUDE.md task-progress rule already present"
+        else
+            echo "" >> "$claude_md"
+            echo "$block" >> "$claude_md"
+            echo "  ✓ CLAUDE.md injected task-progress rule"
+        fi
+    else
+        echo "$block" > "$claude_md"
+        echo "  ✓ CLAUDE.md created with task-progress rule"
     fi
 }
 
@@ -266,6 +296,10 @@ if [ "$GLOBAL" = true ]; then
     mkdir -p "$PROJECT_DIR/docs/rein/archive"
     echo "  ✓ docs/rein/{changes,archive}"
 
+    # [7/8] Inject task progress rule into CLAUDE.md
+    echo "[7/8] Injecting task-progress rule into CLAUDE.md..."
+    inject_claude_md "$PROJECT_DIR"
+
     echo ""
     echo "=== Global Installation Complete ==="
     echo ""
@@ -323,6 +357,9 @@ else
     mkdir -p "$PROJECT_DIR/docs/rein/changes"
     mkdir -p "$PROJECT_DIR/docs/rein/archive"
     echo "  ✓ docs/rein/{changes,archive}"
+
+    # [5.5/6] Inject task progress rule into CLAUDE.md
+    inject_claude_md "$PROJECT_DIR"
 
     # [6/6] Verification
     echo "[6/6] Verifying installation..."
