@@ -74,6 +74,8 @@ After green only:
 
 Keep tests green. Don't add behavior.
 
+**结构化重构：** 当 REFACTOR 阶段需要多步改善时，使用 `refactor` 技能的 Ralph loop（识别坏味道 → 小步重构 → 运行测试 → 提交 → 循环）。GREEN 阶段已提供测试守护，可跳过特征测试步骤。
+
 ## The Prove-It Pattern (Bug Fixes)
 
 When a bug is reported, **do not start by trying to fix it.** Start by writing a test that reproduces it.

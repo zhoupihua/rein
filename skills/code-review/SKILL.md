@@ -248,6 +248,10 @@ Human makes the final call
 
 After any refactoring, check for orphaned code. List it explicitly and ask before deleting.
 
+## Refactoring Follow-Up
+
+When code review identifies structural issues (deep nesting, long functions, duplicated logic, etc.), use the `refactor` skill's Ralph loop to address them systematically: identify the smell → characterize behavior → small refactor → verify → commit → repeat. This ensures every refactoring step is test-guarded and individually reversible.
+
 ## Honesty in Review
 
 - Don't rubber-stamp. "LGTM" without evidence of review helps no one.
