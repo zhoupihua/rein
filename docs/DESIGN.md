@@ -12,7 +12,7 @@
 rein/
 ├── README.md
 │
-├── skills/                          # 20 个统一技能
+├── skills/                          # 21 个统一技能
 │   │
 │   │── # ===== 元技能 =====
 │   ├── using-rein/              # 技能发现与操作行为
@@ -50,6 +50,8 @@ rein/
 │   │   ├── spec-reviewer-prompt.md
 │   │   └── code-quality-reviewer-prompt.md
 │   ├── tdd/
+│   │   └── SKILL.md
+│   ├── refactor/                # Ralph loop 结构化重构
 │   │   └── SKILL.md
 │   ├── context-engineering/     # 合并自 context-engineering + source-driven
 │   │   └── SKILL.md
@@ -115,7 +117,8 @@ rein/
 │   ├── checkbox-guard.sh/ps1        # checkbox 警告
 │   ├── task-progress.sh/ps1         # 自动勾选 task
 │   ├── leak-guard.sh/ps1            # 密钥泄露拦截
-│   └── inject.sh/ps1                # 注入审查清单
+│   ├── inject.sh/ps1                # 注入审查清单
+│   └── artifact-validate            # Go-only，验证制品阶段完整性
 │
 ├── references/                      # 参考清单
 │   ├── testing-patterns.md

@@ -70,7 +70,7 @@ Install these as skills so they activate only when relevant:
 
 ## Slash Commands
 
-The repo ships slash commands under `.gemini/commands/` that map to the development lifecycle:
+The repo ships slash commands under `commands/` that map to the development lifecycle. Copy them to `.gemini/commands/` when setting up:
 
 | Command | What it does |
 |---------|--------------|
@@ -80,7 +80,7 @@ The repo ships slash commands under `.gemini/commands/` that map to the developm
 | `/code-review` | Five-axis code review (includes simplification) |
 | `/ship` | Pre-launch checklist via parallel persona fan-out |
 
-> **Note:** Use `/planning` instead of `/plan` — `/plan` conflicts with a Gemini CLI internal command name.
+> **Note:** Use `/planning` instead of `/plan` — `/plan` conflicts with a Gemini CLI internal command name. To make this work, create a `.gemini/commands/planning.md` that references the same content as `commands/plan.md`.
 
 ## Usage Tips
 

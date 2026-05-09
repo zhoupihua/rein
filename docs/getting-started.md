@@ -159,11 +159,11 @@ Treat them as **living documents** while the work is in progress. Update them wh
 
 ```bash
 rein init                          # Create docs/rein/{changes,archive} directories
-rein validate <feature>            # Check artifact completeness
-rein status <feature>              # Show phase and task progress
-rein task next <feature>           # Find next unchecked task
-rein task done <feature> N.M       # Mark task complete
-rein task list <feature>           # List all tasks with status
+rein validate [feature]            # Check artifact completeness
+rein status [feature]              # Show phase and task progress
+rein task next [feature]           # Find next unchecked task
+rein task done N.M                 # Mark task complete (e.g., rein task done 1.1)
+rein task list [feature]           # List all tasks with status
 rein visual start                  # Start visual brainstorming server
 rein visual stop                   # Stop visual brainstorming server
 rein instructions apply            # Apply rein instructions to project

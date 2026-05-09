@@ -30,7 +30,7 @@ rein is a zero-dependency AI coding workflow toolkit. It ships as static markdow
 
 ### Static Content (installed into target projects)
 
-- **`skills/`** — 20 SKILL.md files organized by SDLC phase (DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP)
+- **`skills/`** — 21 SKILL.md files organized by SDLC phase (DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP)
 - **`commands/`** — Slash command definitions consumed by Claude Code
 - **`agents/`** — Expert persona prompts (code-reviewer, test-engineer, security-auditor)
 - **`hooks/`** — Shell/PowerShell scripts + `hooks.json` wiring; most have `.sh` and `.ps1` variants (Go-only hooks like `artifact-validate` have no shell scripts)
@@ -76,6 +76,6 @@ docs/rein/archive/<name>/   # shipped features
 - Task IDs use `phase.seq` format (e.g., `1.1`, `2.3`); sub-task IDs use `phase.seq.index` format (e.g., `1.1.0`, `1.1.2`)
 - Spec scenarios use `WHEN`/`THEN`/`TEST` format parsed by regex in `spec.go`; decisions use `**Decision:** ... — **Rationale:** ...` format
 - Plan has section-level fields (Architecture Overview, Dependency Graph, etc.) parsed by `## ` heading accumulation in `plan.go`; task details use bold-labeled fields (`**Acceptance:**`, `**Approach:**`, etc.) parsed by regex
-- Hook communication: read `CLAUDE_TOOL_INPUT` (JSON), output `{"decision":"block","reason":"..."}` or `{"hookSpecificOutput":{"additionalContext":"..."}}`
+- Hook communication: read `CLAUDE_TOOL_INPUT` (JSON), output `{"decision":"block","reason":"..."}` to reject or `{"hookSpecificOutput":{"hookEventName":"...","additionalContext":"..."}}` to inject context
 - Most hooks have both `.sh` and `.ps1` implementations; Go-only hooks (artifact-validate) are invoked via `rein hook <name>` only
-- No external dependencies beyond cobra; stdlib-only for all internal packages
+- No direct external dependencies beyond cobra; all internal packages use stdlib only
