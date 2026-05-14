@@ -665,7 +665,7 @@ if ($Global) {
         # Check existing installation
         if (Test-Path "$ConfigDir\.rein-manifest") {
             Write-Host "INFO Existing rein installation detected — upgrading" -ForegroundColor Yellow
-        fi
+        }
 
         # [1/8] Install binary
         Write-Host "[1/8] Installing rein CLI..." -ForegroundColor Yellow
