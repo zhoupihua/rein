@@ -7,7 +7,7 @@ import (
 
 var hookCmd = &cobra.Command{
 	Use:   "hook <name>",
-	Short: "Run a hook handler (called by Claude Code events)",
+	Short: "Run a hook handler (called by IDE events)",
 	Args:  cobra.ExactArgs(1),
 	RunE:  runHook,
 }

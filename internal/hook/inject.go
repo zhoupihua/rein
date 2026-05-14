@@ -6,6 +6,11 @@ import (
 )
 
 func Inject() {
+	// Non-Claude IDEs have no UserPromptExpansion hook equivalent
+	if IDE() != "claude" {
+		return
+	}
+
 	// Inject review checklist for /code-review
 	configDir := ConfigDir()
 	checklistPath := filepath.Join(configDir, "checklists", "review.md")

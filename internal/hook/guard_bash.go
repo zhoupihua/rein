@@ -5,6 +5,11 @@ import (
 )
 
 func GuardBash() {
+	// Non-Claude IDEs have no PreBash hook equivalent
+	if IDE() != "claude" {
+		return
+	}
+
 	input := ReadToolInput()
 	if input == "" {
 		return

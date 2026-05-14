@@ -7,6 +7,12 @@ import (
 )
 
 func Gate() {
+	if IDE() != "claude" {
+		// Cursor/Codex PreCommit: run tests unconditionally
+		runTests()
+		return
+	}
+
 	input := ReadToolInput()
 	if input == "" {
 		return
@@ -33,13 +39,16 @@ func Gate() {
 		return
 	}
 
-	// Try running tests
+	runTests()
+}
+
+func runTests() {
 	testCmd := exec.Command("npm", "test")
 	testCmd.Dir = ProjectDir()
 	testCmd.Stdout = os.Stderr
 	testCmd.Stderr = os.Stderr
 
 	if err := testCmd.Run(); err != nil {
-		OutputBlock("Tests failed. Fix tests before deploying.")
+		BlockExit("Tests failed. Fix tests before deploying.")
 	}
 }

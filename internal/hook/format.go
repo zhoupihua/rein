@@ -6,12 +6,7 @@ import (
 )
 
 func Format() {
-	input := ReadToolInput()
-	if input == "" {
-		return
-	}
-
-	target := ExtractFilePath(input)
+	target := FilePath()
 	if target == "" {
 		return
 	}

@@ -14,6 +14,11 @@ var secretPatterns = []*regexp.Regexp{
 }
 
 func LeakGuard() {
+	// Non-Claude IDEs have no PostRead/PostBash hook equivalent
+	if IDE() != "claude" {
+		return
+	}
+
 	// Read tool result from environment or file
 	result := os.Getenv("CLAUDE_TOOL_RESULT")
 	if result == "" {

@@ -10,6 +10,11 @@ import (
 )
 
 func ArtifactValidate() {
+	// Non-Claude IDEs have no access to edit content for artifact validation
+	if IDE() != "claude" {
+		return
+	}
+
 	input := ReadToolInput()
 	if input == "" {
 		return

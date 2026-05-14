@@ -5,6 +5,11 @@ import (
 )
 
 func CheckboxGuard() {
+	// Non-Claude IDEs have no access to edit content diff
+	if IDE() != "claude" {
+		return
+	}
+
 	input := ReadToolInput()
 	if input == "" {
 		return
