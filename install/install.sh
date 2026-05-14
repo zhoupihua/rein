@@ -101,9 +101,9 @@ copy_resources_cursor() {
     rm -rf "$cursor_dir/rules"
     mkdir -p "$cursor_dir/rules"
 
-    local rein_bin="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein"
+    local rein_bin="${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein"
     if [ ! -f "$rein_bin" ]; then
-        rein_bin="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein.exe"
+        rein_bin="${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe"
     fi
 
     if [ -f "$rein_bin" ]; then
@@ -452,9 +452,9 @@ copy_resources_codex() {
 
     mkdir -p "$codex_dir"
 
-    local rein_bin="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein"
+    local rein_bin="${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein"
     if [ ! -f "$rein_bin" ]; then
-        rein_bin="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein.exe"
+        rein_bin="${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe"
     fi
 
     if [ -f "$rein_bin" ]; then
@@ -540,7 +540,7 @@ _generate_codex_md_fallback() {
 _generate_codex_config_fallback() {
     local codex_dir="$1"
     local config_file="$codex_dir/config.toml"
-    local rein_cmd="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein"
+    local rein_cmd="${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein"
 
     cat > "$config_file" <<TOML
 # rein Codex configuration
@@ -610,7 +610,7 @@ TOML
 # ============================================================
 if [ "$GLOBAL" = true ]; then
     if [ "$IDE" = "cursor" ]; then
-        CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+        CONFIG_DIR="${REIN_CONFIG_DIR:-$HOME/.rein}"
         BIN_DIR="$CONFIG_DIR/bin"
         CURSOR_GLOBAL_DIR="$HOME/.cursor"
 
@@ -676,7 +676,7 @@ if [ "$GLOBAL" = true ]; then
         echo "Reference rules in Cursor chat with @<rule-name>"
 
     elif [ "$IDE" = "codex" ]; then
-        CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+        CONFIG_DIR="${REIN_CONFIG_DIR:-$HOME/.rein}"
         BIN_DIR="$CONFIG_DIR/bin"
         PROJECT_DIR="$(pwd)"
         CODEX_DIR="$PROJECT_DIR/.codex"
@@ -742,8 +742,9 @@ if [ "$GLOBAL" = true ]; then
         echo "Codex will read CODEX.md automatically on session start"
 
     else
-        CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+        CONFIG_DIR="${REIN_CONFIG_DIR:-$HOME/.rein}"
         BIN_DIR="$CONFIG_DIR/bin"
+        CLAUDE_SETTINGS_DIR="$HOME/.claude"
 
         echo "=== rein Global Installer ==="
         echo "Target: $CONFIG_DIR"
@@ -766,10 +767,10 @@ if [ "$GLOBAL" = true ]; then
         echo "[3/8] Generating protection manifest..."
         generate_manifest "$CONFIG_DIR"
 
-        # [4/8] Configure settings.json (hooks use $CLAUDE_CONFIG_DIR)
+        # [4/8] Configure settings.json (hooks use $REIN_CONFIG_DIR)
         echo "[4/8] Configuring settings.json..."
-        HOOK_CMD='${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein hook'
-        configure_settings "$CONFIG_DIR/settings.json" "$HOOK_CMD"
+        HOOK_CMD='${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein hook'
+        configure_settings "$CLAUDE_SETTINGS_DIR/settings.json" "$HOOK_CMD"
 
         # Clean up old bash/ps1 hooks
         if [ -d "$CONFIG_DIR/hooks" ]; then
@@ -830,7 +831,7 @@ else
 
     if [ "$IDE" = "cursor" ]; then
         CURSOR_DIR="$PROJECT_DIR/.cursor"
-        CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+        CONFIG_DIR="${REIN_CONFIG_DIR:-$HOME/.rein}"
 
         echo "=== rein Project Installer (Cursor) ==="
         echo "Target: $PROJECT_DIR"
@@ -877,7 +878,7 @@ else
 
     elif [ "$IDE" = "codex" ]; then
         CODEX_DIR="$PROJECT_DIR/.codex"
-        CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+        CONFIG_DIR="${REIN_CONFIG_DIR:-$HOME/.rein}"
 
         echo "=== rein Project Installer (Codex) ==="
         echo "Target: $PROJECT_DIR"
@@ -923,15 +924,16 @@ else
         echo "Codex will read CODEX.md automatically on session start"
 
     else
+        REIN_DIR="$PROJECT_DIR/.rein"
+        CONFIG_DIR="${REIN_CONFIG_DIR:-$HOME/.rein}"
         CLAUDE_DIR="$PROJECT_DIR/.claude"
-        CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
         echo "=== rein Project Installer ==="
         echo "Target: $PROJECT_DIR"
         echo ""
 
         # Check existing installation
-        if [ -f "$CLAUDE_DIR/.rein-manifest" ]; then
+        if [ -f "$REIN_DIR/.rein-manifest" ]; then
             echo "ℹ Existing rein installation detected — upgrading" >&2
         fi
 
@@ -942,20 +944,20 @@ else
 
         # [2/6] Copy resources
         echo "[2/6] Installing resources..."
-        copy_resources "$CLAUDE_DIR"
+        copy_resources "$REIN_DIR"
 
         # [3/6] Generate manifest
         echo "[3/6] Generating protection manifest..."
-        generate_manifest "$CLAUDE_DIR"
+        generate_manifest "$REIN_DIR"
 
         # [4/6] Configure settings.json (hooks use global binary)
         echo "[4/6] Configuring settings.json..."
-        HOOK_CMD='${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein hook'
+        HOOK_CMD='${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein hook'
         configure_settings "$CLAUDE_DIR/settings.json" "$HOOK_CMD"
 
         # Clean up old bash/ps1 hooks
-        if [ -d "$CLAUDE_DIR/hooks" ]; then
-            rm -f "$CLAUDE_DIR/hooks/"*.sh "$CLAUDE_DIR/hooks/"*.ps1 2>/dev/null
+        if [ -d "$REIN_DIR/hooks" ]; then
+            rm -f "$REIN_DIR/hooks/"*.sh "$REIN_DIR/hooks/"*.ps1 2>/dev/null
             echo "  ✓ Cleaned old hook scripts"
         fi
 
@@ -980,7 +982,7 @@ else
         echo "=== Project Installation Complete ==="
         echo ""
         echo "Installed:"
-        echo "  Resources: $CLAUDE_DIR/skills/, commands/, agents/"
+        echo "  Resources: $REIN_DIR/skills/, commands/, agents/"
         echo "  Hooks:     $CLAUDE_DIR/settings.json"
         echo "  Artifacts: $PROJECT_DIR/docs/rein/"
         echo ""

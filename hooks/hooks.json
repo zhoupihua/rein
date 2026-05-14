@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/session-start.sh\""
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/guard.sh\""
           }
         ]
       },
@@ -26,11 +26,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-bash.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/guard-bash.sh\""
           },
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/gate.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/gate.sh\""
           }
         ]
       }
@@ -41,15 +41,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/format.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/format.sh\""
           },
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/checkbox-guard.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/checkbox-guard.sh\""
           },
           {
             "type": "command",
-            "command": "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein hook artifact-validate"
+            "command": "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein hook artifact-validate"
           }
         ]
       },
@@ -58,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/leak-guard.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/leak-guard.sh\""
           }
         ]
       }
@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PROJECT_DIR}/.claude/hooks/inject.sh\""
+            "command": "bash \"${CLAUDE_PROJECT_DIR}/.rein/hooks/inject.sh\""
           }
         ]
       }

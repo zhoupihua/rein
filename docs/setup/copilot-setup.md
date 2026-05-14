@@ -10,9 +10,9 @@ Copilot supports creating agent skills using a `.github/skills` directory in you
 mkdir -p .github/skills
 
 # Copy essential rein skills
-cp -r .claude/skills/define .github/skills/
-cp -r .claude/skills/tdd .github/skills/
-cp -r .claude/skills/code-review .github/skills/
+cp -r .rein/skills/define .github/skills/
+cp -r .rein/skills/tdd .github/skills/
+cp -r .rein/skills/code-review .github/skills/
 ```
 
 For more details, refer [Creating agent skills for GitHub Copilot](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-skills).
@@ -23,9 +23,9 @@ Copilot supports specialized agent personas:
 
 ```bash
 mkdir -p .github/agents
-cp .claude/agents/code-reviewer.md .github/agents/code-reviewer.md
-cp .claude/agents/test-engineer.md .github/agents/test-engineer.md
-cp .claude/agents/security-auditor.md .github/agents/security-auditor.md
+cp .rein/agents/code-reviewer.md .github/agents/code-reviewer.md
+cp .rein/agents/test-engineer.md .github/agents/test-engineer.md
+cp .rein/agents/security-auditor.md .github/agents/security-auditor.md
 ```
 
 Invoke agents in Copilot Chat:

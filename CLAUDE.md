@@ -39,7 +39,7 @@ rein is a zero-dependency AI coding workflow toolkit. It ships as static markdow
 
 ### Install Flow
 
-`install/install.sh` (or `.ps1`) copies skills/commands/agents/hooks into `<project>/.claude/`, configures `settings.json` hooks, and generates `.rein-manifest` for file protection. The guard hooks read this manifest to block AI edits to rein-managed files.
+`install/install.sh` (or `.ps1`) copies skills/commands/agents into `<project>/.rein/` (or IDE-specific dirs like `.cursor/rules/`), configures hooks in `.claude/settings.json` (Claude Code) or `.cursor/hooks.json` (Cursor), and generates `.rein-manifest` for file protection. The binary and global resources live in `~/.rein/`.
 
 ## Workflow Levels
 

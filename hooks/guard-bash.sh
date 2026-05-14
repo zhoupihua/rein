@@ -2,7 +2,7 @@
 # guard-bash Hook (PreToolUse → Bash)
 # Prevents destructive commands targeting rein-managed files
 
-MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
+MANIFEST="${CLAUDE_PROJECT_DIR}/.rein/.rein-manifest"
 [ -f "$MANIFEST" ] || exit 0
 
 # Read tool input from env or file

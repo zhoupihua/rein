@@ -60,17 +60,17 @@ No mention of skills in instructions at all. Measures default behavior.
 ### Soft Suggestion
 ```markdown
 ## Skills Library
-You have access to skills at `.claude/skills/`. Consider
+You have access to skills at `.rein/skills/`. Consider
 checking for relevant skills before working on tasks.
 ```
 
 ### Directive
 ```markdown
 ## Skills Library
-Before working on any task, check `.claude/skills/` for
+Before working on any task, check `.rein/skills/` for
 relevant skills. You should use skills when they exist.
-Browse: `ls .claude/skills/`
-Search: `grep -r "keyword" .claude/skills/`
+Browse: `ls .rein/skills/`
+Search: `grep -r "keyword" .rein/skills/`
 ```
 
 ### Emphatic (XML tags)

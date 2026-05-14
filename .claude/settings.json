@@ -1,0 +1,83 @@
+{
+    "hooks":  {
+                  "SessionStart":  [
+                                       {
+                                           "matcher":  "",
+                                           "hooks":  [
+                                                         {
+                                                             "type":  "command",
+                                                             "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook session-start"
+                                                         }
+                                                     ]
+                                       }
+                                   ],
+                  "PreToolUse":  [
+                                     {
+                                         "matcher":  "Edit|Write|MultiEdit",
+                                         "hooks":  [
+                                                       {
+                                                           "type":  "command",
+                                                           "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook guard"
+                                                       }
+                                                   ]
+                                     },
+                                     {
+                                         "matcher":  "Bash",
+                                         "hooks":  [
+                                                       {
+                                                           "type":  "command",
+                                                           "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook guard-bash"
+                                                       },
+                                                       {
+                                                           "type":  "command",
+                                                           "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook gate"
+                                                       }
+                                                   ]
+                                     }
+                                 ],
+                  "PostToolUse":  [
+                                      {
+                                          "matcher":  "Write|Edit|MultiEdit",
+                                          "hooks":  [
+                                                        {
+                                                            "type":  "command",
+                                                            "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook format"
+                                                        },
+                                                        {
+                                                            "type":  "command",
+                                                            "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook checkbox-guard"
+                                                        },
+{
+                                                            "type":  "command",
+                                                            "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook artifact-validate"
+                                                        }
+                                                    ]
+                                      },
+                                      {
+                                          "matcher":  "Read|Bash",
+                                          "hooks":  [
+                                                        {
+                                                            "type":  "command",
+                                                            "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook leak-guard"
+                                                        }
+                                                    ]
+                                      }
+                                  ],
+                  "UserPromptExpansion":  [
+                                              {
+                                                  "matcher":  "code-review",
+                                                  "hooks":  [
+                                                                {
+                                                                    "type":  "command",
+                                                                    "command":  "${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook inject"
+                                                                }
+                                                            ]
+                                              }
+                                          ]
+              },
+    "permissions":  {
+                        "allow":  [
+                                      "Bash(rein *)"
+                                  ]
+                    }
+}

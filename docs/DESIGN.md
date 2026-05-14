@@ -261,12 +261,11 @@ powershell -ExecutionPolicy Bypass -File \path\to\rein\install\install.ps1
 ### install 脚本做的事
 
 1. 创建制品目录：`docs/rein/changes/`、`docs/rein/archive/`
-2. 复制 `commands/*.md` 到 `.claude/commands/`
-3. 复制 `skills/` 到 `.claude/skills/`
-4. 复制 `agents/*.md` 到 `.claude/agents/`
-5. 复制 `hooks/` 到 `.claude/hooks/`
-6. 配置 `.claude/settings.json` 中的 hooks
-7. 生成 `.claude/.rein-manifest` 保护清单
+2. 复制 `commands/*.md` 到 `.rein/commands/`
+3. 复制 `skills/` 到 `.rein/skills/`
+4. 复制 `agents/*.md` 到 `.rein/agents/`
+5. 配置 `.claude/settings.json` 中的 hooks
+6. 生成 `.rein/.rein-manifest` 保护清单
 
 ---
 

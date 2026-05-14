@@ -18,13 +18,13 @@ go install github.com/zhoupihua/rein/cmd/rein@latest
 cd /your/project
 rein init
 
-# Option B: Full install (skills, commands, agents, hooks into .claude/)
+# Option B: Full install (skills, commands, agents into .rein/)
 cd /your/project
 bash /path/to/rein/install/install.sh       # Linux/Mac
 powershell -File \path\to\rein\install\install.ps1  # Windows
 ```
 
-`rein init` creates `docs/rein/{changes,archive}` directories. The install script copies skills, commands, agents, and hooks into your project's `.claude/` directory and configures hooks in `settings.json`.
+`rein init` creates `docs/rein/{changes,archive}` directories. The install script copies skills, commands, agents into your project's `.rein/` directory and configures hooks in `.claude/settings.json`.
 
 ### 2. Choose a skill
 

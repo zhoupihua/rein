@@ -139,9 +139,10 @@ func collectArtifacts(sourceDir string) (skills, commands, agents map[string]str
 }
 
 func findReinBinary() string {
-	// Try common locations
 	home, _ := os.UserHomeDir()
 	candidates := []string{
+		filepath.Join(home, ".rein", "bin", "rein"),
+		filepath.Join(home, ".rein", "bin", "rein.exe"),
 		filepath.Join(home, ".claude", "bin", "rein"),
 		filepath.Join(home, ".claude", "bin", "rein.exe"),
 		"rein", // rely on PATH

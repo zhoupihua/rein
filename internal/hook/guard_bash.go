@@ -22,7 +22,7 @@ func GuardBash() {
 
 	// Check for destructive commands targeting rein-managed files
 	destructiveCmds := []string{"rm ", "rm -rf ", "rm -r ", "del ", "rmdir "}
-	reinPaths := []string{"docs/rein/", ".claude/commands/", ".claude/skills/", ".claude/agents/", ".claude/hooks/", ".claude/checklists/", ".claude/.rein-manifest", ".claude/bin/"}
+	reinPaths := []string{"docs/rein/", ".rein/commands/", ".rein/skills/", ".rein/agents/", ".rein/hooks/", ".rein/checklists/", ".rein/.rein-manifest", ".rein/bin/"}
 
 	for _, dc := range destructiveCmds {
 		if strings.Contains(cmd, dc) {

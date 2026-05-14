@@ -186,6 +186,7 @@ func findSkillFile(relPath string) string {
 	// Check multiple possible locations for skill files
 	candidates := []string{
 		relPath,
+		filepath.Join(".rein", relPath),
 		filepath.Join(".claude", relPath),
 	}
 

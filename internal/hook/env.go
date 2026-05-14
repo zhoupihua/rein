@@ -74,12 +74,14 @@ func ExtractBashCommand(input string) string {
 }
 
 func ConfigDir() string {
-	dir := os.Getenv("CLAUDE_CONFIG_DIR")
-	if dir != "" {
+	if dir := os.Getenv("REIN_CONFIG_DIR"); dir != "" {
+		return dir
+	}
+	if dir := os.Getenv("CLAUDE_CONFIG_DIR"); dir != "" {
 		return dir
 	}
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".claude")
+	return filepath.Join(home, ".rein")
 }
 
 func ProjectDir() string {
@@ -134,11 +136,14 @@ func manifestContainsIn(filePath, manifestPath string) bool {
 }
 
 func ManifestContains(filePath string) bool {
-	// Check .claude/.rein-manifest
 	if manifestContainsIn(filePath, filepath.Join(ConfigDir(), ".rein-manifest")) {
 		return true
 	}
 	pd := ProjectDir()
+	// Check .rein/.rein-manifest (project-level install)
+	if manifestContainsIn(filePath, filepath.Join(pd, ".rein", ".rein-manifest")) {
+		return true
+	}
 	// Check .cursor/.rein-manifest (project-level Cursor install)
 	if manifestContainsIn(filePath, filepath.Join(pd, ".cursor", ".rein-manifest")) {
 		return true

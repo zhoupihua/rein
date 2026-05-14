@@ -33,9 +33,9 @@ For skills you want always loaded as persistent project context:
 
 ```bash
 # Create GEMINI.md with core skills
-cat .claude/skills/executing-plans/SKILL.md > GEMINI.md
+cat .rein/skills/executing-plans/SKILL.md > GEMINI.md
 echo -e "\n---\n" >> GEMINI.md
-cat .claude/skills/code-review/SKILL.md >> GEMINI.md
+cat .rein/skills/code-review/SKILL.md >> GEMINI.md
 ```
 
 Or modularize by importing from separate files:

@@ -246,7 +246,7 @@ function Copy-Resources-Cursor([string]$CursorDir) {
     if (Test-Path "$CursorDir\rules") { Remove-Item "$CursorDir\rules" -Recurse -Force }
     New-Item -ItemType Directory -Path "$CursorDir\rules" -Force | Out-Null
 
-    $ReinBin = if ($env:CLAUDE_CONFIG_DIR) { "$env:CLAUDE_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.claude\bin\rein.exe" }
+    $ReinBin = if ($env:REIN_CONFIG_DIR) { "$env:REIN_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.rein\bin\rein.exe" }
 
     if (Test-Path $ReinBin) {
         # Use rein convert for proper frontmatter transformation
@@ -399,7 +399,7 @@ function Copy-Resources-Codex([string]$ProjectDir) {
     $CodexDir = "$ProjectDir\.codex"
     New-Item -ItemType Directory -Path $CodexDir -Force | Out-Null
 
-    $ReinBin = if ($env:CLAUDE_CONFIG_DIR) { "$env:CLAUDE_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.claude\bin\rein.exe" }
+    $ReinBin = if ($env:REIN_CONFIG_DIR) { "$env:REIN_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.rein\bin\rein.exe" }
 
     if (Test-Path $ReinBin) {
         & $ReinBin convert --ide codex --source-dir $WorkflowDir --output-dir $ProjectDir
@@ -481,7 +481,7 @@ function Generate-CodexMDFallback([string]$ProjectDir) {
 
 function Generate-CodexConfigFallback([string]$CodexDir) {
     $ConfigFile = "$CodexDir\config.toml"
-    $ReinCmd = if ($env:CLAUDE_CONFIG_DIR) { "$env:CLAUDE_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.claude\bin\rein.exe" }
+    $ReinCmd = if ($env:REIN_CONFIG_DIR) { "$env:REIN_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.rein\bin\rein.exe" }
 
     $Content = @"
 # rein Codex configuration
@@ -545,7 +545,7 @@ description = "Auto-format web files with prettier"
 # ============================================================
 if ($Global) {
     if ($Ide -eq "cursor") {
-        $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+        $ConfigDir = if ($env:REIN_CONFIG_DIR) { $env:REIN_CONFIG_DIR } else { "$env:USERPROFILE\.rein" }
         $BinDir = "$ConfigDir\bin"
         $CursorGlobalDir = "$env:USERPROFILE\.cursor"
 
@@ -600,7 +600,7 @@ if ($Global) {
         Write-Host "Reference rules in Cursor chat with @<rule-name>"
 
     } elseif ($Ide -eq "codex") {
-        $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+        $ConfigDir = if ($env:REIN_CONFIG_DIR) { $env:REIN_CONFIG_DIR } else { "$env:USERPROFILE\.rein" }
         $BinDir = "$ConfigDir\bin"
         $ProjectDir = Get-Location
         $CodexDir = "$ProjectDir\.codex"
@@ -655,8 +655,9 @@ if ($Global) {
         Write-Host "Codex will read CODEX.md automatically on session start"
 
     } else {
-        $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+        $ConfigDir = if ($env:REIN_CONFIG_DIR) { $env:REIN_CONFIG_DIR } else { "$env:USERPROFILE\.rein" }
         $BinDir = "$ConfigDir\bin"
+        $ClaudeSettingsDir = "$env:USERPROFILE\.claude"
 
         Write-Host "=== rein Global Installer ===" -ForegroundColor Cyan
         Write-Host "Target: $ConfigDir"
@@ -679,10 +680,10 @@ if ($Global) {
         Write-Host "[3/8] Generating protection manifest..." -ForegroundColor Yellow
         Generate-Manifest $ConfigDir
 
-        # [4/8] Configure settings.json (hooks use $CLAUDE_CONFIG_DIR)
+        # [4/8] Configure settings.json (hooks use $REIN_CONFIG_DIR)
         Write-Host "[4/8] Configuring settings.json..." -ForegroundColor Yellow
-        $HookCmd = '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein.exe hook'
-        Configure-Settings "$ConfigDir\settings.json" $HookCmd
+        $HookCmd = '${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook'
+        Configure-Settings "$ClaudeSettingsDir\settings.json" $HookCmd
 
         # Clean up old bash/ps1 hooks
         if (Test-Path "$ConfigDir\hooks") {
@@ -732,7 +733,7 @@ if ($Global) {
 
     if ($Ide -eq "cursor") {
         $CursorDir = "$ProjectDir\.cursor"
-        $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+        $ConfigDir = if ($env:REIN_CONFIG_DIR) { $env:REIN_CONFIG_DIR } else { "$env:USERPROFILE\.rein" }
 
         Write-Host "=== rein Project Installer (Cursor) ===" -ForegroundColor Cyan
         Write-Host "Target: $ProjectDir"
@@ -779,7 +780,7 @@ if ($Global) {
 
     } elseif ($Ide -eq "codex") {
         $CodexDir = "$ProjectDir\.codex"
-        $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+        $ConfigDir = if ($env:REIN_CONFIG_DIR) { $env:REIN_CONFIG_DIR } else { "$env:USERPROFILE\.rein" }
 
         Write-Host "=== rein Project Installer (Codex) ===" -ForegroundColor Cyan
         Write-Host "Target: $ProjectDir"
@@ -825,15 +826,16 @@ if ($Global) {
         Write-Host "Codex will read CODEX.md automatically on session start"
 
     } else {
+        $ReinDir = "$ProjectDir\.rein"
         $ClaudeDir = "$ProjectDir\.claude"
-        $ConfigDir = if ($env:CLAUDE_CONFIG_DIR) { $env:CLAUDE_CONFIG_DIR } else { "$env:USERPROFILE\.claude" }
+        $ConfigDir = if ($env:REIN_CONFIG_DIR) { $env:REIN_CONFIG_DIR } else { "$env:USERPROFILE\.rein" }
 
         Write-Host "=== rein Project Installer ===" -ForegroundColor Cyan
         Write-Host "Target: $ProjectDir"
         Write-Host ""
 
         # Check existing installation
-        if (Test-Path "$ClaudeDir\.rein-manifest") {
+        if (Test-Path "$ReinDir\.rein-manifest") {
             Write-Host "INFO Existing rein installation detected — upgrading" -ForegroundColor Yellow
         }
 
@@ -844,20 +846,20 @@ if ($Global) {
 
         # [2/6] Copy resources
         Write-Host "[2/6] Installing resources..." -ForegroundColor Yellow
-        Copy-Resources $ClaudeDir
+        Copy-Resources $ReinDir
 
         # [3/6] Generate manifest
         Write-Host "[3/6] Generating protection manifest..." -ForegroundColor Yellow
-        Generate-Manifest $ClaudeDir
+        Generate-Manifest $ReinDir
 
         # [4/6] Configure settings.json (hooks use global binary)
         Write-Host "[4/6] Configuring settings.json..." -ForegroundColor Yellow
-        $HookCmd = '${CLAUDE_CONFIG_DIR:-$HOME/.claude}/bin/rein.exe hook'
+        $HookCmd = '${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein.exe hook'
         Configure-Settings "$ClaudeDir\settings.json" $HookCmd
 
         # Clean up old bash/ps1 hooks
-        if (Test-Path "$ClaudeDir\hooks") {
-            Remove-Item "$ClaudeDir\hooks\*.sh", "$ClaudeDir\hooks\*.ps1" -Force -ErrorAction SilentlyContinue
+        if (Test-Path "$ReinDir\hooks") {
+            Remove-Item "$ReinDir\hooks\*.sh", "$ReinDir\hooks\*.ps1" -Force -ErrorAction SilentlyContinue
             Write-Host "  OK Cleaned old hook scripts"
         }
 
@@ -887,7 +889,7 @@ if ($Global) {
         Write-Host "=== Project Installation Complete ===" -ForegroundColor Green
         Write-Host ""
         Write-Host "Installed:"
-        Write-Host "  Resources: $ClaudeDir\skills\, commands\, agents\"
+        Write-Host "  Resources: $ReinDir\skills\, commands\, agents\"
         Write-Host "  Hooks:     $ClaudeDir\settings.json"
         Write-Host "  Artifacts: $ProjectDir\docs\rein\"
         Write-Host ""

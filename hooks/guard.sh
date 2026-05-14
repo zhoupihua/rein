@@ -2,7 +2,7 @@
 # guard Hook (PreToolUse → Edit|Write|MultiEdit)
 # Prevents modification of rein-managed files
 
-MANIFEST="${CLAUDE_PROJECT_DIR}/.claude/.rein-manifest"
+MANIFEST="${CLAUDE_PROJECT_DIR}/.rein/.rein-manifest"
 [ -f "$MANIFEST" ] || exit 0
 
 # Read tool input from env or file
@@ -24,7 +24,7 @@ while IFS= read -r entry; do
     [[ -z "${entry// /}" ]] && continue
     entry=$(echo "$entry" | tr '\\' '/')
     if [[ "$TARGET" == *"$entry"* ]]; then
-        echo '{"decision":"block","reason":"This file is managed by rein and cannot be modified. Use rein commands to update, or remove its path from .claude/.rein-manifest to allow edits."}'
+        echo '{"decision":"block","reason":"This file is managed by rein and cannot be modified. Use rein commands to update, or remove its path from .rein/.rein-manifest to allow edits."}'
         exit 2
     fi
 done < "$MANIFEST"
