@@ -229,3 +229,28 @@ func TestCodexConfigTOML(t *testing.T) {
 		t.Errorf("missing rein path: %q", result)
 	}
 }
+
+func TestCodexConfigTOML_EscapesWindowsPath(t *testing.T) {
+	result := CodexConfigTOML(`C:\Users\admin\.claude\bin\rein.exe`)
+
+	if strings.Contains(result, `command = "C:\Users`) {
+		t.Errorf("Windows path was not escaped for TOML: %q", result)
+	}
+	if !strings.Contains(result, `command = "C:\\Users\\admin\\.claude\\bin\\rein.exe hook guard"`) {
+		t.Errorf("missing escaped guard command: %q", result)
+	}
+	if !strings.Contains(result, `command = "C:\\Users\\admin\\.claude\\bin\\rein.exe hook gate"`) {
+		t.Errorf("missing escaped gate command: %q", result)
+	}
+	if !strings.Contains(result, `command = "C:\\Users\\admin\\.claude\\bin\\rein.exe hook format"`) {
+		t.Errorf("missing escaped format command: %q", result)
+	}
+}
+
+func TestCodexConfigTOML_EscapesQuotes(t *testing.T) {
+	result := CodexConfigTOML(`C:\Program Files\rein "stable"\rein.exe`)
+
+	if !strings.Contains(result, `C:\\Program Files\\rein \"stable\"\\rein.exe hook guard`) {
+		t.Errorf("missing escaped quote in command: %q", result)
+	}
+}

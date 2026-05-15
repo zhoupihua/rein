@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 // SkillGlobs maps skill names to file glob patterns for auto-attached Cursor rules.
@@ -190,22 +191,66 @@ func ConvertToCODEXMd(skills, commands, agents map[string]string) string {
 
 // CodexConfigTOML generates a .codex/config.toml with rein hooks.
 func CodexConfigTOML(reinBinPath string) string {
+	guardCommand := tomlBasicString(reinBinPath + " hook guard")
+	gateCommand := tomlBasicString(reinBinPath + " hook gate")
+	formatCommand := tomlBasicString(reinBinPath + " hook format")
+
 	return fmt.Sprintf(`# rein Codex configuration
 [features]
 multi_agent = true
 
 [[hooks.pre_command]]
-command = "%s hook guard"
+command = %s
 description = "Block edits to rein-managed files"
 
 [[hooks.pre_command]]
-command = "%s hook gate"
+command = %s
 description = "Run tests before deploy commands"
 
 [[hooks.post_command]]
-command = "%s hook format"
+command = %s
 description = "Auto-format web files with prettier"
-`, reinBinPath, reinBinPath, reinBinPath)
+`, guardCommand, gateCommand, formatCommand)
+}
+
+func tomlBasicString(s string) string {
+	var sb strings.Builder
+	sb.Grow(len(s) + 2)
+	sb.WriteByte('"')
+	for len(s) > 0 {
+		r, size := utf8.DecodeRuneInString(s)
+		if r == utf8.RuneError && size == 1 {
+			sb.WriteString(`\uFFFD`)
+			s = s[size:]
+			continue
+		}
+
+		switch r {
+		case '\b':
+			sb.WriteString(`\b`)
+		case '\t':
+			sb.WriteString(`\t`)
+		case '\n':
+			sb.WriteString(`\n`)
+		case '\f':
+			sb.WriteString(`\f`)
+		case '\r':
+			sb.WriteString(`\r`)
+		case '"':
+			sb.WriteString(`\"`)
+		case '\\':
+			sb.WriteString(`\\`)
+		default:
+			if r < 0x20 {
+				sb.WriteString(fmt.Sprintf(`\u%04X`, r))
+			} else {
+				sb.WriteRune(r)
+			}
+		}
+		s = s[size:]
+	}
+	sb.WriteByte('"')
+	return sb.String()
 }
 
 func sortedKeys(m map[string]string) []string {

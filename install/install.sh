@@ -541,6 +541,10 @@ _generate_codex_config_fallback() {
     local codex_dir="$1"
     local config_file="$codex_dir/config.toml"
     local rein_cmd="${REIN_CONFIG_DIR:-$HOME/.rein}/bin/rein"
+    local guard_command gate_command format_command
+    guard_command=$(toml_basic_string "$rein_cmd hook guard")
+    gate_command=$(toml_basic_string "$rein_cmd hook gate")
+    format_command=$(toml_basic_string "$rein_cmd hook format")
 
     cat > "$config_file" <<TOML
 # rein Codex configuration
@@ -548,18 +552,30 @@ _generate_codex_config_fallback() {
 multi_agent = true
 
 [[hooks.pre_command]]
-command = "$rein_cmd hook guard"
+command = $guard_command
 description = "Block edits to rein-managed files"
 
 [[hooks.pre_command]]
-command = "$rein_cmd hook gate"
+command = $gate_command
 description = "Run tests before deploy commands"
 
 [[hooks.post_command]]
-command = "$rein_cmd hook format"
+command = $format_command
 description = "Auto-format web files with prettier"
 TOML
     echo "  ✓ .codex/config.toml created"
+}
+
+toml_basic_string() {
+    local value="$1"
+    value=${value//\\/\\\\}
+    value=${value//\"/\\\"}
+    value=${value//$'\b'/\\b}
+    value=${value//$'\t'/\\t}
+    value=${value//$'\n'/\\n}
+    value=${value//$'\f'/\\f}
+    value=${value//$'\r'/\\r}
+    printf '"%s"\n' "$value"
 }
 
 # --- Shared helper: configure Codex config.toml ---
@@ -571,28 +587,32 @@ configure_codex_config() {
     mkdir -p "$codex_dir"
 
     local config_content
+    local guard_command gate_command format_command
+    guard_command=$(toml_basic_string "$rein_cmd hook guard")
+    gate_command=$(toml_basic_string "$rein_cmd hook gate")
+    format_command=$(toml_basic_string "$rein_cmd hook format")
     config_content=$(cat <<TOML
 # rein Codex configuration
 [features]
 multi_agent = true
 
 [[hooks.pre_command]]
-command = "$rein_cmd hook guard"
+command = $guard_command
 description = "Block edits to rein-managed files"
 
 [[hooks.pre_command]]
-command = "$rein_cmd hook gate"
+command = $gate_command
 description = "Run tests before deploy commands"
 
 [[hooks.post_command]]
-command = "$rein_cmd hook format"
+command = $format_command
 description = "Auto-format web files with prettier"
 TOML
 )
 
     if [ -f "$config_file" ]; then
         # Simple merge: append rein hooks if not present
-        if grep -q "rein hook guard" "$config_file" 2>/dev/null; then
+        if grep -q "hook guard" "$config_file" 2>/dev/null; then
             echo "  ✓ config.toml already has rein hooks"
         else
             echo "" >> "$config_file"

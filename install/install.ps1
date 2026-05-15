@@ -479,25 +479,38 @@ function Generate-CodexMDFallback([string]$ProjectDir) {
     Write-Host "  OK CODEX.md created"
 }
 
+function ConvertTo-TomlBasicString([string]$Value) {
+    $Escaped = $Value.Replace('\', '\\').
+        Replace('"', '\"').
+        Replace("`b", '\b').
+        Replace("`t", '\t').
+        Replace("`n", '\n').
+        Replace("`f", '\f').
+        Replace("`r", '\r')
+    return '"' + $Escaped + '"'
+}
+
 function Generate-CodexConfigFallback([string]$CodexDir) {
     $ConfigFile = "$CodexDir\config.toml"
     $ReinCmd = if ($env:REIN_CONFIG_DIR) { "$env:REIN_CONFIG_DIR\bin\rein.exe" } else { "$env:USERPROFILE\.rein\bin\rein.exe" }
-
+    $GuardCommand = ConvertTo-TomlBasicString "$ReinCmd hook guard"
+    $GateCommand = ConvertTo-TomlBasicString "$ReinCmd hook gate"
+    $FormatCommand = ConvertTo-TomlBasicString "$ReinCmd hook format"
     $Content = @"
 # rein Codex configuration
 [features]
 multi_agent = true
 
 [[hooks.pre_command]]
-command = "$ReinCmd hook guard"
+command = $GuardCommand
 description = "Block edits to rein-managed files"
 
 [[hooks.pre_command]]
-command = "$ReinCmd hook gate"
+command = $GateCommand
 description = "Run tests before deploy commands"
 
 [[hooks.post_command]]
-command = "$ReinCmd hook format"
+command = $FormatCommand
 description = "Auto-format web files with prettier"
 "@
     Set-Content -Path $ConfigFile -Value $Content
@@ -508,6 +521,9 @@ description = "Auto-format web files with prettier"
 function Configure-CodexConfig([string]$ConfigFile, [string]$ReinCmd) {
     $CodexDir = Split-Path -Parent $ConfigFile
     New-Item -ItemType Directory -Path $CodexDir -Force | Out-Null
+    $GuardCommand = ConvertTo-TomlBasicString "$ReinCmd hook guard"
+    $GateCommand = ConvertTo-TomlBasicString "$ReinCmd hook gate"
+    $FormatCommand = ConvertTo-TomlBasicString "$ReinCmd hook format"
 
     $Content = @"
 # rein Codex configuration
@@ -515,20 +531,20 @@ function Configure-CodexConfig([string]$ConfigFile, [string]$ReinCmd) {
 multi_agent = true
 
 [[hooks.pre_command]]
-command = "$ReinCmd hook guard"
+command = $GuardCommand
 description = "Block edits to rein-managed files"
 
 [[hooks.pre_command]]
-command = "$ReinCmd hook gate"
+command = $GateCommand
 description = "Run tests before deploy commands"
 
 [[hooks.post_command]]
-command = "$ReinCmd hook format"
+command = $FormatCommand
 description = "Auto-format web files with prettier"
 "@
     if (Test-Path $ConfigFile) {
         $existing = Get-Content $ConfigFile -Raw
-        if ($existing -match "rein hook guard") {
+        if ($existing -match "hook guard") {
             Write-Host "  OK config.toml already has rein hooks"
         } else {
             Add-Content -Path $ConfigFile -Value "`n$Content"
